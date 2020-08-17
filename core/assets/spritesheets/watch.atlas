@@ -1,0 +1,153 @@
+
+watch.png
+size: 256,128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+break
+  rotate: false
+  xy: 0, 20
+  size: 127, 5
+  orig: 127, 5
+  offset: 0, 0
+  index: -1
+buttonBackIcon
+  rotate: false
+  xy: 72, 0
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonBagBack
+  rotate: false
+  xy: 130, 69
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonBagIcon
+  rotate: false
+  xy: 72, 10
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonMiscBack
+  rotate: false
+  xy: 0, 6
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonPartyBack
+  rotate: false
+  xy: 230, 114
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonPartyIcon
+  rotate: false
+  xy: 154, 77
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonPhoneBack
+  rotate: false
+  xy: 24, 6
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonPhoneIcon
+  rotate: false
+  xy: 164, 87
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonSaveBack
+  rotate: false
+  xy: 130, 97
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonSaveIcon
+  rotate: false
+  xy: 130, 59
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonSettingsBack
+  rotate: false
+  xy: 48, 6
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonSettingsIcon
+  rotate: false
+  xy: 178, 101
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonUserBack
+  rotate: false
+  xy: 130, 83
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonUserIcon
+  rotate: false
+  xy: 188, 101
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+buttonWifiBack
+  rotate: false
+  xy: 154, 97
+  size: 24, 14
+  orig: 24, 14
+  offset: 0, 0
+  index: -1
+buttonWifiIcon
+  rotate: false
+  xy: 154, 87
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+partyButton
+  rotate: false
+  xy: 130, 111
+  size: 100, 17
+  orig: 100, 17
+  offset: 0, 0
+  index: -1
+screen
+  rotate: false
+  xy: 0, 25
+  size: 130, 103
+  orig: 130, 103
+  offset: 0, 0
+  index: -1
+scrollEnd
+  rotate: false
+  xy: 82, 15
+  size: 5, 5
+  orig: 5, 5
+  offset: 0, 0
+  index: -1
+scrollMiddle
+  rotate: false
+  xy: 230, 113
+  size: 5, 1
+  orig: 5, 1
+  offset: 0, 0
+  index: -1

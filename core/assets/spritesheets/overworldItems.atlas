@@ -1,0 +1,76 @@
+
+overworldItems.png
+size: 32,16
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+glimmer
+  rotate: false
+  xy: 0, 0
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 0
+glimmer
+  rotate: false
+  xy: 0, 0
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 7
+glimmer
+  rotate: false
+  xy: 5, 0
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 1
+glimmer
+  rotate: false
+  xy: 10, 0
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 2
+glimmer
+  rotate: false
+  xy: 15, 0
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 3
+glimmer
+  rotate: false
+  xy: 18, 9
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 4
+glimmer
+  rotate: false
+  xy: 23, 9
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 5
+glimmer
+  rotate: false
+  xy: 20, 2
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: 6
+regular
+  rotate: false
+  xy: 0, 7
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+tm
+  rotate: false
+  xy: 9, 7
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
