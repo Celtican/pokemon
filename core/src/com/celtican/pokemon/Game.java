@@ -3,6 +3,7 @@ package com.celtican.pokemon;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.celtican.pokemon.screens.LoadingScreen;
+import com.celtican.pokemon.screens.OverworldScreen;
 import com.celtican.pokemon.screens.Screen;
 import com.celtican.pokemon.utils.AssetHandler;
 import com.celtican.pokemon.utils.RenderHandler;
@@ -14,6 +15,8 @@ public class Game extends ApplicationAdapter {
 	public static final byte TARGET_FRAME_RATE = 60;
 	public static final int MILLIS_PER_FRAME = (int)(1f/TARGET_FRAME_RATE*1000);
 	public static final byte PIXEL_SIZE = 4;
+	public static final byte TILE_SIZE = 16;
+	public static final int CHUNK_SIZE = TILE_SIZE * 8;
 	public static Game game;
 
 	public AssetHandler assets;
@@ -29,7 +32,7 @@ public class Game extends ApplicationAdapter {
 		game = this;
 		assets = new AssetHandler();
 		canvas = new RenderHandler();
-		switchScreens(new LoadingScreen());
+		switchScreens(new OverworldScreen());
 
 	}
 
