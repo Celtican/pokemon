@@ -66,11 +66,11 @@ public class Texture {
     }
 
     private static class Renderable {
-        void render(int x, int y) {}
-        int getWidth() {
+        public void render(int x, int y) {}
+        public int getWidth() {
             return 0;
         }
-        int getHeight() {
+        public int getHeight() {
             return 0;
         }
     }

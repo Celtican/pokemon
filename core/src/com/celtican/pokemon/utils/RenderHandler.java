@@ -18,22 +18,25 @@ public class RenderHandler {
     private final ScreenViewport viewport;
 
     private int width, height;
-
-    private float r, g, b, a;
+    private Color clearColor = new Color();
+    private Texture pixel;
 
     public RenderHandler() {
-        setClearColor(0.5f, 0.5f, 0.5f, 1);
+        resetClearColor();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
         viewport.apply();
         camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
     }
+    public void setup() {
+        pixel = Game.game.assets.get("misc/pixel.png", Texture.class);
+    }
 
     public void update() {
         if (Game.game.screen == null)
             return;
-        Gdx.gl.glClearColor(r, g, b, a);
+        Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -64,12 +67,39 @@ public class RenderHandler {
         batch.draw(region, x * Game.PIXEL_SIZE, y * Game.PIXEL_SIZE,
                 region.getRegionWidth() * Game.PIXEL_SIZE, region.getRegionHeight() * Game.PIXEL_SIZE);
     }
+    private void drawRect(int x, int y, int width, int height) {
+        batch.draw(pixel, x*Game.PIXEL_SIZE, y*Game.PIXEL_SIZE,
+                width*Game.PIXEL_SIZE, height*Game.PIXEL_SIZE);
+    }
+    public void drawRect(int x, int y, int width, int height, Color color) {
+        if (pixel == null)
+            return;
+        setColor(color);
+        drawRect(x, y, width, height);
+        resetColor();
+    }
+    public void drawRect(int x, int y, int width, int height, float r, float g, float b) {
+        drawRect(x, y, width, height, r, g, b, 1);
+    }
+    public void drawRect(int x, int y, int width, int height, float r, float g, float b, float a) {
+        if (pixel == null)
+            return;
+        setColor(r, g, b, a);
+        drawRect(x, y, width, height);
+        resetColor();
+    }
 
+    public void setClearColor(Color color) {
+        clearColor = color;
+    }
     public void setClearColor(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+        clearColor.r = r;
+        clearColor.g = g;
+        clearColor.b = b;
+        clearColor.a = a;
+    }
+    public void resetClearColor() {
+        setClearColor(0.5f, 0.5f, 0.5f, 1);
     }
     public void setColor(float r, float g, float b, float a) {
         batch.setColor(r, g, b, a);

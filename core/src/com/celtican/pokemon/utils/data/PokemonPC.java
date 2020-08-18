@@ -81,7 +81,7 @@ public class PokemonPC implements Pokemon {
     }
 
     @Override public AnimatedTexture getAnimatedTexture(boolean forward, float millisPerSecond) {
-        return new AnimatedTexture("spritesheets/" + species + ".atlas",
+        return new AnimatedTexture("spritesheets/pokemon/" + species + ".atlas",
                 (forward ? "F" : "B") + (isShiny ? "S" : ""), millisPerSecond);
     }
 }

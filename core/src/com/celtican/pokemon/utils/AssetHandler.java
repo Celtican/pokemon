@@ -17,12 +17,18 @@ public class AssetHandler {
             assets.load(fileName, type);
         return null;
     }
+    public <T> void preLoad(String fileName, Class<T> type) {
+        assets.load(fileName, type);
+    }
+    public float getProgress() {
+        return assets.getProgress();
+    }
 
     public boolean update() {
         return assets.update();
     }
     public boolean heavyUpdate() {
-        return assets.update((int)Game.MILLIS_PER_FRAME);
+        return assets.update((int)(Game.MILLIS_PER_FRAME*0.8f));
     }
 
     public void dispose() {

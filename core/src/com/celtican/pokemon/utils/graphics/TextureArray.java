@@ -4,38 +4,41 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
 
-public class AnimatedTexture {
+public class TextureArray {
+
     private Renderable renderable;
+    private int curFrame;
 
-    private float millisPerSecond;
-    private float curMillis = 0;
-
-    public AnimatedTexture(String fileName, String regionName, float millisPerSecond) {
+    public TextureArray(String fileName, String regionName) {
         setTexture(fileName, regionName);
-        setSpeed(millisPerSecond);
+    }
+    public TextureArray(String fileName, String regionName, int startFrame) {
+        setTexture(fileName, regionName, startFrame);
     }
 
     public void render(int x, int y) {
         renderable.render(x, y);
     }
 
+    public void setTexture(String fileName, String regionName, int startFrame) {
+        curFrame = startFrame;
+        setTexture(fileName, regionName);
+    }
     public void setTexture(String fileName, String regionName) {
         TextureAtlas atlas = Game.game.assets.get(fileName, TextureAtlas.class);
         if (atlas == null)
             renderable = new RenderablePending(fileName, regionName);
-    }
-    public void setSpeed(float millisPerSecond) {
-        this.millisPerSecond = millisPerSecond;
+        else {
+            Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(regionName);
+            if (regions.isEmpty())
+                renderable = new Renderable();
+            else
+                renderable = new RenderableActive(regions);
+        }
     }
 
-    public float getSpeed() {
-        return millisPerSecond;
-    }
-    public int getCurFrame() {
-        return renderable.getCurFrame();
-    }
-    public int getNumFrames() {
-        return renderable.getNumFrames();
+    public void setFrame(int frame) {
+        renderable.setFrame(frame);
     }
 
     public int getWidth() {
@@ -44,26 +47,33 @@ public class AnimatedTexture {
     public int getHeight() {
         return renderable.getHeight();
     }
+    public int getFrame() {
+        return curFrame;
+    }
+    public int getMaxFrames() {
+        return renderable.getMaxFrames();
+    }
     public boolean isLoaded() {
         return renderable.getClass() == RenderableActive.class;
     }
 
-    private static class Renderable {
+    private class Renderable {
         public void render(int x, int y) {}
+        public void setFrame(int frame) {
+            curFrame = frame;
+        }
         public int getWidth() {
             return 0;
         }
         public int getHeight() {
             return 0;
         }
-        public int getCurFrame() {
-            return 0;
-        }
-        public int getNumFrames() {
+        public int getMaxFrames() {
             return 0;
         }
     }
     private class RenderablePending extends Renderable {
+
         private final String fileName, regionName;
 
         public RenderablePending(String fileName, String regionName) {
@@ -83,39 +93,32 @@ public class AnimatedTexture {
         }
     }
     private class RenderableActive extends Renderable {
+
         private final Array<TextureAtlas.AtlasRegion> regions;
-        private TextureAtlas.AtlasRegion region;
-        private int curFrame = 0;
 
         public RenderableActive(Array<TextureAtlas.AtlasRegion> regions) {
             this.regions = regions;
-            advanceFrame();
-        }
-
-        private void advanceFrame() {
-            curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerSecond) % getNumFrames();
-            region = regions.get(curFrame);
+            setFrame(curFrame);
         }
 
         @Override public void render(int x, int y) {
-            Game.game.canvas.draw(region, x, y);
-
-            curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerSecond) % getNumFrames();
-            region = regions.get(curFrame);
+            Game.game.canvas.draw(regions.get(curFrame), x, y);
+        }
+        @Override public void setFrame(int frame) {
+            if (frame < 0)
+                curFrame = 0;
+            else
+                curFrame = frame % getMaxFrames();
         }
         @Override public int getWidth() {
-            return region.getRegionWidth();
+            return regions.get(curFrame).getRegionWidth();
         }
         @Override public int getHeight() {
-            return region.getRegionHeight();
+            return regions.get(curFrame).getRegionHeight();
         }
-        @Override public int getCurFrame() {
-            return curFrame;
-        }
-        @Override public int getNumFrames() {
+        @Override public int getMaxFrames() {
             return regions.size;
         }
+
     }
 }
