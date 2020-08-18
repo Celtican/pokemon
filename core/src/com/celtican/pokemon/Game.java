@@ -3,9 +3,9 @@ package com.celtican.pokemon;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.celtican.pokemon.screens.LoadingScreen;
-import com.celtican.pokemon.screens.OverworldScreen;
 import com.celtican.pokemon.screens.Screen;
 import com.celtican.pokemon.utils.AssetHandler;
+import com.celtican.pokemon.utils.DataHandler;
 import com.celtican.pokemon.utils.RenderHandler;
 
 public class Game extends ApplicationAdapter {
@@ -13,7 +13,7 @@ public class Game extends ApplicationAdapter {
 	public static final String version = "PreAlpha v0";
 
 	public static final byte TARGET_FRAME_RATE = 60;
-	public static final int MILLIS_PER_FRAME = (int)(1f/TARGET_FRAME_RATE*1000);
+	public static final float MILLIS_PER_FRAME = (1f/TARGET_FRAME_RATE*1000);
 	public static final byte PIXEL_SIZE = 4;
 	public static final byte TILE_SIZE = 16;
 	public static final int CHUNK_SIZE = TILE_SIZE * 8;
@@ -21,6 +21,7 @@ public class Game extends ApplicationAdapter {
 
 	public AssetHandler assets;
 	public RenderHandler canvas;
+	public DataHandler data;
 
 	public int frame = 0;
 	public Screen screen;
@@ -32,29 +33,33 @@ public class Game extends ApplicationAdapter {
 		game = this;
 		assets = new AssetHandler();
 		canvas = new RenderHandler();
-		switchScreens(new OverworldScreen());
-
+		data = new DataHandler();
+		switchScreens(new LoadingScreen());
 	}
 
 	@Override public void render () {
 		game = this;
 		frame++;
-		try {
-			if (screenToSwitchTo != null) {
+		if (screenToSwitchTo != null) {
+			try {
 				if (screen != null)
 					screen.hide();
 				screen = screenToSwitchTo;
 				screenToSwitchTo = null;
 				screen.show();
 				screen.resize(canvas.getWidth(), canvas.getHeight());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+		}
+		try {
 			assets.update();
 			if (screen != null)
 				screen.update();
-			canvas.update();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		canvas.update();
 	}
 	@Override public void resize(int width, int height) {
 		try {

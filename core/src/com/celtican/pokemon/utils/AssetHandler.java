@@ -18,11 +18,11 @@ public class AssetHandler {
         return null;
     }
 
-    public void update() {
-        assets.update();
+    public boolean update() {
+        return assets.update();
     }
-    public void heavyUpdate() {
-        assets.update(Game.MILLIS_PER_FRAME);
+    public boolean heavyUpdate() {
+        return assets.update((int)Game.MILLIS_PER_FRAME);
     }
 
     public void dispose() {

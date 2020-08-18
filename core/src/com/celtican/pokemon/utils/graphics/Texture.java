@@ -83,7 +83,7 @@ public class Texture {
         }
 
         @Override public void render(int x, int y) {
-            Game.game.canvas.drawAtlasRegion(region, x, y);
+            Game.game.canvas.draw(region, x, y);
         }
         @Override public int getWidth() {
             return region.getRegionWidth();
@@ -141,7 +141,7 @@ public class Texture {
         }
 
         @Override public void render(int x, int y) {
-            Game.game.canvas.drawTexture(texture, x, y);
+            Game.game.canvas.draw(texture, x, y);
         }
         @Override public int getWidth() {
             return texture.getWidth();
