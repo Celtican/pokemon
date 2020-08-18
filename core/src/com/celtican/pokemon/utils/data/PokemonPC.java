@@ -3,6 +3,7 @@ package com.celtican.pokemon.utils.data;
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.utils.Enums;
+import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public class PokemonPC implements Pokemon {
 
@@ -77,5 +78,10 @@ public class PokemonPC implements Pokemon {
         nickname = null;
         nature = Enums.Nature.getRandomNature();
         isShiny = MathUtils.random(9) == 0;
+    }
+
+    @Override public AnimatedTexture getAnimatedTexture(boolean forward, float millisPerSecond) {
+        return new AnimatedTexture("spritesheets/" + species + ".atlas",
+                (forward ? "F" : "B") + (isShiny ? "S" : ""), millisPerSecond);
     }
 }

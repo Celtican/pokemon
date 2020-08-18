@@ -1,6 +1,7 @@
 package com.celtican.pokemon.utils.data;
 
 import com.celtican.pokemon.utils.Enums;
+import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public interface Pokemon {
     Species getSpecies();
@@ -49,5 +50,5 @@ public interface Pokemon {
     // HGSS pokeball
     // performance
 
-    // sprites
+    AnimatedTexture getAnimatedTexture(boolean forward, float millisPerSecond);
 }
