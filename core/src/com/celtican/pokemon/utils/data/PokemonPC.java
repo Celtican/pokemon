@@ -7,6 +7,36 @@ import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public class PokemonPC implements Pokemon {
 
+    public PokemonPC(Pokemon pokemon) {
+        species = pokemon.getSpecies().getIndex();
+        experience = pokemon.getExperience();
+        ability = pokemon.getAbility().getIndex();
+        evs = pokemon.getEVs();
+        Move[] moves = pokemon.getMoves();
+        this.moves = new int[4];
+        for (int i = 0; i < 4; i++)
+            this.moves[i] = moves[i].index;
+        ppUsed = pokemon.getMovesRemainingPP();
+        ppUps = pokemon.getMovesPPUps();
+        ivs = pokemon.getIVs();
+        nickname = pokemon.getNickname();
+        nature = pokemon.getNature();
+        isShiny = pokemon.isShiny();
+    }
+    public PokemonPC(Species species) {
+        this.species = species.getIndex();
+        experience = 0;
+        ability = Species.getRandomWhichAbility();
+        evs = new int[6];
+        moves = new int[] {1, 0, 0, 0};
+        ppUsed = new int[4];
+        ppUps = new int[4];
+        ivs = new int[6];
+        nickname = null;
+        nature = Enums.Nature.getRandomNature();
+        isShiny = MathUtils.random(9) == 0;
+    }
+
     private int species;
     @Override public Species getSpecies() {
         return Game.game.data.getSpecies(species);
@@ -64,20 +94,6 @@ public class PokemonPC implements Pokemon {
     private boolean isShiny;
     @Override public boolean isShiny() {
         return isShiny;
-    }
-
-    public PokemonPC(Species species) {
-        this.species = species.getIndex();
-        experience = 0;
-        ability = Species.getRandomWhichAbility();
-        evs = new int[6];
-        moves = new int[] {1, 0, 0, 0};
-        ppUsed = new int[4];
-        ppUps = new int[4];
-        ivs = new int[6];
-        nickname = null;
-        nature = Enums.Nature.getRandomNature();
-        isShiny = MathUtils.random(9) == 0;
     }
 
     @Override public AnimatedTexture getAnimatedTexture(boolean forward, float millisPerSecond) {
