@@ -79,56 +79,82 @@ public class LoadingScreen extends Screen {
             case 0:
                 if (Game.game.assets.heavyUpdate()) {
                     Game.game.canvas.setup();
-
-                    Game.game.assets.preLoad("sfx/battleExpRise.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleExpFull.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleBallClick.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleBallShake.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleBallEscape.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleFlee.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleDamage.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleDamageSuper.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/battleDamageWeak.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/guiCursor.ogg", Sound.class);
-                    Game.game.assets.preLoad("sfx/guiSelect.ogg", Sound.class);
-
-                    Game.game.assets.preLoad("bgm/evolutionStart.ogg", Music.class);
-                    Game.game.assets.preLoad("bgm/evolution.ogg", Music.class);
-                    Game.game.assets.preLoad("bgm/evolutionFanfare.ogg", Music.class);
-                    Game.game.assets.preLoad("bgm/route29.ogg", Music.class);
-                    Game.game.assets.preLoad("bgm/wildBattle.ogg", Music.class);
-                    Game.game.assets.preLoad("bgm/trainerBattle.ogg", Music.class);
-
-                    for (int i = 1; i <= 20; i++) {
-                        Game.game.assets.preLoad("sfx/cries/" + i + ".ogg", Sound.class);
-                        Game.game.assets.preLoad("spritesheets/pokemon/" + i + ".atlas", TextureAtlas.class);
-                    }
-                    Game.game.assets.preLoad("spritesheets/overworldItems.atlas", TextureAtlas.class);
-//                    game.assets.load("spritesheets/watch.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/forest.atlas", TextureAtlas.class);
-//                    game.assets.load("spritesheets/jungle.atlas", TextureAtlas.class);
-//                    game.assets.load("spritesheets/testTiles.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/indoor.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/overworld.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/juniper.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/player.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/nurse.atlas", TextureAtlas.class);
-                    Game.game.assets.preLoad("spritesheets/battle.atlas", TextureAtlas.class);
-
-                    Game.game.assets.preLoad("misc/fontSmall.fnt", BitmapFont.class);
-
+                    startLoadAssets();
                     stage++;
                 }
                 break;
             case 1:
                 if (Game.game.assets.heavyUpdate()) {
-                    Game.game.data.addSpecies("Nullomon", Enums.GenderRatio.GENDERLESS, Enums.Type.NORMAL, Enums.Type.NORMAL, Enums.EggGroup.UNDISCOVERED, Enums.EggGroup.UNDISCOVERED, Enums.ExpGrowth.SLOW,
-                            0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 1, 1, 1, 0, 0, 0, 0, 0, 0);
-                    Game.game.data.addSpecies("Bulbasaur", Enums.GenderRatio.FEMALE_IS_RARE, Enums.Type.GRASS, Enums.Type.POISON, Enums.EggGroup.MONSTER, Enums.EggGroup.GRASS, Enums.ExpGrowth.MEDIUM_SLOW,
-                            65, 65, 34, 34, 45, 49, 49, 65, 65, 45, 45, 50, 46, 0, 0, 0, 1, 0, 0);
-                    Game.game.switchScreens(new OverworldScreen());
+                    addSpecies();
+                    addMoves();
+                    addAbilities();
+                    addItems();
                     stage++;
                 }
+                break;
+            case 2:
+                finalizeLoad();
+                stage++;
+                break;
         }
+    }
+
+    private void startLoadAssets() {
+        Game.game.assets.preLoad("sfx/battleExpRise.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleExpFull.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleBallClick.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleBallShake.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleBallEscape.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleFlee.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleDamage.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleDamageSuper.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/battleDamageWeak.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/guiCursor.ogg", Sound.class);
+        Game.game.assets.preLoad("sfx/guiSelect.ogg", Sound.class);
+
+        Game.game.assets.preLoad("bgm/evolutionStart.ogg", Music.class);
+        Game.game.assets.preLoad("bgm/evolution.ogg", Music.class);
+        Game.game.assets.preLoad("bgm/evolutionFanfare.ogg", Music.class);
+        Game.game.assets.preLoad("bgm/route29.ogg", Music.class);
+        Game.game.assets.preLoad("bgm/wildBattle.ogg", Music.class);
+        Game.game.assets.preLoad("bgm/trainerBattle.ogg", Music.class);
+
+        for (int i = 1; i <= 20; i++) {
+            Game.game.assets.preLoad("sfx/cries/" + i + ".ogg", Sound.class);
+            Game.game.assets.preLoad("spritesheets/pokemon/" + i + ".atlas", TextureAtlas.class);
+        }
+        Game.game.assets.preLoad("spritesheets/overworldItems.atlas", TextureAtlas.class);
+//                    game.assets.load("spritesheets/watch.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/forest.atlas", TextureAtlas.class);
+//                    game.assets.load("spritesheets/jungle.atlas", TextureAtlas.class);
+//                    game.assets.load("spritesheets/testTiles.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/indoor.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/overworld.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/juniper.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/player.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/nurse.atlas", TextureAtlas.class);
+        Game.game.assets.preLoad("spritesheets/battle.atlas", TextureAtlas.class);
+
+        Game.game.assets.preLoad("misc/fontSmall.fnt", BitmapFont.class);
+    }
+    private void addSpecies() {
+        Game.game.data.addSpecies("Nullomon", Enums.GenderRatio.GENDERLESS, Enums.Type.NORMAL, Enums.Type.NORMAL, Enums.EggGroup.UNDISCOVERED, Enums.EggGroup.UNDISCOVERED, Enums.ExpGrowth.SLOW,
+                0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 1, 1, 1, 0, 0, 0, 0, 0, 0);
+        Game.game.data.addSpecies("Bulbasaur", Enums.GenderRatio.FEMALE_IS_RARE, Enums.Type.GRASS, Enums.Type.POISON, Enums.EggGroup.MONSTER, Enums.EggGroup.GRASS, Enums.ExpGrowth.MEDIUM_SLOW,
+                65, 65, 34, 34, 45, 49, 49, 65, 65, 45, 45, 50, 46, 0, 0, 0, 1, 0, 0);
+    }
+    private void addMoves() {
+
+    }
+    private void addAbilities() {
+
+    }
+    private void addItems() {
+
+    }
+    private void finalizeLoad() {
+        Game.game.canvas.setupFont();
+
+        Game.game.switchScreens(new MainMenuScreen());
     }
 }

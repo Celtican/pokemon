@@ -6,6 +6,7 @@ import com.celtican.pokemon.screens.LoadingScreen;
 import com.celtican.pokemon.screens.Screen;
 import com.celtican.pokemon.utils.AssetHandler;
 import com.celtican.pokemon.utils.DataHandler;
+import com.celtican.pokemon.utils.InputHandler;
 import com.celtican.pokemon.utils.RenderHandler;
 
 public class Game extends ApplicationAdapter {
@@ -22,6 +23,7 @@ public class Game extends ApplicationAdapter {
 	public AssetHandler assets;
 	public RenderHandler canvas;
 	public DataHandler data;
+	public InputHandler input;
 
 	public int frame = 0;
 	public Screen screen;
@@ -34,12 +36,19 @@ public class Game extends ApplicationAdapter {
 		assets = new AssetHandler();
 		canvas = new RenderHandler();
 		data = new DataHandler();
+		input = new InputHandler();
+
 		switchScreens(new LoadingScreen());
 	}
 
 	@Override public void render () {
 		game = this;
 		frame++;
+		try {
+			input.update();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (screenToSwitchTo != null) {
 			try {
 				if (screen != null)
@@ -59,7 +68,11 @@ public class Game extends ApplicationAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		canvas.update();
+		try {
+			canvas.update();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	@Override public void resize(int width, int height) {
 		try {

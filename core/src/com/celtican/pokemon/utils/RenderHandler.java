@@ -5,11 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.utils.data.Vector2Int;
 
 public class RenderHandler {
 
@@ -20,6 +24,10 @@ public class RenderHandler {
     private int width, height;
     private Color clearColor = new Color();
     private Texture pixel;
+    private FreeTypeFontGenerator fontGenerator;
+    private BitmapFont font;
+    private BitmapFont fontSmall;
+    private GlyphLayout layout;
 
     public RenderHandler() {
         resetClearColor();
@@ -28,14 +36,31 @@ public class RenderHandler {
         viewport = new ScreenViewport(camera);
         viewport.apply();
         camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
+        layout = new GlyphLayout();
     }
     public void setup() {
         pixel = Game.game.assets.get("misc/pixel.png", Texture.class);
+    }
+    public void setupFont() {
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("misc/font.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 16 * Game.PIXEL_SIZE;
+        fontParameter.kerning = false;
+        fontParameter.shadowOffsetX = Game.PIXEL_SIZE;
+        fontParameter.shadowOffsetY = Game.PIXEL_SIZE;
+        font = fontGenerator.generateFont(fontParameter);
+        font.setColor(Color.WHITE);
+
+        fontSmall = Game.game.assets.get("misc/fontSmall.fnt", BitmapFont.class);
+        fontSmall.getData().setScale(2f / Game.PIXEL_SIZE);
     }
 
     public void update() {
         if (Game.game.screen == null)
             return;
+
+        layout.reset();
+
         Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
@@ -88,6 +113,12 @@ public class RenderHandler {
         drawRect(x, y, width, height);
         resetColor();
     }
+    public void drawText(int x, int y, String text) {
+        font.draw(batch, text, x * Game.PIXEL_SIZE, (y+11) * Game.PIXEL_SIZE);
+    }
+    public void drawSmallText(int x, int y, String text) {
+        fontSmall.draw(batch, text.replace(" ", "  "), x * Game.PIXEL_SIZE, (y+9) * Game.PIXEL_SIZE);
+    }
 
     public void setClearColor(Color color) {
         clearColor = color;
@@ -116,6 +147,30 @@ public class RenderHandler {
     }
     public int getHeight() {
         return height;
+    }
+    public int getWidthOfText(String text) {
+        layout.setText(font, text);
+        return (int)(layout.width/Game.PIXEL_SIZE);
+    }
+    public int getHeightOfText(String text) {
+        layout.setText(font, text);
+        return (int)(layout.height/Game.PIXEL_SIZE);
+    }
+    public Vector2Int getBoundsOfText(String text) {
+        layout.setText(font, text);
+        return new Vector2Int((int)(layout.width/Game.PIXEL_SIZE), (int)(layout.height/Game.PIXEL_SIZE));
+    }
+    public int getWidthOfSmallText(String text) {
+        layout.setText(fontSmall, text);
+        return (int)(layout.width/Game.PIXEL_SIZE);
+    }
+    public int getHeightOfSmallText(String text) {
+        layout.setText(fontSmall, text);
+        return (int)(layout.height/Game.PIXEL_SIZE);
+    }
+    public Vector2Int getBoundsOfSmallText(String text) {
+        layout.setText(fontSmall, text);
+        return new Vector2Int((int)(layout.width/Game.PIXEL_SIZE), (int)(layout.height/Game.PIXEL_SIZE));
     }
 
     public void dispose() {
