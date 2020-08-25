@@ -2,17 +2,47 @@ package com.celtican.pokemon.utils.graphics;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class AnimatedTexture {
+public class AnimatedTexture implements Json.Serializable {
     private Renderable renderable;
 
     private float millisPerSecond;
     private float curMillis = 0;
 
+    private AnimatedTexture() {
+        renderable = new Renderable();
+    }
     public AnimatedTexture(String fileName, String regionName, float millisPerSecond) {
         setTexture(fileName, regionName);
         setSpeed(millisPerSecond);
+    }
+    public static AnimatedTexture fromString(String s) {
+        AnimatedTexture t = new AnimatedTexture();
+        t.setFromString(s);
+        return t;
+    }
+    private void setFromString(String s) {
+        String[] parts = s.split(":");
+        if (parts.length != 3) {
+            Game.logError("Attempting to create an animated texture from string with " + parts.length + " arguments");
+            return;
+        }
+        try {
+            setTexture(parts[0], parts[1]);
+            millisPerSecond = Float.parseFloat(parts[2]);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override public void write(Json json) {
+        json.writeValue("AnimatedTexture", toString());
+    }
+    @Override public void read(Json json, JsonValue jsonMap) {
+        setFromString(jsonMap.child().asString());
     }
 
     public void render(int x, int y) {
@@ -48,6 +78,10 @@ public class AnimatedTexture {
         return renderable.getClass() == RenderableActive.class;
     }
 
+    public String toString() {
+        return renderable.toString() + ":" + millisPerSecond;
+    }
+
     private static class Renderable {
         public void render(int x, int y) {}
         public int getWidth() {
@@ -61,6 +95,9 @@ public class AnimatedTexture {
         }
         public int getNumFrames() {
             return 0;
+        }
+        public String toString() {
+            return "";
         }
     }
     private class RenderablePending extends Renderable {
@@ -79,16 +116,21 @@ public class AnimatedTexture {
             if (regions.isEmpty())
                 renderable = new Renderable();
             else
-                renderable = new RenderableActive(regions);
+                renderable = new RenderableActive(regions, fileName);
+        }
+        @Override public String toString() {
+            return fileName + ":" + regionName;
         }
     }
     private class RenderableActive extends Renderable {
         private final Array<TextureAtlas.AtlasRegion> regions;
+        private final String fileName;
         private TextureAtlas.AtlasRegion region;
         private int curFrame = 0;
 
-        public RenderableActive(Array<TextureAtlas.AtlasRegion> regions) {
+        public RenderableActive(Array<TextureAtlas.AtlasRegion> regions, String fileName) {
             this.regions = regions;
+            this.fileName = fileName;
             advanceFrame();
         }
 
@@ -116,6 +158,9 @@ public class AnimatedTexture {
         }
         @Override public int getNumFrames() {
             return regions.size;
+        }
+        @Override public String toString() {
+            return fileName + ":" + region.name;
         }
     }
 }

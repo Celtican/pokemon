@@ -1,12 +1,17 @@
 package com.celtican.pokemon.utils.graphics;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class Texture {
+public class Texture implements Json.Serializable {
 
     private Renderable renderable;
 
+    private Texture() {
+        renderable = new Renderable();
+    }
     public Texture(String fileName) {
         setTexture(fileName);
     }
@@ -16,6 +21,39 @@ public class Texture {
     public Texture(String fileName, String regionName, int index) {
         setTexture(fileName, regionName, index);
     }
+    public static Texture fromString(String s) {
+        Texture t = new Texture();
+        t.setFromString(s);
+        return t;
+    }
+    private void setFromString(String s) {
+        String[] parts = s.split(":");
+        switch (parts.length) {
+            case 1:
+                setTexture(parts[0]);
+                break;
+            case 2:
+                setTexture(parts[0], parts[1]);
+                break;
+            case 3:
+                try {
+                    setTexture(parts[0], parts[1], Integer.parseInt(parts[2]));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                Game.logError("Attempting to create a texture from string with " + parts.length + " arguments");
+                break;
+        }
+    }
+
+    @Override public void write(Json json) {
+        json.writeValue("Texture", toString());
+    }
+    @Override public void read(Json json, JsonValue jsonMap) {
+        setFromString(jsonMap.child().asString());
+    }
 
     public void render(int x, int y) {
         renderable.render(x, y);
@@ -24,7 +62,7 @@ public class Texture {
     public void setTexture(String fileName) {
         com.badlogic.gdx.graphics.Texture texture = Game.game.assets.get(fileName, com.badlogic.gdx.graphics.Texture.class);
         if (texture != null)
-            renderable = new RenderableTexture(texture);
+            renderable = new RenderableTexture(texture, fileName);
         else
             renderable = new RenderableTexturePending(fileName);
     }
@@ -37,7 +75,7 @@ public class Texture {
             if (region == null)
                 renderable = new Renderable();
             else
-                renderable = new RenderableAtlasRegion(region);
+                renderable = new RenderableAtlasRegion(region, fileName);
         }
     }
     public void setTexture(String fileName, String regionName, int index) {
@@ -49,7 +87,7 @@ public class Texture {
             if (region == null)
                 renderable = new Renderable();
             else
-                renderable = new RenderableAtlasRegion(region);
+                renderable = new RenderableAtlasRegion(region, fileName);
         }
     }
 
@@ -65,6 +103,10 @@ public class Texture {
                 renderable.getClass() == RenderableTexture.class;
     }
 
+    public String toString() {
+        return renderable.toString();
+    }
+
     private static class Renderable {
         public void render(int x, int y) {}
         public int getWidth() {
@@ -73,13 +115,18 @@ public class Texture {
         public int getHeight() {
             return 0;
         }
+        public String toString() {
+            return "";
+        }
     }
     private static class RenderableAtlasRegion extends Renderable {
 
         private final TextureAtlas.AtlasRegion region;
+        private final String fileName;
 
-        public RenderableAtlasRegion(TextureAtlas.AtlasRegion region) {
+        public RenderableAtlasRegion(TextureAtlas.AtlasRegion region, String fileName) {
             this.region = region;
+            this.fileName = fileName;
         }
 
         @Override public void render(int x, int y) {
@@ -90,6 +137,12 @@ public class Texture {
         }
         @Override public int getHeight() {
             return region.getRegionHeight();
+        }
+        @Override public String toString() {
+            String s = fileName + ":" + region.name;
+            if (region.index != 0)
+                s += ":" + region.index;
+            return s;
         }
     }
     private class RenderablePendingAtlasRegion extends Renderable {
@@ -109,7 +162,10 @@ public class Texture {
             if (region == null)
                 renderable = new Renderable();
             else
-                renderable = new RenderableAtlasRegion(region);
+                renderable = new RenderableAtlasRegion(region, fileName);
+        }
+        @Override public String toString() {
+            return fileName + ":" + regionName;
         }
     }
     private class RenderablePendingAtlasRegionIndex extends Renderable {
@@ -130,14 +186,20 @@ public class Texture {
             if (region == null)
                 renderable = new Renderable();
             else
-                renderable = new RenderableAtlasRegion(region);
+                renderable = new RenderableAtlasRegion(region, fileName);
+        }
+
+        @Override public String toString() {
+            return fileName + ":" + regionName + ":" + index;
         }
     }
     private static class RenderableTexture extends Renderable {
         private final com.badlogic.gdx.graphics.Texture texture;
+        private final String fileLocation;
 
-        public RenderableTexture(com.badlogic.gdx.graphics.Texture texture) {
+        public RenderableTexture(com.badlogic.gdx.graphics.Texture texture, String fileLocation) {
             this.texture = texture;
+            this.fileLocation = fileLocation;
         }
 
         @Override public void render(int x, int y) {
@@ -148,6 +210,9 @@ public class Texture {
         }
         @Override public int getHeight() {
             return texture.getHeight();
+        }
+        @Override public String toString() {
+            return fileLocation;
         }
     }
     private class RenderableTexturePending extends Renderable {
@@ -161,7 +226,10 @@ public class Texture {
         @Override public void render(int x, int y) {
             com.badlogic.gdx.graphics.Texture texture = Game.game.assets.get(fileName, com.badlogic.gdx.graphics.Texture.class);
             if (texture != null)
-                renderable = new RenderableTexture(texture);
+                renderable = new RenderableTexture(texture, fileName);
+        }
+        @Override public String toString() {
+            return fileName;
         }
     }
 }
