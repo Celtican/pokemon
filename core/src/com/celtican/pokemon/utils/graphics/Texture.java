@@ -21,6 +21,9 @@ public class Texture implements Json.Serializable {
     public Texture(String fileName, String regionName, int index) {
         setTexture(fileName, regionName, index);
     }
+    public Texture(String fileName, TextureAtlas.AtlasRegion region) {
+        renderable = new RenderableAtlasRegion(region, fileName);
+    }
     public static Texture fromString(String s) {
         Texture t = new Texture();
         t.setFromString(s);
@@ -106,6 +109,9 @@ public class Texture implements Json.Serializable {
     public String toString() {
         return renderable.toString();
     }
+    public String toString(boolean omitFileName) {
+        return renderable.toString(omitFileName);
+    }
 
     private static class Renderable {
         public void render(int x, int y) {}
@@ -116,6 +122,9 @@ public class Texture implements Json.Serializable {
             return 0;
         }
         public String toString() {
+            return "";
+        }
+        public String toString(boolean omitFileName) {
             return "";
         }
     }
@@ -140,9 +149,15 @@ public class Texture implements Json.Serializable {
         }
         @Override public String toString() {
             String s = fileName + ":" + region.name;
-            if (region.index != 0)
+            if (region.index != -1)
                 s += ":" + region.index;
             return s;
+        }
+        @Override public String toString(boolean omitFileName) {
+            if (omitFileName)
+                return region.index != -1 ? region.name + ":" + region.index : region.name;
+            else
+                return toString();
         }
     }
     private class RenderablePendingAtlasRegion extends Renderable {
@@ -166,6 +181,12 @@ public class Texture implements Json.Serializable {
         }
         @Override public String toString() {
             return fileName + ":" + regionName;
+        }
+        @Override public String toString(boolean omitFileName) {
+            if (omitFileName)
+                return regionName;
+            else
+                return toString();
         }
     }
     private class RenderablePendingAtlasRegionIndex extends Renderable {
@@ -192,6 +213,12 @@ public class Texture implements Json.Serializable {
         @Override public String toString() {
             return fileName + ":" + regionName + ":" + index;
         }
+        @Override public String toString(boolean omitFileName) {
+            if (omitFileName)
+                return regionName + ":" + index;
+            else
+                return toString();
+        }
     }
     private static class RenderableTexture extends Renderable {
         private final com.badlogic.gdx.graphics.Texture texture;
@@ -214,6 +241,12 @@ public class Texture implements Json.Serializable {
         @Override public String toString() {
             return fileLocation;
         }
+        @Override public String toString(boolean omitFileName) {
+            if (omitFileName)
+                return "";
+            else
+                return toString();
+        }
     }
     private class RenderableTexturePending extends Renderable {
 
@@ -230,6 +263,12 @@ public class Texture implements Json.Serializable {
         }
         @Override public String toString() {
             return fileName;
+        }
+        @Override public String toString(boolean omitFileName) {
+            if (omitFileName)
+                return "";
+            else
+                return toString();
         }
     }
 }

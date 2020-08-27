@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.data.Button;
+import com.celtican.pokemon.utils.graphics.Button;
 import com.celtican.pokemon.utils.data.Vector2Int;
 
 public class InputHandler {

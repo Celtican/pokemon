@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.Enums;
+import com.celtican.pokemon.utils.data.Pokemon;
 import com.celtican.pokemon.utils.graphics.TextureArray;
 
 public class LoadingScreen extends Screen {
@@ -138,9 +138,9 @@ public class LoadingScreen extends Screen {
         Game.game.assets.preLoad("misc/fontSmall.fnt", BitmapFont.class);
     }
     private void addSpecies() {
-        Game.game.data.addSpecies("Nullomon", Enums.GenderRatio.GENDERLESS, Enums.Type.NORMAL, Enums.Type.NORMAL, Enums.EggGroup.UNDISCOVERED, Enums.EggGroup.UNDISCOVERED, Enums.ExpGrowth.SLOW,
+        Game.game.data.addSpecies("Nullomon", Pokemon.GenderRatio.GENDERLESS, Pokemon.Type.NORMAL, Pokemon.Type.NORMAL, Pokemon.EggGroup.UNDISCOVERED, Pokemon.EggGroup.UNDISCOVERED, Pokemon.ExpGrowth.SLOW,
                 0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 1, 1, 1, 0, 0, 0, 0, 0, 0);
-        Game.game.data.addSpecies("Bulbasaur", Enums.GenderRatio.FEMALE_IS_RARE, Enums.Type.GRASS, Enums.Type.POISON, Enums.EggGroup.MONSTER, Enums.EggGroup.GRASS, Enums.ExpGrowth.MEDIUM_SLOW,
+        Game.game.data.addSpecies("Bulbasaur", Pokemon.GenderRatio.FEMALE_IS_RARE, Pokemon.Type.GRASS, Pokemon.Type.POISON, Pokemon.EggGroup.MONSTER, Pokemon.EggGroup.GRASS, Pokemon.ExpGrowth.MEDIUM_SLOW,
                 65, 65, 34, 34, 45, 49, 49, 65, 65, 45, 45, 50, 46, 0, 0, 0, 1, 0, 0);
     }
     private void addMoves() {

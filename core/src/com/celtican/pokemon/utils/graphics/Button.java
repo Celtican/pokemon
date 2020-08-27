@@ -1,4 +1,4 @@
-package com.celtican.pokemon.utils.data;
+package com.celtican.pokemon.utils.graphics;
 
 import com.badlogic.gdx.graphics.Color;
 import com.celtican.pokemon.Game;
@@ -10,22 +10,11 @@ public class Button {
             mousePressed, mouseJustPressed, mouseJustUnpressed, enabled;
 
     public Button() {}
-    public Button(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
     public Button(int x, int y, int width, int height) {
-        this(x, y);
-        this.width = width;
-        this.height = height;
-    }
-    public Button(int x, int y, int width, int height, boolean enable) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        if (enable)
-            show();
     }
 
     public void updateInput(int mouseX, int mouseY, boolean isMouseDown, boolean isMouseJustDown) {
@@ -82,7 +71,10 @@ public class Button {
      */
     public void update() {
         // todo add sounds here
+        if (isMouseJustPressed())
+            clicked();
     }
+    public void clicked() {}
     public void render() {
         Game.game.canvas.drawRect(x, y, width, height, Color.DARK_GRAY);
         Game.game.canvas.drawRect(x+1, y+1, width-2, height-2, Color.LIGHT_GRAY);

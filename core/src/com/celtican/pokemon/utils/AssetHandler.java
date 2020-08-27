@@ -1,5 +1,6 @@
 package com.celtican.pokemon.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.celtican.pokemon.Game;
 
@@ -13,7 +14,7 @@ public class AssetHandler {
     public <T> T get(String fileName, Class<T> type) {
         if (assets.isLoaded(fileName, type))
             return assets.get(fileName, type);
-        if (!assets.contains(fileName, type))
+        if (!assets.contains(fileName, type) && Gdx.files.internal(fileName).exists())
             assets.load(fileName, type);
         return null;
     }

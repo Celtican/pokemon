@@ -1,7 +1,5 @@
 package com.celtican.pokemon.utils.data;
 
-import com.celtican.pokemon.utils.Enums;
-
 public class Move {
 
     public final boolean crit         ; // has 1 stage higher chance to crit
@@ -32,10 +30,10 @@ public class Move {
     // todo change int to byte
     public final int index;
     public final String name;
-    public final Enums.Type type;
-    public final Enums.MoveCategory category;
-    public final Enums.ContestType contest;
-    public final Enums.MoveTargets targets;
+    public final Pokemon.Type type;
+    public final Pokemon.MoveCategory category;
+    public final Pokemon.ContestType contest;
+    public final Pokemon.MoveTargets targets;
     public final int basePP; // this is the final PP divided by 5. For example, Mega Punch's final PP is 20 without PP Ups, so its basePP is 4
     public final int basePower;
     public final int accuracy;
@@ -75,8 +73,8 @@ public class Move {
 
     */
 
-    public Move(int index, String name, Enums.Type type, Enums.MoveCategory category, Enums.ContestType contest,
-                Enums.MoveTargets targets, int basePP, int basePower, int accuracy, int[] effects,
+    public Move(int index, String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest,
+                Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, int[] effects,
                 boolean crit, boolean multi, boolean doubleHit, boolean authentic, boolean charge, boolean contact,
                 boolean defrost, boolean distance, boolean gravity, boolean heal, boolean mirror, boolean nonsky,
                 boolean protect, boolean punch, boolean recharge, boolean reflectable, boolean snatch, boolean sound,

@@ -92,7 +92,7 @@ public class RenderHandler {
         batch.draw(region, x * Game.PIXEL_SIZE, y * Game.PIXEL_SIZE,
                 region.getRegionWidth() * Game.PIXEL_SIZE, region.getRegionHeight() * Game.PIXEL_SIZE);
     }
-    private void drawRect(int x, int y, int width, int height) {
+    public void drawRect(int x, int y, int width, int height) {
         batch.draw(pixel, x*Game.PIXEL_SIZE, y*Game.PIXEL_SIZE,
                 width*Game.PIXEL_SIZE, height*Game.PIXEL_SIZE);
     }
@@ -116,8 +116,18 @@ public class RenderHandler {
     public void drawText(int x, int y, String text) {
         font.draw(batch, text, x * Game.PIXEL_SIZE, (y+11) * Game.PIXEL_SIZE);
     }
+    public void drawText(int x, int y, String text, Color color) {
+        font.setColor(color);
+        drawText(x, y, text);
+        font.setColor(Color.WHITE);
+    }
     public void drawSmallText(int x, int y, String text) {
         fontSmall.draw(batch, text.replace(" ", "  "), x * Game.PIXEL_SIZE, (y+9) * Game.PIXEL_SIZE);
+    }
+    public void drawSmallText(int x, int y, String text, Color color) {
+        fontSmall.setColor(color);
+        drawSmallText(x, y, text);
+        fontSmall.setColor(Color.WHITE);
     }
 
     public void setClearColor(Color color) {

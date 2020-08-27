@@ -2,7 +2,6 @@ package com.celtican.pokemon.utils.data;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.Enums;
 import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public class PokemonPC implements Pokemon {
@@ -33,7 +32,7 @@ public class PokemonPC implements Pokemon {
         ppUps = new int[4];
         ivs = new int[6];
         nickname = null;
-        nature = Enums.Nature.getRandomNature();
+        nature = Pokemon.Nature.getRandomNature();
         isShiny = MathUtils.random(9) == 0;
     }
 
@@ -87,8 +86,8 @@ public class PokemonPC implements Pokemon {
     @Override public String getNickname() {
         return nickname;
     }
-    private Enums.Nature nature;
-    @Override public Enums.Nature getNature() {
+    private Pokemon.Nature nature;
+    @Override public Pokemon.Nature getNature() {
         return nature;
     }
     private boolean isShiny;

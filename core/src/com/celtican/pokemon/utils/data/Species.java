@@ -2,7 +2,6 @@ package com.celtican.pokemon.utils.data;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.Enums;
 
 public class Species {
     private final int index;
@@ -17,8 +16,8 @@ public class Species {
     // height in meters
     // weight in kilograms
 
-    private final Enums.GenderRatio genderRatio;
-    public Enums.GenderRatio getGenderRatio() {
+    private final Pokemon.GenderRatio genderRatio;
+    public Pokemon.GenderRatio getGenderRatio() {
         return genderRatio;
     }
     private final int captureRate;
@@ -26,8 +25,8 @@ public class Species {
         return captureRate;
     }
 //    private int eggCycles
-    private final Enums.ExpGrowth expGrowth;
-    public Enums.ExpGrowth getExperienceGrowth() {
+    private final Pokemon.ExpGrowth expGrowth;
+    public Pokemon.ExpGrowth getExperienceGrowth() {
         return expGrowth;
     }
     private final int expEarned;
@@ -42,29 +41,29 @@ public class Species {
     public int getBaseHappiness() {
         return baseHappiness;
     }
-    private final Enums.EggGroup eggGroup1, eggGroup2;
-    public Enums.EggGroup getEggGroup1() {
+    private final Pokemon.EggGroup eggGroup1, eggGroup2;
+    public Pokemon.EggGroup getEggGroup1() {
         return eggGroup1;
     }
-    public Enums.EggGroup getEggGroup2() {
+    public Pokemon.EggGroup getEggGroup2() {
         return eggGroup2;
     }
     public boolean eggGroupsMatch(Species species) {
-        return eggGroup1 != Enums.EggGroup.UNDISCOVERED && eggGroup2 != Enums.EggGroup.UNDISCOVERED &&
+        return eggGroup1 != Pokemon.EggGroup.UNDISCOVERED && eggGroup2 != Pokemon.EggGroup.UNDISCOVERED &&
                 (eggGroup1 == species.eggGroup1 ||
                         eggGroup1 == species.eggGroup2 ||
                         eggGroup2 == species.eggGroup1 ||
                         eggGroup2 == species.eggGroup2);
     }
-    private final Enums.Type type1, type2;
-    public Enums.Type getType1() {
+    private final Pokemon.Type type1, type2;
+    public Pokemon.Type getType1() {
         return type1;
     }
-    public Enums.Type getType2() {
+    public Pokemon.Type getType2() {
         return type2;
     }
-    public Enums.Type[] getTypes() {
-        return new Enums.Type[] {type1, type2};
+    public Pokemon.Type[] getTypes() {
+        return new Pokemon.Type[] {type1, type2};
     }
     private final int[] abilities;
     public Ability getAbility(int which) {
@@ -97,9 +96,9 @@ public class Species {
     // moves
     // evolution
 
-    public Species(int index, String name, Enums.GenderRatio genderRatio, int captureRate, Enums.ExpGrowth expGrowth,
-                   int expEarned, byte[] earnedEVs, int baseHappiness, Enums.EggGroup eggGroup1, Enums.EggGroup eggGroup2,
-                   Enums.Type type1, Enums.Type type2, int[] abilities, int[] stats) {
+    public Species(int index, String name, Pokemon.GenderRatio genderRatio, int captureRate, Pokemon.ExpGrowth expGrowth,
+                   int expEarned, byte[] earnedEVs, int baseHappiness, Pokemon.EggGroup eggGroup1, Pokemon.EggGroup eggGroup2,
+                   Pokemon.Type type1, Pokemon.Type type2, int[] abilities, int[] stats) {
         this.index = index;
         this.name = name;
         this.genderRatio = genderRatio;

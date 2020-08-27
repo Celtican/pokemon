@@ -1,0 +1,34 @@
+{
+spritesheets/overworld.atlas: {
+	"Dirt:-1": NONE
+	"Grass:-1": NONE
+	"GrassAlt:-1": NONE
+	"GrassCNE:-1": NONE
+	"GrassCNW:-1": NONE
+	"GrassCSE:-1": NONE
+	"GrassCSW:-1": NONE
+	"GrassE:-1": NONE
+	"GrassN:-1": NONE
+	"GrassNE:-1": NONE
+	"GrassNW:-1": NONE
+	"GrassS:-1": NONE
+	"GrassSE:-1": NONE
+	"GrassSW:-1": NONE
+	"GrassW:-1": NONE
+	"TallGrass:-1": GRASS
+	"WasterSE:-1": NONE
+	"Water:-1": WATER
+	"WaterAlt:-1": WATER
+	"WaterCNE:-1": WATER
+	"WaterCNW:-1": WATER
+	"WaterCSE:-1": WATER
+	"WaterCSW:-1": WATER
+	"WaterE:-1": WATER
+	"WaterN:-1": WATER
+	"WaterNE:-1": WATER
+	"WaterNW:-1": WATER
+	"WaterS:-1": NONE
+	"WaterSW:-1": NONE
+	"WaterW:-1": WATER
+}
+}

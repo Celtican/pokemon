@@ -3,6 +3,7 @@ package com.celtican.pokemon.utils;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.utils.data.Ability;
 import com.celtican.pokemon.utils.data.Move;
+import com.celtican.pokemon.utils.data.Pokemon;
 import com.celtican.pokemon.utils.data.Species;
 
 public class DataHandler {
@@ -41,13 +42,12 @@ public class DataHandler {
         return abilities.get(0);
     }
 
-    public void addSpecies(String name, Enums.GenderRatio genderRatio, Enums.Type type1, Enums.Type type2, Enums.EggGroup eggGroup1, Enums.EggGroup eggGroup2, Enums.ExpGrowth expGrowth,
+    public void addSpecies(String name, Pokemon.GenderRatio genderRatio, Pokemon.Type type1, Pokemon.Type type2, Pokemon.EggGroup eggGroup1, Pokemon.EggGroup eggGroup2, Pokemon.ExpGrowth expGrowth,
                            int a1, int a2, int aH, int aE, int hp, int atk, int def, int spA, int spD, int spe,
                            int captureRate, int baseHappiness, int expEarned, int evHP, int evAtk, int evDef, int evSpA, int evSpD, int evSpe) {
-        Species species = new Species(this.species.size, name, genderRatio, captureRate, expGrowth, expEarned,
-                new byte[] {(byte)evHP, (byte)evAtk, (byte)evDef, (byte)evSpA, (byte)evSpD, (byte)evSpe},
-                baseHappiness, eggGroup1, eggGroup2, type1, type2, new int[] {a1, a2, aH, aE},
-                new int[] {hp, atk, def, spA, spD, spe});
+        species.add(new Species(species.size, name, genderRatio, captureRate, expGrowth, expEarned,
+                new byte[] {(byte)evHP, (byte)evAtk, (byte)evDef, (byte)evSpA, (byte)evSpD, (byte)evSpe}, baseHappiness, eggGroup1, eggGroup2,
+                type1, type2, new int[] {a1, a2, aH, aE}, new int[] {hp, atk, def, spA, spD, spe}));
     }
     public void addMove(Move move) {
         moves.add(move);

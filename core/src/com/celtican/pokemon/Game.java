@@ -13,6 +13,7 @@ public class Game extends ApplicationAdapter {
 
 	public static final String version = "PreAlpha v0";
 
+	public static final boolean JSON_PRETTY_PRINT = true;
 	public static final byte TARGET_FRAME_RATE = 60;
 	public static final float MILLIS_PER_FRAME = (1f/TARGET_FRAME_RATE*1000);
 	public static final byte PIXEL_SIZE = 4;
