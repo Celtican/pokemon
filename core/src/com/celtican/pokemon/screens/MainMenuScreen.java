@@ -32,20 +32,16 @@ public class MainMenuScreen extends Screen {
     }
 
     @Override public void update() {
-        for (Button button : buttons)
-            button.update();
+        buttons.forEach(Button::update);
     }
     @Override public void render() {
-        for (Button button : buttons)
-            button.render();
+        buttons.forEach(Button::render);
     }
     @Override public void show() {
-        for (Button button : buttons)
-            button.show();
+        buttons.forEach(Button::show);
     }
     @Override public void hide() {
-        for (Button button : buttons)
-            button.hide();
+        buttons.forEach(Button::hide);
     }
     @Override public void resize(int width, int height) {
         if (buttons.size == 0)

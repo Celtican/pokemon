@@ -30,43 +30,35 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
     @Override public void update() {
         if (!loaded)
             return;
-        for (Button button : tileButtons)
-            button.update();
-        for (Button button : buttons)
-            button.update();
+        tileButtons.forEach(Button::update);
+        buttons.forEach(Button::update);
     }
     @Override public void render() {
         if (!loaded)
             return;
-        for (Button button : tileButtons)
-            button.render();
+        tileButtons.forEach(Button::render);
         String name = selectedTile.texture.toString();
         Vector2Int dim = Game.game.canvas.getBoundsOfText(name);
         Game.game.canvas.drawText(Game.game.canvas.getWidth()-dim.x, Game.game.canvas.getHeight()-dim.y, name);
-        for (Button button : buttons)
-            button.render();
+        buttons.forEach(Button::render);
     }
     @Override public void show() {
         if (!loaded)
             return;
-        for (Button button : tileButtons)
-            button.show();
-        for (Button button : buttons)
-            button.show();
+        tileButtons.forEach(Button::show);
+        buttons.forEach(Button::show);
     }
     @Override public void hide() {
         if (!loaded)
             return;
-        for (Button button : tileButtons)
-            button.hide();
-        for (Button button : buttons)
-            button.hide();
+        tileButtons.forEach(Button::hide);
+        buttons.forEach(Button::hide);
     }
     @Override public void resize(int width, int height) {
         if (!loaded)
             return;
         int x = 0, y = Game.game.canvas.getHeight()-Game.TILE_SIZE;
-        for (Button button : tileButtons) {
+        for (Button button : new Array.ArrayIterator<>(tileButtons)) {
             button.x = x;
             button.y = y;
             y -= Game.TILE_SIZE;
@@ -76,7 +68,7 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
             }
         }
         y = Game.game.canvas.getHeight() - Game.game.canvas.getHeightOfText(selectedTile.texture.toString()) - 2;
-        for (Button button : buttons) {
+        for (Button button : new Array.ArrayIterator<>(buttons)) {
             y -= button.height - 1;
             button.y = y;
             button.x = Game.game.canvas.getWidth() - button.width;
