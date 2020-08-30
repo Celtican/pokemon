@@ -13,7 +13,7 @@ public class MainMenuScreen extends Screen {
         buttons = new Array<>();
         addButton("Exit", () -> Gdx.app.exit());
         addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
-        addButton("Edit Map", null);
+        addButton("Edit Map", () -> Game.game.switchScreens(new EditMapScreen()));
         addButton("Play", () -> Game.game.switchScreens(new OverworldScreen()));
     }
 

@@ -26,6 +26,13 @@ public class InputHandler {
             button.updateInput(mouse.x, mouse.y, mousePressed, mouseJustPressed);
     }
 
+    public int getX() {
+        return mouse.x;
+    }
+    public int getY() {
+        return mouse.y;
+    }
+
     public void addButton(Button button) {
         buttons.add(button);
     }

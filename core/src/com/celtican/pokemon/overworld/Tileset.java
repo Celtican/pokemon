@@ -1,5 +1,7 @@
 package com.celtican.pokemon.overworld;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -10,31 +12,28 @@ import com.celtican.pokemon.utils.graphics.Texture;
 
 public class Tileset implements Json.Serializable {
     private ArrayMap<String, Tile> tiles;
+    private String atlasFileName;
     private String fileName;
 
     private Tileset() {}
-    public Tileset(String fileName) {
-        this(fileName, Game.game.assets.get(fileName, TextureAtlas.class));
-    }
-    public Tileset(String fileName, TextureAtlas atlas) {
-        this.fileName = fileName;
+    public Tileset(String atlasFileName, TextureAtlas atlas) {
+        this.atlasFileName = atlasFileName;
         tiles = new ArrayMap<>();
         Array<TextureAtlas.AtlasRegion> regions = atlas.getRegions();
         for (int i = 0; i < regions.size; i++) {
             TextureAtlas.AtlasRegion region = regions.get(i);
-            tiles.put(region.name + ":" + region.index, new Tile(new Texture(fileName, region)), i);
+            String name = region.name + ":" + region.index;
+            tiles.put(name, new Tile(this, name, new Texture(atlasFileName, region)), i);
         }
     }
-    public Tileset(String fileName, Array<Tile> tiles) {
-        this.fileName = fileName;
-        this.tiles = new ArrayMap<>();
-        for (int i = 0; i < tiles.size; i++) {
-            Tile tile = tiles.get(i);
-            String key = tile.texture.toString(true);
-            if (key.split(":").length < 2)
-                key += ":-1";
-            this.tiles.put(key, tile, i);
+    public static Tileset fromFileName(String fileName) {
+        FileHandle file = Gdx.files.internal(fileName);
+        if (file.exists()) {
+            Tileset tileset = new Json().fromJson(Tileset.class, file.readString());
+            tileset.fileName = fileName;
+            return tileset;
         }
+        return null;
     }
 
     public Tile get(int i) {
@@ -49,22 +48,39 @@ public class Tileset implements Json.Serializable {
     public int size() {
         return tiles.size;
     }
+    public String getName(boolean omitDirectory) {
+        if (fileName == null)
+            return "null";
+        if (!omitDirectory)
+            return fileName;
+        String[] splits = fileName.split("\\\\");
+        return splits[splits.length-1].split("\\.")[0];
+    }
+    public String getAtlasName(boolean omitDirectory) {
+        if (atlasFileName == null)
+            return "null";
+        if (!omitDirectory)
+            return atlasFileName;
+        String[] splits = atlasFileName.split("/");
+        return splits[splits.length-1].split("\\.")[0];
+    }
 
     @Override public void write(Json json) {
 //        json.writeObjectStart("name", Tileset.class, Tileset.class);
-        json.writeObjectStart(fileName);
+        json.writeObjectStart(atlasFileName);
         tiles.forEach(entry -> json.writeValue(entry.key, entry.value.type.toString()));
         json.writeObjectEnd();
 //        json.writeObjectEnd();
     }
     @Override public void read(Json json, JsonValue jsonData) {
-        fileName = jsonData.child.name;
-        TextureAtlas atlas = Game.game.assets.get(fileName, TextureAtlas.class);
+        atlasFileName = jsonData.child.name;
+        TextureAtlas atlas = Game.game.assets.get(atlasFileName, TextureAtlas.class);
         tiles = new ArrayMap<>();
         final int[] i = {0}; // if it's just an int, the iterator doesn't cooperate
         jsonData.child.forEach(jsonValue -> {
             String[] split = jsonValue.name.split(":");
-            tiles.put(jsonValue.name, new Tile(new Texture(fileName, atlas.findRegion(split[0], Integer.parseInt(split[1]))),
+            tiles.put(jsonValue.name, new Tile(this, jsonValue.name, new Texture(atlasFileName,
+                    atlas.findRegion(split[0], Integer.parseInt(split[1]))),
                     Tile.Type.valueOf(jsonValue.asString())), i[0]++);
         });
     }

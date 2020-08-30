@@ -81,7 +81,7 @@ public class RenderHandler {
         this.width = MathUtils.ceil((float)width/Game.PIXEL_SIZE);
         this.height = MathUtils.ceil((float)height/Game.PIXEL_SIZE);
         if (Game.game.screen != null)
-            Game.game.screen.resize(width, height);
+            Game.game.screen.resize(this.width, this.height);
     }
 
     public void draw(Texture texture, int x, int y) {
@@ -93,12 +93,11 @@ public class RenderHandler {
                 region.getRegionWidth() * Game.PIXEL_SIZE, region.getRegionHeight() * Game.PIXEL_SIZE);
     }
     public void drawRect(int x, int y, int width, int height) {
-        batch.draw(pixel, x*Game.PIXEL_SIZE, y*Game.PIXEL_SIZE,
-                width*Game.PIXEL_SIZE, height*Game.PIXEL_SIZE);
+        if (pixel != null)
+            batch.draw(pixel, x*Game.PIXEL_SIZE, y*Game.PIXEL_SIZE,
+                    width*Game.PIXEL_SIZE, height*Game.PIXEL_SIZE);
     }
     public void drawRect(int x, int y, int width, int height, Color color) {
-        if (pixel == null)
-            return;
         setColor(color);
         drawRect(x, y, width, height);
         resetColor();
@@ -107,10 +106,27 @@ public class RenderHandler {
         drawRect(x, y, width, height, r, g, b, 1);
     }
     public void drawRect(int x, int y, int width, int height, float r, float g, float b, float a) {
-        if (pixel == null)
-            return;
         setColor(r, g, b, a);
         drawRect(x, y, width, height);
+        resetColor();
+    }
+    public void drawBox(int x, int y, int width, int height) {
+        drawRect(x, y, width, 1);
+        drawRect(x, y, 1, height);
+        drawRect(x, y+height-1, width, 1);
+        drawRect(x+width-1, y, 1, height);
+    }
+    public void drawBox(int x, int y, int width, int height, Color color) {
+        setColor(color);
+        drawBox(x, y, width, height);
+        resetColor();
+    }
+    public void drawBox(int x, int y, int width, int height, float r, float g, float b) {
+        drawBox(x, y, width, height, r, g, b, 1);
+    }
+    public void drawBox(int x, int y, int width, int height, float r, float g, float b, float a) {
+        setColor(r, g, b, a);
+        drawBox(x, y, width, height);
         resetColor();
     }
     public void drawText(int x, int y, String text) {
@@ -141,6 +157,9 @@ public class RenderHandler {
     }
     public void resetClearColor() {
         setClearColor(0.5f, 0.5f, 0.5f, 1);
+    }
+    public void setColor(float r, float g, float b) {
+        setColor(r, g, b, 1);
     }
     public void setColor(float r, float g, float b, float a) {
         batch.setColor(r, g, b, a);

@@ -16,6 +16,11 @@ public class Button {
         this.width = width;
         this.height = height;
     }
+    public Button(int x, int y, int width, int height, boolean show) {
+        this(x, y, width, height);
+        if (show)
+            show();
+    }
 
     public void updateInput(int mouseX, int mouseY, boolean isMouseDown, boolean isMouseJustDown) {
         boolean oldIsMouseOver = mouseOver;
@@ -71,11 +76,15 @@ public class Button {
      */
     public void update() {
         // todo add sounds here
+        if (!enabled)
+            return;
         if (isMouseJustPressed())
             clicked();
     }
     public void clicked() {}
     public void render() {
+        if (!enabled)
+            return;
         Game.game.canvas.drawRect(x, y, width, height, Color.DARK_GRAY);
         Game.game.canvas.drawRect(x+1, y+1, width-2, height-2, Color.LIGHT_GRAY);
     }

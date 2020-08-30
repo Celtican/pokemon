@@ -3,7 +3,6 @@ package com.celtican.pokemon.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -97,9 +96,9 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
                         askForInput();
                     break;
                 case "json":
-                    FileHandle file = Gdx.files.internal(text);
-                    if (file.exists())
-                        createButtons(new Json().fromJson(Tileset.class, file.readString()));
+                    Tileset t = Tileset.fromFileName(text);
+                    if (t != null)
+                        createButtons(t);
                     else
                         askForInput();
                     break;
@@ -134,30 +133,7 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
                         clickTile(finalI);
                 }
                 @Override public void render() {
-                    Tile tile = tileset.get(finalI);
-                    tile.render(x, y);
-                    if (tile.type == Tile.Type.NONE)
-                        return;
-                    char c;
-                    Color color;
-                    switch (tile.type) {
-                        case SOLID:
-                            c = 'S';
-                            color = Color.WHITE;
-                            break;
-                        case WATER:
-                            c = 'W';
-                            color = Color.BLUE;
-                            break;
-                        case GRASS:
-                            c = 'G';
-                            color = Color.GREEN;
-                            break;
-                        default:
-                            Game.logWarning("A new tile type hasn't been registered in EditTilesetScreen yet");
-                            return;
-                    }
-                    Game.game.canvas.drawSmallText(x+1, y+2, Character.toString(c), color);
+                    tileset.get(finalI).renderDebug(x, y);
                 }
             });
         }

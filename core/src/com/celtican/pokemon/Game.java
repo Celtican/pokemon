@@ -2,6 +2,7 @@ package com.celtican.pokemon;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.celtican.pokemon.overworld.Map;
 import com.celtican.pokemon.screens.LoadingScreen;
 import com.celtican.pokemon.screens.Screen;
 import com.celtican.pokemon.utils.AssetHandler;
@@ -25,6 +26,8 @@ public class Game extends ApplicationAdapter {
 	public RenderHandler canvas;
 	public DataHandler data;
 	public InputHandler input;
+
+	public Map map;
 
 	public int frame = 0;
 	public Screen screen;
