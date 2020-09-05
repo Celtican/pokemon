@@ -179,27 +179,29 @@ public class RenderHandler {
     }
     public int getWidthOfText(String text) {
         layout.setText(font, text);
-        return (int)(layout.width/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.width/Game.PIXEL_SIZE);
     }
     public int getHeightOfText(String text) {
         layout.setText(font, text);
-        return (int)(layout.height/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.height/Game.PIXEL_SIZE);
     }
     public Vector2Int getBoundsOfText(String text) {
         layout.setText(font, text);
-        return new Vector2Int((int)(layout.width/Game.PIXEL_SIZE), (int)(layout.height/Game.PIXEL_SIZE));
+        return new Vector2Int(MathUtils.ceil(layout.width/Game.PIXEL_SIZE),
+                MathUtils.ceil(layout.height/Game.PIXEL_SIZE));
     }
     public int getWidthOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return (int)(layout.width/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.width/Game.PIXEL_SIZE);
     }
     public int getHeightOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return (int)(layout.height/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.height/Game.PIXEL_SIZE);
     }
     public Vector2Int getBoundsOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return new Vector2Int((int)(layout.width/Game.PIXEL_SIZE), (int)(layout.height/Game.PIXEL_SIZE));
+        return new Vector2Int(MathUtils.ceil(layout.width/Game.PIXEL_SIZE),
+                MathUtils.ceil(layout.height/Game.PIXEL_SIZE));
     }
 
     public void dispose() {

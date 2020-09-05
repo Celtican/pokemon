@@ -2,6 +2,7 @@ package com.celtican.pokemon;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.celtican.pokemon.overworld.Map;
 import com.celtican.pokemon.screens.LoadingScreen;
 import com.celtican.pokemon.screens.Screen;
@@ -43,6 +44,15 @@ public class Game extends ApplicationAdapter {
 		input = new InputHandler();
 
 		switchScreens(new LoadingScreen());
+
+
+		FileHandle file = Gdx.files.classpath("com\\celtican\\pokemon");
+		if (file.isDirectory()) {
+			FileHandle[] files = file.list();
+			for (FileHandle f : files)
+				Game.logInfo(f.name());
+		} else
+			Game.logInfo("Not a dir. " + file.name());
 	}
 
 	@Override public void render () {

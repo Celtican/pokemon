@@ -4,9 +4,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.overworld.objects.MapObject;
 
 public class Chunk implements Json.Serializable {
     private Tile[][] tiles;
+    public final Array<MapObject> objects = new Array<>();
 
     private Chunk() {}
     public Chunk(int layers) {

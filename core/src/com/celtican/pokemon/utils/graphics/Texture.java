@@ -5,11 +5,11 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class Texture implements Json.Serializable {
+public class Texture implements Json.Serializable, Renderable {
 
     private Renderable renderable;
 
-    private Texture() {
+    public Texture() {
         renderable = new Renderable();
     }
     public Texture(String fileName) {
@@ -29,7 +29,7 @@ public class Texture implements Json.Serializable {
         t.setFromString(s);
         return t;
     }
-    private void setFromString(String s) {
+    public void setFromString(String s) {
         String[] parts = s.split(":");
         switch (parts.length) {
             case 1:
@@ -58,8 +58,8 @@ public class Texture implements Json.Serializable {
         setFromString(jsonMap.child().asString());
     }
 
-    public void render(int x, int y) {
-        renderable.render(x, y);
+    public void render(float x, float y) {
+        renderable.render((int)x, (int)y);
     }
 
     public void setTexture(String fileName) {

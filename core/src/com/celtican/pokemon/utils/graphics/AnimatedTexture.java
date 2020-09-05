@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class AnimatedTexture implements Json.Serializable {
+public class AnimatedTexture implements Json.Serializable, Renderable {
     private Renderable renderable;
 
     private float millisPerSecond;
@@ -45,8 +45,8 @@ public class AnimatedTexture implements Json.Serializable {
         setFromString(jsonMap.child().asString());
     }
 
-    public void render(int x, int y) {
-        renderable.render(x, y);
+    public void render(float x, float y) {
+        renderable.render((int)x, (int)y);
     }
 
     public void setTexture(String fileName, String regionName) {

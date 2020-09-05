@@ -6,16 +6,20 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.overworld.objects.MapObject;
 import com.celtican.pokemon.utils.data.Vector2Int;
+import com.celtican.pokemon.utils.graphics.Renderable;
 
 public class Map implements Json.Serializable {
 
     public Array<Tileset> tilesets;
 
-    private Chunk[] chunks;
+    public Chunk[] chunks;
     public int chunksX, chunksY;
     public int layers;
     public Vector2Int camera;
+    public Vector2Int renderOffset = new Vector2Int();
+    private Array<MapObject> objects = new Array<>();
 
     private Map() {
 //        tilesets = new Array<>();
@@ -58,16 +62,29 @@ public class Map implements Json.Serializable {
             camera.y -= speed;
         if (Gdx.input.isKeyPressed(Input.Keys.D))
             camera.x += speed;
+        objects.clear();
+        for (Chunk chunk : chunks) {objects.addAll(chunk.objects); if (chunk.objects.notEmpty()) Game.logInfo("huh");}
+//        objects.sort((o1, o2) -> (int) (o2.hitbox.y - o1.hitbox.y));
+        if (objects.size != 0)
+            Game.logInfo("soze: " + objects.size);
+        objects.forEach(MapObject::update);
     }
     public void render() {
-        int xOff = Game.game.canvas.getWidth()/2 - camera.x;
-        int yOff = Game.game.canvas.getHeight()/2 - camera.y;
+        renderOffset.x = Game.game.canvas.getWidth()/2 - camera.x;
+        renderOffset.y = Game.game.canvas.getHeight()/2 - camera.y;
+
         for (int l = 0; l < layers; l++) {
             int i = 0;
             for (int chunkY = 0; chunkY < chunksY; chunkY++)
                 for (int chunkX = 0; chunkX < chunksX; chunkX++)
-                    chunks[i++].render(chunkX * Game.CHUNK_SIZE + xOff, chunkY * Game.CHUNK_SIZE + yOff, l);
+                    chunks[i++].render(chunkX * Game.CHUNK_SIZE + renderOffset.x,
+                            chunkY * Game.CHUNK_SIZE + renderOffset.y, l);
         }
+        objects.forEach(MapObject::render);
+    }
+
+    public void renderToMap(Renderable renderable, float x, float y) {
+        renderable.render(x + renderOffset.x, y + renderOffset.y);
     }
 
     @Override public void write(Json json) {
@@ -88,9 +105,8 @@ public class Map implements Json.Serializable {
         for (String s : jsonData.get("tilesets").asStringArray()) tilesets.add(Tileset.fromFileName(s));
         JsonValue chunksJson = jsonData.get("chunks");
         chunks = new Chunk[chunksJson.size];
-        for (int i = 0; i < chunksJson.size; i++) {
+        for (int i = 0; i < chunksJson.size; i++)
             chunks[i] = json.fromJson(Chunk.class, chunksJson.get(i).toString());
-        }
     }
 
     public void setTile(int x, int y, int layer, Tile tile) {

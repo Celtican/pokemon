@@ -6,16 +6,19 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Json;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.overworld.Map;
 import com.celtican.pokemon.overworld.Tile;
 import com.celtican.pokemon.overworld.Tileset;
+import com.celtican.pokemon.overworld.objects.MapObject;
 import com.celtican.pokemon.utils.data.Vector2Int;
 import com.celtican.pokemon.utils.graphics.Button;
 
 public class EditMapScreen extends Screen {
 
+    private static final String[] MAP_OBJECT_CLASS_NAMES = new String[] {"MapObjectWithTexture"};
     private static final int SCREEN_WIDTH = 60;
 
     private Map map;
@@ -153,7 +156,8 @@ public class EditMapScreen extends Screen {
     }
     private class SaveMap implements Input.TextInputListener {
         public SaveMap() {
-            Gdx.input.getTextInput(this, "Input exact file location to save map", "", "");
+            Gdx.input.getTextInput(this, "Input exact file location to save map",
+                    "overworld/maps/sample.json", "");
         }
 
         @Override public void input(String text) {
@@ -167,7 +171,8 @@ public class EditMapScreen extends Screen {
     }
     private class LoadMap implements Input.TextInputListener {
         public LoadMap() {
-            Gdx.input.getTextInput(this, "Input internal file location to load map", "", "");
+            Gdx.input.getTextInput(this, "Input internal file location to load map",
+                    "overworld/maps/sample.json", "");
         }
 
         @Override public void input(String text) {
@@ -281,6 +286,7 @@ public class EditMapScreen extends Screen {
     private class MainScreen extends RightSideScreen {
         public MainScreen() {
             addButton("Tilesets", () -> switchTo(new TilesetSelectScreen()));
+            addButton("Objects", () -> switchTo(new ObjectScreen()));
             addButton("Save Map", SaveMap::new);
             addButton("Load Map", LoadMap::new);
         }
@@ -357,6 +363,100 @@ public class EditMapScreen extends Screen {
                 button.x = (Game.TILE_SIZE+1) * (i% columns);
                 button.y = (Game.TILE_SIZE+1) * (i/ columns);
             }
+        }
+    }
+    private class ObjectScreen extends RightSideScreen {
+        public ObjectScreen() {
+            addButton("Back", () -> switchTo(new MainScreen()));
+            addButton("New Object", () -> switchTo(new CreateObjectScreen()));
+        }
+    }
+    private class CreateObjectScreen extends LeftSideScreen {
+        public CreateObjectScreen() {
+            for (String className : MAP_OBJECT_CLASS_NAMES) {
+                addButton(className, () -> {
+                    try {
+                        MapObject object = (MapObject) Class.forName("com.celtican.pokemon.overworld" +
+                                ".objects.nonabstract." + className).newInstance();
+                        if (object.chunk != null)
+                            switchTo(new EditObjectScreen(object));
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        Game.logWarning("Attempted to create a button which creates a non-existent \"" +
+                                className + "\" map object class.");
+                    }
+                });
+            }
+        }
+    }
+    private class EditObjectScreen extends LeftSideScreen {
+        public final MapObject object;
+        public EditObjectScreen(MapObject object) {
+            if (object.chunk == null) {
+                this.object = null;
+                return;
+            }
+            this.object = object;
+            ArrayMap<String, Object> values = object.getValues();
+            values.forEach(entry -> addValueButton(entry.key, entry.value));
+        }
+
+        private void addValueButton(String key, Object value) {
+            int height = Game.game.canvas.getHeightOfSmallText("Test") + 4;
+            Vector2Int bounds = Game.game.canvas.getBoundsOfSmallText(key);
+            bounds.add(4, 4);
+            int y;
+            if (buttons.notEmpty())
+                y = buttons.peek().y - height;
+            else
+                y = Game.game.canvas.getHeight() - height;
+            buttons.add(new Button(width, y, bounds.x, height) {
+                private final String valueString = value.toString();
+                @Override public void clicked() {
+                    new ValueSetter(key, value);
+                }
+                @Override public void render() {
+                    super.render();
+                    Game.game.canvas.drawSmallText(x+2, y+2, key + " " + valueString);
+                }
+            });
+        }
+
+        @Override public void render() {
+            Game.game.canvas.drawBox((int)object.hitbox.x + map.renderOffset.x,
+                    (int)object.hitbox.y + map.renderOffset.y, object.hitbox.width, object.hitbox.height,
+                    new Color(0.5f, 1, 1, 1));
+            super.render();
+        }
+
+        private class ValueSetter implements Input.TextInputListener {
+
+            private final String key;
+            private final Object value;
+
+            public ValueSetter(String key, Object value) {
+                this.key = key;
+                this.value = value;
+                Gdx.input.getTextInput(this, "", value.toString(), "");
+            }
+
+            @Override public void input(String text) {
+                if (value instanceof String) {
+                    object.setValue(key, text);
+                } else if (value instanceof Integer) {
+                    try {
+                        object.setValue(key, Integer.parseInt(text));
+                    } catch (NumberFormatException ignored) {}
+                } else if (value instanceof Float) {
+                    try {
+                        object.setValue(key, Float.parseFloat(text));
+                    } catch (NumberFormatException ignored) {}
+                } else if (value instanceof Boolean) {
+                    object.setValue(key, Boolean.parseBoolean(text));
+                }
+            }
+            @Override public void canceled() {}
         }
     }
 }
