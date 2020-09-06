@@ -10,9 +10,8 @@ public class Chunk implements Json.Serializable {
     private Tile[][] tiles;
     public final Array<MapObject> objects = new Array<>();
 
-    private Chunk() {}
-    public Chunk(int layers) {
-        tiles = new Tile[layers][64];
+    public Chunk() {
+        tiles = new Tile[Game.game.map.layers][64];
     }
     public Chunk(Tile[][] tiles) {
         this.tiles = tiles;
@@ -42,19 +41,25 @@ public class Chunk implements Json.Serializable {
     }
 
     @Override public void write(Json json) {
+        json.writeArrayStart("Objects");
+        objects.forEach(json::writeValue);
+        json.writeArrayEnd();
         json.writeArrayStart("Tiles");
         for (Tile[] layer : tiles) {
             json.writeArrayStart();
-            for (Tile tile : layer) {
+            for (Tile tile : layer)
                 json.writeValue(tile == null ? "null" :
                         Game.game.map.tilesets.indexOf(tile.tileset, true) + ":" + tile.name);
-            }
             json.writeArrayEnd();
         }
         json.writeArrayEnd();
     }
-    @Override public void read(Json json, JsonValue jsonData) {
-        tiles = new Tile[Game.game.map.layers][64];
+    @SuppressWarnings("unchecked") @Override public void read(Json json, JsonValue jsonData) {
+        for (int i = 0; i < Game.game.map.chunks.length; i++)
+            if (Game.game.map.chunks[i] == null) {
+                Game.game.map.chunks[i] = this;
+                break;
+            }
         JsonValue tilesJson = jsonData.get("tiles");
         for (int layer = 0; layer < Game.game.map.layers; layer++) {
             String[] tilesStrings = tilesJson.get(layer).asStringArray();
@@ -65,6 +70,18 @@ public class Chunk implements Json.Serializable {
                 Tileset tileset = Game.game.map.tilesets.get(Integer.parseInt(parts[0]));
                 tiles[layer][i] = tileset.get(parts[1]);
             }
+        }
+        JsonValue objectsJson = jsonData.get("objects");
+        if (objectsJson != null) {
+            objectsJson.forEach(jsonValue -> {
+                try {
+                    String s = "com.celtican.pokemon.overworld.objects.nonabstract." + jsonValue.get("type").asString();
+                    Class<?> c = Class.forName(s).asSubclass(MapObject.class);
+                    json.fromJson((Class<MapObject>)c, jsonValue.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 }

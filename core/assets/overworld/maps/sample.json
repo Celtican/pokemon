@@ -7,6 +7,16 @@ tilesets: [
 ]
 chunks: [
 	{
+		Objects: [
+			{
+				type: MapObjectWithTexture
+				x: 32
+				y: 112
+				width: 64
+				height: 80
+				texture: misc/Tree.png
+			}
+		]
 		Tiles: [
 			[
 				0:Grass:-1
@@ -143,6 +153,7 @@ chunks: [
 		]
 	}
 	{
+		Objects: []
 		Tiles: [
 			[
 				0:Grass:-1
@@ -279,6 +290,7 @@ chunks: [
 		]
 	}
 	{
+		Objects: []
 		Tiles: [
 			[
 				0:Grass:-1
@@ -415,6 +427,7 @@ chunks: [
 		]
 	}
 	{
+		Objects: []
 		Tiles: [
 			[
 				0:Water:-1

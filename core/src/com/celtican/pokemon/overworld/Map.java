@@ -42,13 +42,14 @@ public class Map implements Json.Serializable {
         camera = new Vector2Int();
     }
     public Map(int chunksX, int chunksY, int layers) {
+        Game.game.map = this;
         tilesets = new Array<>();
         this.chunksX = chunksX;
         this.chunksY = chunksY;
         this.layers = layers;
         chunks = new Chunk[chunksX * chunksY];
         for (int i = 0; i < chunks.length; i++)
-            chunks[i] = new Chunk(layers);
+            chunks[i] = new Chunk();
         camera = new Vector2Int();
     }
 
@@ -63,10 +64,7 @@ public class Map implements Json.Serializable {
         if (Gdx.input.isKeyPressed(Input.Keys.D))
             camera.x += speed;
         objects.clear();
-        for (Chunk chunk : chunks) {objects.addAll(chunk.objects); if (chunk.objects.notEmpty()) Game.logInfo("huh");}
-//        objects.sort((o1, o2) -> (int) (o2.hitbox.y - o1.hitbox.y));
-        if (objects.size != 0)
-            Game.logInfo("soze: " + objects.size);
+        for (Chunk chunk : chunks) objects.addAll(chunk.objects);
         objects.forEach(MapObject::update);
     }
     public void render() {
@@ -106,7 +104,7 @@ public class Map implements Json.Serializable {
         JsonValue chunksJson = jsonData.get("chunks");
         chunks = new Chunk[chunksJson.size];
         for (int i = 0; i < chunksJson.size; i++)
-            chunks[i] = json.fromJson(Chunk.class, chunksJson.get(i).toString());
+            json.fromJson(Chunk.class, chunksJson.get(i).toString());
     }
 
     public void setTile(int x, int y, int layer, Tile tile) {

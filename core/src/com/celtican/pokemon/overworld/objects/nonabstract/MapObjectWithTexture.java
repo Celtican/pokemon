@@ -6,14 +6,9 @@ import com.celtican.pokemon.overworld.objects.MapObject;
 import com.celtican.pokemon.utils.graphics.Texture;
 
 public class MapObjectWithTexture extends MapObject {
-    public Texture texture;
-
-    public MapObjectWithTexture() {
-        texture = new Texture();
-    }
+    public Texture texture = new Texture();
 
     @Override public void render() {
-        Game.logInfo("hmmmmm");
         Game.game.map.renderToMap(texture, hitbox.x, hitbox.y);
     }
 
