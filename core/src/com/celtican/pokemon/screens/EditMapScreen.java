@@ -18,7 +18,7 @@ import com.celtican.pokemon.utils.graphics.Button;
 
 public class EditMapScreen extends Screen {
 
-    private static final String[] MAP_OBJECT_CLASS_NAMES = new String[] {"MapObjectWithTexture"};
+    private static final String[] MAP_OBJECT_CLASS_NAMES = new String[] {"TextureHolder", "Character", "Player"};
     private static final int SCREEN_WIDTH = 60;
 
     private Map map;
@@ -27,6 +27,8 @@ public class EditMapScreen extends Screen {
     private LeftSideScreen leftScreenToSwitchTo;
     private RightSideScreen rightScreen;
     private RightSideScreen rightScreenToSwitchTo;
+
+    private boolean updateMap = false;
 
     public EditMapScreen() {
         new NewMapInitializer();
@@ -38,7 +40,19 @@ public class EditMapScreen extends Screen {
     @Override public void update() {
         if (map == null)
             return;
-        map.update();
+        map.update(updateMap);
+        if (!updateMap) {
+            int speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? 6 : 2;
+            Vector2Int camera = Game.game.map.camera;
+            if (Gdx.input.isKeyPressed(Input.Keys.W))
+                camera.y += speed;
+            if (Gdx.input.isKeyPressed(Input.Keys.A))
+                camera.x -= speed;
+            if (Gdx.input.isKeyPressed(Input.Keys.S))
+                camera.y -= speed;
+            if (Gdx.input.isKeyPressed(Input.Keys.D))
+                camera.x += speed;
+        }
         if (leftScreenToSwitchTo != null) {
             if (leftScreen != null)
                 leftScreen.hide();
@@ -285,6 +299,7 @@ public class EditMapScreen extends Screen {
     }
     private class MainScreen extends RightSideScreen {
         public MainScreen() {
+            addButton("Toggle World Update", () -> updateMap = !updateMap);
             addButton("Tilesets", () -> switchTo(new TilesetSelectScreen()));
             addButton("Objects", () -> switchTo(new ObjectScreen()));
             addButton("Save Map", SaveMap::new);
@@ -370,6 +385,25 @@ public class EditMapScreen extends Screen {
             addButton("Back", () -> switchTo(new MainScreen()));
             addButton("New Object", () -> switchTo(new CreateObjectScreen()));
         }
+        @Override public void update() {
+            super.update();
+            if (!Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
+                return;
+            Vector2Int v = map.screenPosToWorldPos(Game.game.input.getX(), Game.game.input.getY());
+            MapObject object = map.getObjectAt(v.x, v.y);
+            if (object != null)
+                switchTo(new EditObjectScreen(object));
+        }
+        @Override public void render() {
+            super.render();
+            if (mouseIsOverAMenu())
+                return;
+            Vector2Int v = map.screenPosToWorldPos(Game.game.input.getX(), Game.game.input.getY());
+            MapObject object = map.getObjectAt(v.x, v.y);
+            if (object != null)
+                Game.game.canvas.drawBox((int)object.hitbox.x+map.renderOffset.x,
+                        (int)object.hitbox.y+map.renderOffset.y, object.hitbox.width, object.hitbox.height);
+        }
     }
     private class CreateObjectScreen extends LeftSideScreen {
         public CreateObjectScreen() {
@@ -378,8 +412,13 @@ public class EditMapScreen extends Screen {
                     try {
                         MapObject object = (MapObject) Class.forName("com.celtican.pokemon.overworld" +
                                 ".objects.nonabstract." + className).newInstance();
-                        if (object.chunk != null)
+                        if (object.chunk != null) {
+                            Vector2Int pos = map.screenPosToWorldPos(Game.game.canvas.getWidth()/2,
+                                    Game.game.canvas.getHeight()/2);
+                            object.setValue("x", pos.x);
+                            object.setValue("y", pos.y);
                             switchTo(new EditObjectScreen(object));
+                        }
                     } catch (InstantiationException | IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
@@ -398,29 +437,43 @@ public class EditMapScreen extends Screen {
                 return;
             }
             this.object = object;
-            ArrayMap<String, Object> values = object.getValues();
-            values.forEach(entry -> addValueButton(entry.key, entry.value));
+            ArrayMap<String, Object> values = object.getValues(false);
+            values.forEach(entry -> setValueButton(-1, entry.key, entry.value));
         }
-
-        private void addValueButton(String key, Object value) {
+        private void setValueButton(int index, String key, Object value) {
             int height = Game.game.canvas.getHeightOfSmallText("Test") + 4;
             Vector2Int bounds = Game.game.canvas.getBoundsOfSmallText(key);
             bounds.add(4, 4);
             int y;
-            if (buttons.notEmpty())
-                y = buttons.peek().y - height;
-            else
+            if (buttons.notEmpty()) {
+                if (index == -1 || index >= buttons.size) {
+                    y = buttons.peek().y - height;
+                    index = buttons.size;
+                } else {
+                    y = buttons.get(index).y;
+                }
+            } else {
                 y = Game.game.canvas.getHeight() - height;
-            buttons.add(new Button(width, y, bounds.x, height) {
+                index = 0;
+            }
+            int finalIndex = index;
+            Button button = new Button(getX(), y, bounds.x, height) {
                 private final String valueString = value.toString();
                 @Override public void clicked() {
-                    new ValueSetter(key, value);
+                    new ValueSetter(finalIndex, key, value);
                 }
                 @Override public void render() {
                     super.render();
                     Game.game.canvas.drawSmallText(x+2, y+2, key + " " + valueString);
                 }
-            });
+            };
+            if (index >= buttons.size)
+                buttons.add(button);
+            else {
+                buttons.get(index).hide();
+                buttons.set(index, button);
+                button.show();
+            }
         }
 
         @Override public void render() {
@@ -432,10 +485,12 @@ public class EditMapScreen extends Screen {
 
         private class ValueSetter implements Input.TextInputListener {
 
+            private final int buttonIndex;
             private final String key;
-            private final Object value;
+            private Object value;
 
-            public ValueSetter(String key, Object value) {
+            public ValueSetter(int buttonIndex, String key, Object value) {
+                this.buttonIndex = buttonIndex;
                 this.key = key;
                 this.value = value;
                 Gdx.input.getTextInput(this, "", value.toString(), "");
@@ -443,18 +498,21 @@ public class EditMapScreen extends Screen {
 
             @Override public void input(String text) {
                 if (value instanceof String) {
-                    object.setValue(key, text);
+                    value = text;
                 } else if (value instanceof Integer) {
                     try {
-                        object.setValue(key, Integer.parseInt(text));
+                        value = Integer.parseInt(text);
                     } catch (NumberFormatException ignored) {}
                 } else if (value instanceof Float) {
                     try {
-                        object.setValue(key, Float.parseFloat(text));
+                        value = Float.parseFloat(text);
                     } catch (NumberFormatException ignored) {}
                 } else if (value instanceof Boolean) {
-                    object.setValue(key, Boolean.parseBoolean(text));
+                    value = Boolean.parseBoolean(text);
                 }
+                object.setValue(key, value);
+                setValueButton(buttonIndex, key, value);
+//                resize(Game.game.canvas.getWidth(), Game.game.canvas.getHeight());
             }
             @Override public void canceled() {}
         }

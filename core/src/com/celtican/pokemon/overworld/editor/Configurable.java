@@ -6,12 +6,12 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public interface Configurable extends Json.Serializable {
 
-    ArrayMap<String, Object> getValues();
+    ArrayMap<String, Object> getValues(boolean omitIfDefault);
     boolean setValue(String key, Object value);
 
     @Override default void write(Json json) {
         json.writeValue("type", getClass().getSimpleName());
-        getValues().forEach(entry -> json.writeValue(entry.key, entry.value));
+        getValues(true).forEach(entry -> json.writeValue(entry.key, entry.value));
     }
     @Override default void read(Json json, JsonValue jsonData) {
         jsonData.forEach(jsonValue -> {

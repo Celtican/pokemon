@@ -19,6 +19,14 @@ public class Vector2Int {
         return new Vector2Int(this);
     }
 
+    public void set(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+    public void set(Vector2Int v) {
+        set(v.x, v.y);
+    }
+
     public void add(int x, int y) {
         this.x += x;
         this.y += y;

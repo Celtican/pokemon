@@ -2,16 +2,14 @@ package com.celtican.pokemon.utils.graphics;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class TextureArray implements Json.Serializable, Renderable {
+public class TextureArray implements Renderable {
 
     private Renderable renderable;
     private int curFrame;
 
-    private TextureArray() {
+    public TextureArray() {
         renderable = new Renderable();
     }
     public TextureArray(String fileName, String regionName) {
@@ -27,27 +25,28 @@ public class TextureArray implements Json.Serializable, Renderable {
     }
     private void setFromString(String s) {
         String[] parts = s.split(":");
-        if (parts.length != 3) {
+        if (parts.length < 2 || parts.length > 3) {
             Game.logError("Attempting to create a texture array from string with " + parts.length + " arguments");
             return;
         }
-        try {
-            setTexture(parts[0], parts[1]);
-            setFrame(Integer.parseInt(parts[2]));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        setTexture(parts[0], parts[1]);
+        if (parts.length > 2)
+            try {
+                setFrame(Integer.parseInt(parts[2]));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
     }
 
-    @Override public void write(Json json) {
-        json.writeValue("TextureArray", toString());
-    }
-    @Override public void read(Json json, JsonValue jsonMap) {
-        setFromString(jsonMap.child().asString());
-    }
+//    @Override public void write(Json json) {
+//        json.writeValue("TextureArray", toString());
+//    }
+//    @Override public void read(Json json, JsonValue jsonMap) {
+//        setFromString(jsonMap.child().asString());
+//    }
 
-    public void render(float x, float y) {
-        renderable.render((int)x, (int)y);
+    @Override public void render(int x, int y) {
+        renderable.render(x, y);
     }
 
     public void setTexture(String fileName, String regionName, int startFrame) {

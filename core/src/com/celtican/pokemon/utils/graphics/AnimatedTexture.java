@@ -2,11 +2,9 @@ package com.celtican.pokemon.utils.graphics;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 
-public class AnimatedTexture implements Json.Serializable, Renderable {
+public class AnimatedTexture implements /*Json.Serializable, */Renderable {
     private Renderable renderable;
 
     private float millisPerSecond;
@@ -38,15 +36,15 @@ public class AnimatedTexture implements Json.Serializable, Renderable {
         }
     }
 
-    @Override public void write(Json json) {
-        json.writeValue("AnimatedTexture", toString());
-    }
-    @Override public void read(Json json, JsonValue jsonMap) {
-        setFromString(jsonMap.child().asString());
-    }
+//    @Override public void write(Json json) {
+//        json.writeValue("AnimatedTexture", toString());
+//    }
+//    @Override public void read(Json json, JsonValue jsonMap) {
+//        setFromString(jsonMap.child().asString());
+//    }
 
-    public void render(float x, float y) {
-        renderable.render((int)x, (int)y);
+    public void render(int x, int y) {
+        renderable.render(x, y);
     }
 
     public void setTexture(String fileName, String regionName) {

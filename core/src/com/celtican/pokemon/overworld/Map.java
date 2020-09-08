@@ -1,25 +1,25 @@
 package com.celtican.pokemon.overworld;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.overworld.objects.MapObject;
+import com.celtican.pokemon.overworld.objects.nonabstract.Player;
 import com.celtican.pokemon.utils.data.Vector2Int;
 import com.celtican.pokemon.utils.graphics.Renderable;
 
 public class Map implements Json.Serializable {
 
     public Array<Tileset> tilesets;
-
     public Chunk[] chunks;
     public int chunksX, chunksY;
     public int layers;
     public Vector2Int camera;
     public Vector2Int renderOffset = new Vector2Int();
-    private Array<MapObject> objects = new Array<>();
+    public Player player;
+
+    private final Array<MapObject> objects = new Array<>();
 
     private Map() {
 //        tilesets = new Array<>();
@@ -54,20 +54,16 @@ public class Map implements Json.Serializable {
     }
 
     public void update() {
-        int speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? 4 : 1;
-        if (Gdx.input.isKeyPressed(Input.Keys.W))
-            camera.y += speed;
-        if (Gdx.input.isKeyPressed(Input.Keys.A))
-            camera.x -= speed;
-        if (Gdx.input.isKeyPressed(Input.Keys.S))
-            camera.y -= speed;
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-            camera.x += speed;
+        update(true);
+    }
+    public void update(boolean updateObjects) {
         objects.clear();
         for (Chunk chunk : chunks) objects.addAll(chunk.objects);
-        objects.forEach(MapObject::update);
+        if (updateObjects) objects.forEach(MapObject::update);
     }
     public void render() {
+        objects.sort((o1, o2) -> (int)o2.hitbox.y - (int)o1.hitbox.y);
+
         renderOffset.x = Game.game.canvas.getWidth()/2 - camera.x;
         renderOffset.y = Game.game.canvas.getHeight()/2 - camera.y;
 
@@ -81,7 +77,7 @@ public class Map implements Json.Serializable {
         objects.forEach(MapObject::render);
     }
 
-    public void renderToMap(Renderable renderable, float x, float y) {
+    public void renderToMap(Renderable renderable, int x, int y) {
         renderable.render(x + renderOffset.x, y + renderOffset.y);
     }
 
@@ -133,6 +129,38 @@ public class Map implements Json.Serializable {
         if (chunkX >= chunksX || chunkY >= chunksY)
             return null;
         return chunks[chunkY*chunksX + chunkX].getTiles(chunkX + x%8, chunkY + y%8);
+    }
+    public MapObject getObjectAt(float x, float y) {
+        for (int i = 0; i < objects.size; i++)
+            if (objects.get(i).hitbox.contains(x, y))
+                return objects.get(i);
+        return null;
+    }
+    public Array<MapObject> getObjectsAt(float x, float y) {
+        Array<MapObject> array = new Array<>();
+        for (int i = 0; i < objects.size; i++)
+            if (objects.get(i).hitbox.contains(x, y))
+                array.add(objects.get(i));
+        return array;
+    }
+    public MapObject getObjectIn(Hitbox h) {
+        return getObjectIn(h, null);
+    }
+    public MapObject getObjectIn(Hitbox h, MapObject omit) {
+        for (int i = 0; i < objects.size; i++)
+            if (objects.get(i).hitbox.overlaps(h) && objects.get(i) != omit)
+                return objects.get(i);
+        return null;
+    }
+    public Array<MapObject> getObjectsIn(Hitbox h) {
+        return getObjectsIn(h, null);
+    }
+    public Array<MapObject> getObjectsIn(Hitbox h, MapObject omit) {
+        Array<MapObject> array = new Array<>();
+        for (int i = 0; i < objects.size; i++)
+            if (objects.get(i).hitbox.overlaps(h) && objects.get(i) != omit)
+                array.add(objects.get(i));
+        return array;
     }
 
     public void addTileset(Tileset tileset) {

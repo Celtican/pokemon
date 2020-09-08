@@ -9,7 +9,7 @@ chunks: [
 	{
 		Objects: [
 			{
-				type: MapObjectWithTexture
+				type: TextureHolder
 				x: 32
 				y: 112
 				width: 64

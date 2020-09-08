@@ -9,6 +9,9 @@ public class Hitbox {
     public int width, height;
 
     public Hitbox() {}
+    public Hitbox(Hitbox hitbox) {
+        this(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+    }
     public Hitbox(float x, float y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -37,5 +40,12 @@ public class Hitbox {
         Game.game.canvas.drawRect(x+width, y, 1, height);
 
         Game.game.canvas.resetColor();
+    }
+
+    public boolean contains(float x, float y) {
+        return !(x < this.x || y < this.y || x > this.x + this.width || y > this.y + this.height);
+    }
+    public boolean overlaps(Hitbox h) {
+        return !(h.x+h.width < x || h.y+h.height < y || x+width < h.x || y+height < h.y);
     }
 }
