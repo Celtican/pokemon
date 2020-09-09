@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.graphics.Button;
 import com.celtican.pokemon.utils.data.Vector2Int;
+import com.celtican.pokemon.utils.graphics.Button;
 
 public class InputHandler {
 
@@ -18,12 +18,63 @@ public class InputHandler {
     }
 
     public void update() {
-        mouse.x = Gdx.input.getX() / Game.PIXEL_SIZE;
-        mouse.y = (Gdx.graphics.getHeight()-Gdx.input.getY())/Game.PIXEL_SIZE;
-        boolean mousePressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-        boolean mouseJustPressed = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
-        for (Button button : buttons)
-            button.updateInput(mouse.x, mouse.y, mousePressed, mouseJustPressed);
+        Array<Button> buttons = new Array<>(this.buttons);
+        int newX = Gdx.input.getX() / Game.PIXEL_SIZE;
+        int newY = (Gdx.graphics.getHeight()-Gdx.input.getY())/Game.PIXEL_SIZE;
+        boolean mousePressed = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+        if (newX != mouse.x || newY != mouse.y || mousePressed) {
+            // update buttons with mouse pos
+            mouse.x = newX;
+            mouse.y = newY;
+            buttons.forEach(button -> {
+                boolean isMouseOver = !(newX < button.x || newY < button.y ||
+                        newX > button.x + button.width || newY > button.y + button.height);
+                if (button.justSelected)
+                    button.justSelected = false;
+                if (isMouseOver) {
+                    if (!button.isSelected()) {
+                        button.justSelected = true;
+                        button.selected = true;
+                        button.hover();
+                    }
+                    if (mousePressed)
+                        button.clicked();
+                } else if (button.isSelected()) {
+                    button.selected = false;
+                    button.leave();
+                }
+            });
+        } else {
+            // update buttons with keyboard buttons
+            Button selectedButton = null;
+            for (int i = 0; i < buttons.size; i++) {
+                Button button = buttons.get(i);
+                if (button.justSelected) button.justSelected = false;
+                if (button.isSelected()) selectedButton = button;
+            }
+            if (selectedButton != null) {
+                Button newButton = Gdx.input.isKeyJustPressed(Input.Keys.W) ? selectedButton.upButton :
+                        Gdx.input.isKeyJustPressed(Input.Keys.A) ? selectedButton.leftButton :
+                        Gdx.input.isKeyJustPressed(Input.Keys.S) ? selectedButton.downButton :
+                        Gdx.input.isKeyJustPressed(Input.Keys.D) ? selectedButton.rightButton : null;
+                if (newButton != null) {
+                    selectedButton.selected = false;
+                    newButton.justSelected = true;
+                    newButton.selected = true;
+                    selectedButton.leave();
+                    newButton.hover();
+                }
+            } else if ((Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.A) ||
+                        Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.D)) &&
+                        buttons.notEmpty()) {
+                selectedButton = buttons.first();
+                selectedButton.justSelected = true;
+                selectedButton.selected = true;
+                selectedButton.hover();
+            }
+            if (selectedButton != null && Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+                selectedButton.clicked();
+        }
     }
 
     public int getX() {

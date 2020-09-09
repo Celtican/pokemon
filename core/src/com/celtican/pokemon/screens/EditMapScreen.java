@@ -192,11 +192,7 @@ public class EditMapScreen extends Screen {
         @Override public void input(String text) {
             if (text.equals(""))
                 return;
-            FileHandle file = Gdx.files.internal(text);
-            if (file.exists()) {
-                map = new Json().fromJson(Map.class, file.readString());
-                Game.game.map = map;
-            }
+            map = Map.fromFileLocation(text);
         }
         @Override public void canceled() {}
     }
@@ -214,7 +210,7 @@ public class EditMapScreen extends Screen {
         }
 
         public void update() {
-            buttons.forEach(Button::update);
+            // update buttons
         }
         public void render() {
             buttons.forEach(Button::render);
@@ -324,6 +320,7 @@ public class EditMapScreen extends Screen {
             show();
         }
         @Override public void hide() {
+            super.hide();
             if (leftScreen instanceof TilesetScreen) {
                 leftScreen.hide();
                 leftScreen = null;

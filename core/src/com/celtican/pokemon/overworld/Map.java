@@ -1,5 +1,7 @@
 package com.celtican.pokemon.overworld;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -22,21 +24,6 @@ public class Map implements Json.Serializable {
     private final Array<MapObject> objects = new Array<>();
 
     private Map() {
-//        tilesets = new Array<>();
-//        chunksX = 2;
-//        chunksY = 2;
-//        layers = 1;
-//        camera = new Vector2Int();
-//
-//        Tile grass = new Tile(null, new Texture("spritesheets/overworld.atlas", "Grass"));
-//        Tile dirt = new Tile(null, new Texture("spritesheets/overworld.atlas", "Dirt"));
-//        chunks = new Chunk[chunksX * chunksY];
-//        for (int i = 0; i < chunks.length; i++) {
-//            Tile[][] tiles = new Tile[1][8*8];
-//            for (int j = 0; j < 64; j++)
-//                tiles[0][j] = MathUtils.randomBoolean() ? grass : dirt;
-//            chunks[i] = new Chunk(tiles);
-//        }
         Game.game.map = this;
         tilesets = new Array<>();
         camera = new Vector2Int();
@@ -51,6 +38,10 @@ public class Map implements Json.Serializable {
         for (int i = 0; i < chunks.length; i++)
             chunks[i] = new Chunk();
         camera = new Vector2Int();
+    }
+    public static Map fromFileLocation(String fileLocation) {
+        FileHandle file = Gdx.files.internal(fileLocation);
+        return file.exists() ? new Json().fromJson(Map.class, file.readString()) : null;
     }
 
     public void update() {
@@ -121,6 +112,9 @@ public class Map implements Json.Serializable {
             return null;
         return chunks[chunkY*chunksX + chunkX].getTile(chunkX + x%8, chunkY + y%8, layer);
     }
+    public Array<Tile> getTiles(Vector2Int pos) {
+        return getTiles(pos.x, pos.y);
+    }
     public Array<Tile> getTiles(int x, int y) {
         if (x < 0 || y < 0)
             return null;
@@ -128,7 +122,7 @@ public class Map implements Json.Serializable {
         int chunkY = y/8;
         if (chunkX >= chunksX || chunkY >= chunksY)
             return null;
-        return chunks[chunkY*chunksX + chunkX].getTiles(chunkX + x%8, chunkY + y%8);
+        return chunks[chunkY*chunksX + chunkX].getTiles(x%8, y%8);
     }
     public MapObject getObjectAt(float x, float y) {
         for (int i = 0; i < objects.size; i++)
@@ -170,16 +164,31 @@ public class Map implements Json.Serializable {
         tilesets.add(tileset);
     }
 
+    public Vector2Int screenPosToTilePos(Vector2Int screenPos) {
+        return screenPosToTilePos(screenPos.x, screenPos.y);
+    }
     public Vector2Int screenPosToTilePos(int screenX, int screenY) {
         return new Vector2Int((screenX + camera.x - Game.game.canvas.getWidth()/2)/Game.TILE_SIZE,
                 (screenY + camera.y - Game.game.canvas.getHeight()/2)/Game.TILE_SIZE);
+    }
+    public Vector2Int screenPosToWorldPos(Vector2Int screenPos) {
+        return screenPosToWorldPos(screenPos.x, screenPos.y);
     }
     public Vector2Int screenPosToWorldPos(int screenX, int screenY) {
         return new Vector2Int((screenX + camera.x - Game.game.canvas.getWidth()/2),
                 (screenY + camera.y - Game.game.canvas.getHeight()/2));
     }
+    public Vector2Int worldPosToScreenPos(Vector2Int worldPos) {
+        return worldPosToScreenPos(worldPos.x, worldPos.y);
+    }
     public Vector2Int worldPosToScreenPos(int worldX, int worldY) {
         return new Vector2Int((worldX - camera.x + Game.game.canvas.getWidth()/2),
                 (worldY - camera.y + Game.game.canvas.getHeight()/2));
+    }
+    public Vector2Int worldPosToTilePos(Vector2Int worldPos) {
+        return worldPosToTilePos(worldPos.x, worldPos.y);
+    }
+    public Vector2Int worldPosToTilePos(int worldX, int worldY) {
+        return new Vector2Int(worldX/Game.TILE_SIZE, worldY/Game.TILE_SIZE);
     }
 }

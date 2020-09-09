@@ -5,9 +5,11 @@ import com.celtican.pokemon.Game;
 
 public class Button {
     public int x, y, width, height;
+    public Button upButton, rightButton, downButton, leftButton;
 
-    private boolean mouseOver, mouseJustEntered, mouseJustLeft,
-            mousePressed, mouseJustPressed, mouseJustUnpressed, enabled;
+//    private boolean mouseOver, mouseJustEntered, mouseJustLeft,
+//            mousePressed, mouseJustPressed, mouseJustUnpressed, enabled;
+    public boolean enabled, selected, justSelected;
 
     public Button() {}
     public Button(int x, int y, int width, int height) {
@@ -22,71 +24,21 @@ public class Button {
             show();
     }
 
-    public void updateInput(int mouseX, int mouseY, boolean isMouseDown, boolean isMouseJustDown) {
-        boolean oldIsMouseOver = mouseOver;
-        mouseOver = !(mouseX < x || mouseY < y || mouseX > x + width || mouseY > y + height);
-        if (oldIsMouseOver != mouseOver) {
-            mouseJustEntered = mouseOver;
-            mouseJustLeft = !mouseOver;
-        } else {
-            mouseJustEntered = false;
-            mouseJustLeft = false;
-        }
-        if (mouseOver) {
-            if (isMouseDown) {
-                mouseJustPressed = isMouseJustDown;
-                mouseJustUnpressed = false;
-                mousePressed = true;
-            } else {
-                mouseJustPressed = false;
-                mouseJustUnpressed = mousePressed;
-                mousePressed = false;
-            }
-        } else {
-            mousePressed = false;
-            mouseJustPressed = false;
-            mouseJustUnpressed = false;
-        }
-    }
-    public boolean isMouseOver() {
-        return mouseOver;
-    }
-    public boolean isMouseJustEntered() {
-        return mouseJustEntered;
-    }
-    public boolean isMouseJustLeft() {
-        return mouseJustLeft;
-    }
-    public boolean isMousePressed() {
-        return mousePressed;
-    }
-    public boolean isMouseJustPressed() {
-        return mouseJustPressed;
-    }
-    public boolean isMouseJustUnpressed() {
-        return mouseJustUnpressed;
-    }
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
-     * update() and render() are not automatically called.
-     * They need to be called manually by the screen.
-     */
-    public void update() {
-        // todo add sounds here
-        if (!enabled)
-            return;
-        if (isMouseJustPressed())
-            clicked();
-    }
     public void clicked() {}
+    public void hover() {}
+    public void leave() {}
     public void render() {
         if (!enabled)
             return;
-        Game.game.canvas.drawRect(x, y, width, height, Color.DARK_GRAY);
-        Game.game.canvas.drawRect(x+1, y+1, width-2, height-2, Color.LIGHT_GRAY);
+        Game.game.canvas.drawRect(x, y, width, height, selected ? new Color(0.5f, 1, 1, 1) : Color.DARK_GRAY);
+        Game.game.canvas.drawRect(x+1, y+1, width-2, height-2, justSelected ? Color.WHITE : Color.LIGHT_GRAY);
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void show() {

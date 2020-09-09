@@ -19,7 +19,7 @@ public class MainMenuScreen extends Screen {
 
     private void addButton(String text, Runnable runnable) {
         Vector2Int dimensions = Game.game.canvas.getBoundsOfText(text);
-        buttons.add(new Button(0, 0, dimensions.x+4, dimensions.y+4) {
+        Button button = new Button(0, 0, dimensions.x+4, dimensions.y+4) {
             @Override public void clicked() {
                 if (runnable != null)
                     runnable.run();
@@ -28,12 +28,17 @@ public class MainMenuScreen extends Screen {
                 super.render();
                 Game.game.canvas.drawText(x+2, y+3, text);
             }
-        });
+        };
+        if (buttons.notEmpty()) {
+            button.downButton = buttons.peek();
+            buttons.peek().upButton = button;
+        }
+        buttons.add(button);
     }
 
-    @Override public void update() {
-        buttons.forEach(Button::update);
-    }
+//    @Override public void update() {
+//        buttons.forEach(Button::update);
+//    }
     @Override public void render() {
         buttons.forEach(Button::render);
     }

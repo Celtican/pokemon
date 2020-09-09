@@ -7,15 +7,15 @@ import com.celtican.pokemon.Game;
 public class AnimatedTexture implements /*Json.Serializable, */Renderable {
     private Renderable renderable;
 
-    private float millisPerSecond;
+    private float millisPerFrame;
     private float curMillis = 0;
 
     private AnimatedTexture() {
         renderable = new Renderable();
     }
-    public AnimatedTexture(String fileName, String regionName, float millisPerSecond) {
+    public AnimatedTexture(String fileName, String regionName, float millisPerFrame) {
         setTexture(fileName, regionName);
-        setSpeed(millisPerSecond);
+        setSpeed(millisPerFrame);
     }
     public static AnimatedTexture fromString(String s) {
         AnimatedTexture t = new AnimatedTexture();
@@ -30,7 +30,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
         }
         try {
             setTexture(parts[0], parts[1]);
-            millisPerSecond = Float.parseFloat(parts[2]);
+            millisPerFrame = Float.parseFloat(parts[2]);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
 //    }
 //    @Override public void read(Json json, JsonValue jsonMap) {
 //        setFromString(jsonMap.child().asString());
-//    }
+//    }B
 
     public void render(int x, int y) {
         renderable.render(x, y);
@@ -51,13 +51,16 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
         TextureAtlas atlas = Game.game.assets.get(fileName, TextureAtlas.class);
         if (atlas == null)
             renderable = new RenderablePending(fileName, regionName);
+        else {
+            renderable = new RenderableActive(atlas.findRegions(regionName), fileName);
+        }
     }
-    public void setSpeed(float millisPerSecond) {
-        this.millisPerSecond = millisPerSecond;
+    public void setSpeed(float millisPerFrame) {
+        this.millisPerFrame = millisPerFrame;
     }
 
     public float getSpeed() {
-        return millisPerSecond;
+        return millisPerFrame;
     }
     public int getCurFrame() {
         return renderable.getCurFrame();
@@ -77,7 +80,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
     }
 
     public String toString() {
-        return renderable.toString() + ":" + millisPerSecond;
+        return renderable.toString() + ":" + millisPerFrame;
     }
 
     private static class Renderable {
@@ -134,7 +137,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
 
         private void advanceFrame() {
             curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerSecond) % getNumFrames();
+            curFrame = (int)(curMillis / millisPerFrame) % getNumFrames();
             region = regions.get(curFrame);
         }
 
@@ -142,7 +145,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
             Game.game.canvas.draw(region, x, y);
 
             curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerSecond) % getNumFrames();
+            curFrame = (int)(curMillis / millisPerFrame) % getNumFrames();
             region = regions.get(curFrame);
         }
         @Override public int getWidth() {

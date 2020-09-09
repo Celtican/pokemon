@@ -10,6 +10,7 @@ chunks: [
 		Objects: [
 			{
 				type: TextureHolder
+				isSolid: false
 				x: 32
 				y: 112
 				width: 64
@@ -153,7 +154,16 @@ chunks: [
 		]
 	}
 	{
-		Objects: []
+		Objects: [
+			{
+				type: Player
+				x: 112
+				y: 94
+				width: 12
+				height: 8
+				texture: spritesheets/player.atlas:S0
+			}
+		]
 		Tiles: [
 			[
 				0:Grass:-1

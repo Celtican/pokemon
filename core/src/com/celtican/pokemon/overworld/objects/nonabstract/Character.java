@@ -5,7 +5,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.overworld.Hitbox;
+import com.celtican.pokemon.overworld.Tile;
 import com.celtican.pokemon.overworld.objects.MapObject;
+import com.celtican.pokemon.utils.data.Vector2Int;
 import com.celtican.pokemon.utils.graphics.CharacterTexture;
 
 public class Character extends MapObject {
@@ -33,8 +35,21 @@ public class Character extends MapObject {
                     return;
 
         // check for tiles
+        Vector2Int start = Game.game.map.worldPosToTilePos((int)newHitbox.x, (int)newHitbox.y);
+        Vector2Int end = Game.game.map.worldPosToTilePos((int)newHitbox.x + newHitbox.width,
+                (int)newHitbox.y + newHitbox.height);
+        for (int x = start.x; x <= end.x; x++) {
+            for (int y = start.y; y <= end.y; y++) {
+                Array<Tile> tiles = Game.game.map.getTiles(x, y);
+                if (tiles == null)
+                    return;
+                for (int i = 0; i < tiles.size; i++)
+                    if (tiles.get(i).type == Tile.Type.SOLID)
+                        return;
+            }
+        }
 
-        hitbox = newHitbox;
+        moveTo(newHitbox.x, newHitbox.y);
     }
     @Override public void render() {
         Game.game.map.renderToMap(texture, (int)hitbox.x-10, (int)hitbox.y);

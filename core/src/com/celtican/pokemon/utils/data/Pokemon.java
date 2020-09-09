@@ -50,7 +50,7 @@ public interface Pokemon {
     // HGSS pokeball
     // performance
 
-    AnimatedTexture getAnimatedTexture(boolean forward, float millisPerSecond);
+    AnimatedTexture getAnimatedTexture(boolean forward, float millisPerFrame);
 
 
     enum EggGroup {

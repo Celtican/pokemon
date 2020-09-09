@@ -29,8 +29,8 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
     @Override public void update() {
         if (!loaded)
             return;
-        tileButtons.forEach(Button::update);
-        buttons.forEach(Button::update);
+//        tileButtons.forEach(Button::update);
+//        buttons.forEach(Button::update);
     }
     @Override public void render() {
         if (!loaded)
@@ -128,9 +128,8 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
         for (int i = 0; i < tileset.size(); i++) {
             int finalI = i;
             tileButtons.add(new Button(0, 0, Game.TILE_SIZE, Game.TILE_SIZE) {
-                @Override public void update() {
-                    if (isMouseJustPressed())
-                        clickTile(finalI);
+                @Override public void clicked() {
+                    clickTile(finalI);
                 }
                 @Override public void render() {
                     tileset.get(finalI).renderDebug(x, y);
