@@ -42,17 +42,20 @@ public class RenderHandler {
         pixel = Game.game.assets.get("misc/pixel.png", Texture.class);
     }
     public void setupFont() {
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("misc/font.ttf"));
+        BitmapFont f = Game.game.assets.get("misc/fontSmall.fnt", BitmapFont.class);
+        if (f == null) return;
+        fontSmall = f;
+        fontSmall.getData().setScale(Game.game.pixelSize / 8f);
+
+        if (fontGenerator == null)
+            fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("misc/font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        fontParameter.size = 16 * Game.PIXEL_SIZE;
+        fontParameter.size = 16 * Game.game.pixelSize;
         fontParameter.kerning = false;
-        fontParameter.shadowOffsetX = Game.PIXEL_SIZE;
-        fontParameter.shadowOffsetY = Game.PIXEL_SIZE;
+        fontParameter.shadowOffsetX = Game.game.pixelSize;
+        fontParameter.shadowOffsetY = Game.game.pixelSize;
         font = fontGenerator.generateFont(fontParameter);
         font.setColor(Color.WHITE);
-
-        fontSmall = Game.game.assets.get("misc/fontSmall.fnt", BitmapFont.class);
-        fontSmall.getData().setScale(2f / Game.PIXEL_SIZE);
     }
 
     public void update() {
@@ -78,24 +81,32 @@ public class RenderHandler {
     public void resize(int width, int height) {
         viewport.update(width, height);
         camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
-        this.width = MathUtils.ceil((float)width/Game.PIXEL_SIZE);
-        this.height = MathUtils.ceil((float)height/Game.PIXEL_SIZE);
+        this.width = MathUtils.ceil((float)width/Game.game.pixelSize);
+        this.height = MathUtils.ceil((float)height/Game.game.pixelSize);
         if (Game.game.screen != null)
             Game.game.screen.resize(this.width, this.height);
     }
 
     public void draw(Texture texture, int x, int y) {
-        batch.draw(texture, x * Game.PIXEL_SIZE, y * Game.PIXEL_SIZE,
-                texture.getWidth() * Game.PIXEL_SIZE, texture.getHeight() * Game.PIXEL_SIZE);
+        batch.draw(texture, x * Game.game.pixelSize, y * Game.game.pixelSize,
+                texture.getWidth() * Game.game.pixelSize, texture.getHeight() * Game.game.pixelSize);
+    }
+    public void draw(Texture texture, int x, int y, int scale) {
+        batch.draw(texture, x * Game.game.pixelSize, y * Game.game.pixelSize,
+                texture.getWidth() * Game.game.pixelSize * scale, texture.getHeight() * Game.game.pixelSize * scale);
     }
     public void draw(TextureAtlas.AtlasRegion region, int x, int y) {
-        batch.draw(region, x * Game.PIXEL_SIZE, y * Game.PIXEL_SIZE,
-                region.getRegionWidth() * Game.PIXEL_SIZE, region.getRegionHeight() * Game.PIXEL_SIZE);
+        batch.draw(region, x * Game.game.pixelSize, y * Game.game.pixelSize,
+                region.getRegionWidth() * Game.game.pixelSize, region.getRegionHeight() * Game.game.pixelSize);
+    }
+    public void draw(TextureAtlas.AtlasRegion texture, int x, int y, int scale) {
+        batch.draw(texture, x * Game.game.pixelSize, y * Game.game.pixelSize,
+                texture.getRegionWidth() * Game.game.pixelSize * scale, texture.getRegionHeight() * Game.game.pixelSize * scale);
     }
     public void drawRect(int x, int y, int width, int height) {
         if (pixel != null)
-            batch.draw(pixel, x*Game.PIXEL_SIZE, y*Game.PIXEL_SIZE,
-                    width*Game.PIXEL_SIZE, height*Game.PIXEL_SIZE);
+            batch.draw(pixel, x*Game.game.pixelSize, y*Game.game.pixelSize,
+                    width*Game.game.pixelSize, height*Game.game.pixelSize);
     }
     public void drawRect(int x, int y, int width, int height, Color color) {
         setColor(color);
@@ -130,7 +141,7 @@ public class RenderHandler {
         resetColor();
     }
     public void drawText(int x, int y, String text) {
-        font.draw(batch, text, x * Game.PIXEL_SIZE, (y+11) * Game.PIXEL_SIZE);
+        font.draw(batch, text, x * Game.game.pixelSize, (y+11) * Game.game.pixelSize);
     }
     public void drawText(int x, int y, String text, Color color) {
         font.setColor(color);
@@ -138,7 +149,7 @@ public class RenderHandler {
         font.setColor(Color.WHITE);
     }
     public void drawSmallText(int x, int y, String text) {
-        fontSmall.draw(batch, text.replace(" ", "  "), x * Game.PIXEL_SIZE, (y+9) * Game.PIXEL_SIZE);
+        fontSmall.draw(batch, text.replace(" ", "  "), x * Game.game.pixelSize, (y+9) * Game.game.pixelSize);
     }
     public void drawSmallText(int x, int y, String text, Color color) {
         fontSmall.setColor(color);
@@ -179,29 +190,29 @@ public class RenderHandler {
     }
     public int getWidthOfText(String text) {
         layout.setText(font, text);
-        return MathUtils.ceil(layout.width/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.width/Game.game.pixelSize);
     }
     public int getHeightOfText(String text) {
         layout.setText(font, text);
-        return MathUtils.ceil(layout.height/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.height/Game.game.pixelSize);
     }
     public Vector2Int getBoundsOfText(String text) {
         layout.setText(font, text);
-        return new Vector2Int(MathUtils.ceil(layout.width/Game.PIXEL_SIZE),
-                MathUtils.ceil(layout.height/Game.PIXEL_SIZE));
+        return new Vector2Int(MathUtils.ceil(layout.width/Game.game.pixelSize),
+                MathUtils.ceil(layout.height/Game.game.pixelSize));
     }
     public int getWidthOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return MathUtils.ceil(layout.width/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.width/Game.game.pixelSize);
     }
     public int getHeightOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return MathUtils.ceil(layout.height/Game.PIXEL_SIZE);
+        return MathUtils.ceil(layout.height/Game.game.pixelSize);
     }
     public Vector2Int getBoundsOfSmallText(String text) {
         layout.setText(fontSmall, text);
-        return new Vector2Int(MathUtils.ceil(layout.width/Game.PIXEL_SIZE),
-                MathUtils.ceil(layout.height/Game.PIXEL_SIZE));
+        return new Vector2Int(MathUtils.ceil(layout.width/Game.game.pixelSize),
+                MathUtils.ceil(layout.height/Game.game.pixelSize));
     }
 
     public void dispose() {

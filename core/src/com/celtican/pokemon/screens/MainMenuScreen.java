@@ -14,6 +14,7 @@ public class MainMenuScreen extends Screen {
         addButton("Exit", () -> Gdx.app.exit());
         addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
         addButton("Edit Map", () -> Game.game.switchScreens(new EditMapScreen()));
+        addButton("Battle!", () -> Game.game.switchScreens(new BattleScreen()));
         addButton("Play", () -> Game.game.switchScreens(new OverworldScreen()));
     }
 

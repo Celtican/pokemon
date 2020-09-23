@@ -46,6 +46,9 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
     public void render(int x, int y) {
         renderable.render(x, y);
     }
+    public void render(int x, int y, int scale) {
+        renderable.render(x, y, scale);
+    }
 
     public void setTexture(String fileName, String regionName) {
         TextureAtlas atlas = Game.game.assets.get(fileName, TextureAtlas.class);
@@ -85,6 +88,7 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
 
     private static class Renderable {
         public void render(int x, int y) {}
+        public void render(int x, int y, int scale) {}
         public int getWidth() {
             return 0;
         }
@@ -143,10 +147,11 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
 
         @Override public void render(int x, int y) {
             Game.game.canvas.draw(region, x, y);
-
-            curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerFrame) % getNumFrames();
-            region = regions.get(curFrame);
+            advanceFrame();
+        }
+        @Override public void render(int x, int y, int scale) {
+            Game.game.canvas.draw(region, x, y, scale);
+            advanceFrame();
         }
         @Override public int getWidth() {
             return region.getRegionWidth();

@@ -2,34 +2,33 @@ package com.celtican.pokemon.utils.data;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public class PokemonPC implements Pokemon {
 
-    public PokemonPC(Pokemon pokemon) {
-        species = pokemon.getSpecies().getIndex();
-        experience = pokemon.getExperience();
-        ability = pokemon.getAbility().getIndex();
-        evs = pokemon.getEVs();
-        Move[] moves = pokemon.getMoves();
+    public PokemonPC(Pokemon base) {
+        species = base.getSpecies().getIndex();
+        experience = base.getExperience();
+        ability = base.getAbility().getIndex();
+        evs = base.getEVs();
+        Move[] moves = base.getMoves();
         this.moves = new int[4];
         for (int i = 0; i < 4; i++)
             this.moves[i] = moves[i].index;
-        ppUsed = pokemon.getMovesRemainingPP();
-        ppUps = pokemon.getMovesPPUps();
-        ivs = pokemon.getIVs();
-        nickname = pokemon.getNickname();
-        nature = pokemon.getNature();
-        isShiny = pokemon.isShiny();
+//        ppUsed = pokemon.getMovesRemainingPP();
+//        ppUps = pokemon.getMovesPPUps();
+        ivs = base.getIVs();
+        nickname = base.getNickname();
+        nature = base.getNature();
+        isShiny = base.isShiny();
     }
-    public PokemonPC(Species species) {
+    public PokemonPC(Species species, int level) {
         this.species = species.getIndex();
-        experience = 0;
+        experience = species.getExperienceGrowth().getExpFromLevel(level);
         ability = Species.getRandomWhichAbility();
         evs = new int[6];
         moves = new int[] {1, 0, 0, 0};
         ppUsed = new int[4];
-        ppUps = new int[4];
+//        ppUps = new int[4];
         ivs = new int[6];
         nickname = null;
         nature = Pokemon.Nature.getRandomNature();
@@ -45,7 +44,7 @@ public class PokemonPC implements Pokemon {
         return experience;
     }
     @Override public int getLevel() {
-        return 0;
+        return getSpecies().getExperienceGrowth().getLevelFromExp(experience);
     }
     private int ability;
     @Override public Ability getAbility() {
@@ -55,6 +54,21 @@ public class PokemonPC implements Pokemon {
     @Override public int[] getEVs() {
         return evs;
     }
+    @Override public int[] getStats() {
+        int[] stats = new int[6];
+        Species s = getSpecies();
+        int level = getLevel();
+        for (int i = 0; i < 6; i++)
+            stats[i] = Pokemon.getStat(i, s.getStat(i), getIVs()[i], getEVs()[i], level, getNature());
+        return stats;
+    }
+    @Override public int getStat(int stat) {
+        return Pokemon.getStat(stat, getSpecies().getStat(stat), getIVs()[stat], getEVs()[stat], getLevel(), getNature());
+    }
+    @Override public int getCurHP() {
+        return getStat(0);
+    } // pokemonpc discards hp information
+    @Override public void setCurHP(int hp) {}
     private int[] moves;
     @Override public Move[] getMoves() {
         Move[] moves = new Move[4];
@@ -65,14 +79,18 @@ public class PokemonPC implements Pokemon {
                 moves[i] = Game.game.data.getMove(this.moves[i]);
         return moves;
     }
+    @Override public Move getMove(int move) {
+        return Game.game.data.getMove(moves[move]);
+    }
     private int[] ppUsed;
-    @Override public int[] getMovesRemainingPP() {
-        return new int[0]; // todo
-    }
-    private int[] ppUps;
-    @Override public int[] getMovesPPUps() {
-        return ppUps;
-    }
+//    @Override public int[] getMovesPPUsed() {}
+//    @Override public int[] getMovesRemainingPP() {
+//        return new int[0]; // todo
+//    }
+//    private int[] ppUps;
+//    @Override public int[] getMovesPPUps() {
+//        return ppUps;
+//    }
     private int[] ivs;
     @Override public int[] getIVs() {
         return ivs;
@@ -86,17 +104,12 @@ public class PokemonPC implements Pokemon {
     @Override public String getNickname() {
         return nickname;
     }
-    private Pokemon.Nature nature;
+    private Nature nature;
     @Override public Pokemon.Nature getNature() {
         return nature;
     }
     private boolean isShiny;
     @Override public boolean isShiny() {
         return isShiny;
-    }
-
-    @Override public AnimatedTexture getAnimatedTexture(boolean forward, float millisPerFrame) {
-        return new AnimatedTexture("spritesheets/pokemon/" + species + ".atlas",
-                (forward ? "F" : "B") + (isShiny ? "S" : ""), millisPerFrame);
     }
 }

@@ -9,7 +9,7 @@ public class Button {
 
 //    private boolean mouseOver, mouseJustEntered, mouseJustLeft,
 //            mousePressed, mouseJustPressed, mouseJustUnpressed, enabled;
-    public boolean enabled, selected, justSelected;
+    public boolean enabled, selected, justSelected, justUnselected;
 
     public Button() {}
     public Button(int x, int y, int width, int height) {

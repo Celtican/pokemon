@@ -19,8 +19,8 @@ public class InputHandler {
 
     public void update() {
         Array<Button> buttons = new Array<>(this.buttons);
-        int newX = Gdx.input.getX() / Game.PIXEL_SIZE;
-        int newY = (Gdx.graphics.getHeight()-Gdx.input.getY())/Game.PIXEL_SIZE;
+        int newX = Gdx.input.getX() / Game.game.pixelSize;
+        int newY = (Gdx.graphics.getHeight()-Gdx.input.getY())/Game.game.pixelSize;
         boolean mousePressed = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         if (newX != mouse.x || newY != mouse.y || mousePressed) {
             // update buttons with mouse pos
@@ -28,9 +28,9 @@ public class InputHandler {
             mouse.y = newY;
             buttons.forEach(button -> {
                 boolean isMouseOver = !(newX < button.x || newY < button.y ||
-                        newX > button.x + button.width || newY > button.y + button.height);
-                if (button.justSelected)
-                    button.justSelected = false;
+                        newX >= button.x + button.width || newY >= button.y + button.height);
+                if (button.justSelected)   button.justSelected = false;
+                if (button.justUnselected) button.justUnselected = false;
                 if (isMouseOver) {
                     if (!button.isSelected()) {
                         button.justSelected = true;
@@ -40,6 +40,7 @@ public class InputHandler {
                     if (mousePressed)
                         button.clicked();
                 } else if (button.isSelected()) {
+                    button.justUnselected = true;
                     button.selected = false;
                     button.leave();
                 }
@@ -49,7 +50,8 @@ public class InputHandler {
             Button selectedButton = null;
             for (int i = 0; i < buttons.size; i++) {
                 Button button = buttons.get(i);
-                if (button.justSelected) button.justSelected = false;
+                if (button.justSelected)   button.justSelected = false;
+                if (button.justUnselected) button.justUnselected = false;
                 if (button.isSelected()) selectedButton = button;
             }
             if (selectedButton != null) {
@@ -59,13 +61,15 @@ public class InputHandler {
                         Gdx.input.isKeyJustPressed(Input.Keys.D) ? selectedButton.rightButton : null;
                 if (newButton != null) {
                     selectedButton.selected = false;
+                    selectedButton.justUnselected = true;
                     newButton.justSelected = true;
                     newButton.selected = true;
                     selectedButton.leave();
                     newButton.hover();
                 }
             } else if ((Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.A) ||
-                        Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.D)) &&
+                        Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.D) ||
+                        Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) &&
                         buttons.notEmpty()) {
                 selectedButton = buttons.first();
                 selectedButton.justSelected = true;

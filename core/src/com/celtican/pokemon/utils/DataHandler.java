@@ -17,6 +17,13 @@ public class DataHandler {
         abilities = new Array<>();
     }
 
+    public Species getRandomSpecies() {
+        Species species = null;
+        while (species == null || species == getNullSpecies()) {
+            species = this.species.random();
+        }
+        return species;
+    }
     public Species getSpecies(int index) {
         if (index > 0 && index < species.size)
             return species.get(index);
@@ -28,7 +35,7 @@ public class DataHandler {
     public Move getMove(int index) {
         if (index > 0 && index < moves.size)
             return moves.get(index);
-        return getNullMove();
+        return null;
     }
     public Move getNullMove() {
         return moves.get(0);
