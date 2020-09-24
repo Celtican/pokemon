@@ -2,13 +2,14 @@ package com.celtican.pokemon.utils.data;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.battle.BattleCalculator;
 
 public class PokemonPC implements Pokemon {
 
     public PokemonPC(Pokemon base) {
         species = base.getSpecies().getIndex();
         experience = base.getExperience();
-        ability = base.getAbility().getIndex();
+        abilitySpeciesIndex = base.getAbilitySpeciesIndex();
         evs = base.getEVs();
         Move[] moves = base.getMoves();
         this.moves = new int[4];
@@ -24,15 +25,26 @@ public class PokemonPC implements Pokemon {
     public PokemonPC(Species species, int level) {
         this.species = species.getIndex();
         experience = species.getExperienceGrowth().getExpFromLevel(level);
-        ability = Species.getRandomWhichAbility();
+        abilitySpeciesIndex = Species.getRandomWhichAbility();
         evs = new int[6];
         moves = new int[] {1, 0, 0, 0};
         ppUsed = new int[4];
 //        ppUps = new int[4];
         ivs = new int[6];
+        if (BattleCalculator.DEBUG_POKEMON_PERFECT_STATS) {
+            for (int i = 0; i < 6; i++) ivs[i] = 31;
+            nature = Nature.SERIOUS;
+        } else {
+            for (int i = 0; i < 6; i++) ivs[i] = MathUtils.random(31);
+            nature = Pokemon.Nature.getRandomNature();
+        }
         nickname = null;
-        nature = Pokemon.Nature.getRandomNature();
         isShiny = MathUtils.random(9) == 0;
+        if (BattleCalculator.DEBUG_POKEMON_GENERATION) {
+            Game.logInfo("Generated a level " + level + " " + species.getName() + ". ivs: [" +
+                    ivs[0] + ", " + ivs[1] + ", " + ivs[2] + ", " + ivs[3] + ", " + ivs[4] + ", " + ivs[5] +
+                    "]. nature: " + nature.toString());
+        }
     }
 
     private int species;
@@ -46,9 +58,12 @@ public class PokemonPC implements Pokemon {
     @Override public int getLevel() {
         return getSpecies().getExperienceGrowth().getLevelFromExp(experience);
     }
-    private int ability;
+    private int abilitySpeciesIndex;
     @Override public Ability getAbility() {
-        return getSpecies().getAbility(ability);
+        return getSpecies().getAbility(abilitySpeciesIndex);
+    }
+    @Override public int getAbilitySpeciesIndex() {
+        return abilitySpeciesIndex;
     }
     private int[] evs;
     @Override public int[] getEVs() {

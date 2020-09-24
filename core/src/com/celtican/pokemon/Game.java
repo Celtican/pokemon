@@ -6,10 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.overworld.Map;
 import com.celtican.pokemon.screens.LoadingScreen;
 import com.celtican.pokemon.screens.Screen;
-import com.celtican.pokemon.utils.AssetHandler;
-import com.celtican.pokemon.utils.DataHandler;
-import com.celtican.pokemon.utils.InputHandler;
-import com.celtican.pokemon.utils.RenderHandler;
+import com.celtican.pokemon.utils.*;
 import com.celtican.pokemon.utils.data.Pokemon;
 
 public class Game extends ApplicationAdapter {
@@ -27,9 +24,11 @@ public class Game extends ApplicationAdapter {
 	public RenderHandler canvas;
 	public DataHandler data;
 	public InputHandler input;
+	public AudioHandler audio;
 
 	public Map map;
 
+	public boolean isIDE;
 	public byte pixelSize = 0;
 	public int frame = 0;
 	public Screen screen;
@@ -43,6 +42,7 @@ public class Game extends ApplicationAdapter {
 		canvas = new RenderHandler();
 		data = new DataHandler();
 		input = new InputHandler();
+		audio = new AudioHandler();
 
 		Pokemon.Type.setupTypes(); // set up type weaknesses and whatnot
 
@@ -71,6 +71,7 @@ public class Game extends ApplicationAdapter {
 		}
 		try {
 			assets.update();
+			audio.update();
 			if (screen != null)
 				screen.update();
 		} catch (Exception e) {

@@ -33,27 +33,10 @@ public class BattleScreen extends Screen {
             for (int j = 0; j < parties[i].numBattling; j++)
                 if (parties[i].members[j] != null)
                     parties[i].displayMembers.add(new PokemonDisplay(parties[i].members[j], i != 0));
-//        userPokemon = new Array<>();
-//        userPokemonDisplay = new Array<>();
-//        userPokemon.add(new BattlePokemon(new PokemonPC(Game.game.data.getSpecies(1), 15)));
-//        userPokemonDisplay.add(new PokemonDisplay(userPokemon.first(), false));
-//        compPokemon = new Array<>();
-//        compPokemonDisplay = new Array<>();
-//        compPokemon.add(new BattlePokemon(new PokemonPC(Game.game.data.getSpecies(1), 15)));
-//        compPokemonDisplay.add(new PokemonDisplay(userPokemon.first(), true));
-//
-//        calculator = new BattleCalculator(new BattleParty[] {
-//                new BattleParty(new BattlePokemon[] {userPokemon.first(), null, null, null, null, null}, 1),
-//                new BattleParty(new BattlePokemon[] {compPokemon.first(), null, null, null, null, null}, 1)
-//        });
 
         buttonTexture = new Texture("spritesheets/battle.atlas", "button");
         buttons = new Array<>();
         makeMenu(MenuType.MAIN);
-//        p1 = new PokemonPC(Game.game.data.getSpecies(1));
-//        pD1 = new PokemonDisplay(p1, true);
-//        p2 = new PokemonPC(Game.game.data.getSpecies(1));
-//        pD2 = new PokemonDisplay(p2, false);
     }
 
     @Override public void update() {
@@ -71,6 +54,7 @@ public class BattleScreen extends Screen {
         buttons.forEach(Button::hide);
     }
     @Override public void show() {
+        Game.game.audio.playMusic("bgm/wildBattle.ogg");
         buttons.forEach(Button::show);
     }
     @Override public void resize(int width, int height) {
@@ -85,8 +69,14 @@ public class BattleScreen extends Screen {
         Button b = new Button(Game.game.canvas.getWidth()- buttonTexture.getWidth()+10,
                 buttons.isEmpty() ? 0 : buttons.peek().y + buttons.peek().height,
                 buttonTexture.getWidth(), buttonTexture.getHeight()+1, true) {
+            @Override public void hover() {
+                Game.game.audio.playSound("sfx/guiCursor.ogg");
+            }
             @Override public void clicked() {
-                if (runnable != null) runnable.run();
+                if (runnable != null) {
+                    runnable.run();
+                    Game.game.audio.playSound("sfx/guiSelect.ogg");
+                }
             }
             @Override public void render() {
                 int renderX = justSelected ? x - 15 : justUnselected ? x + 5 : selected ? x - 10 : x;
@@ -101,18 +91,6 @@ public class BattleScreen extends Screen {
         buttons.add(b);
     }
     private void addAction(BattlePokemon.Action action) {
-//        for (int i = 0; i < actionQueue.length; i++) {
-//            if (actionQueue[i] == null) {
-//                actionQueue[i] = action;
-//                if (i == actionQueue.length-1) {
-//                    resultHandler.setResults(calculator.calculateTurn(actionQueue));
-//                    Arrays.fill(actionQueue, null);
-//                    makeMenu(MenuType.MAIN);
-//                    buttons.forEach(Button::hide);
-//                }
-//                break;
-//            }
-//        }
         parties[0].members[actionI].action = action;
         makeMenu(MenuType.MAIN);
         if (++actionI >= parties[0].numBattling) {

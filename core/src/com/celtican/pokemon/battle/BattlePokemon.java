@@ -24,6 +24,7 @@ public class BattlePokemon implements Pokemon {
         this.party = party;
         this.partyMemberSlot = partyMemberSlot;
         this.originalPartyMemberSlot = partyMemberSlot;
+        types = species.getTypes().clone();
     }
 
     public int party;
@@ -32,6 +33,7 @@ public class BattlePokemon implements Pokemon {
 
     public Action action;
     public int speed;
+    public Type[] types;
     public int[] statBoosts = new int[7]; // atk, def, spa, spd, spe, acc, eva
     public StatusCondition statusCondition = StatusCondition.HEALTHY;
 
@@ -50,6 +52,10 @@ public class BattlePokemon implements Pokemon {
     private Ability ability;
     @Override public Ability getAbility() {
         return ability;
+    }
+    private int abilitySpeciesIndex;
+    @Override public int getAbilitySpeciesIndex() {
+        return abilitySpeciesIndex;
     }
     private int[] evs;
     @Override public int[] getEVs() {

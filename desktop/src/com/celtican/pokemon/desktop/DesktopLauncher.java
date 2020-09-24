@@ -10,6 +10,8 @@ public class DesktopLauncher {
 		config.forceExit = false;
 		config.width = 1366;
 		config.height = 768;
-		new LwjglApplication(new Game(), config);
+		Game game = new Game();
+		game.isIDE = System.getProperty("user.dir").endsWith("\\Pokemon\\core\\assets");
+		new LwjglApplication(game, config);
 	}
 }

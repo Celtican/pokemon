@@ -1,5 +1,6 @@
 package com.celtican.pokemon.screens;
 
+import com.celtican.pokemon.Game;
 import com.celtican.pokemon.overworld.Map;
 
 public class OverworldScreen extends Screen {
@@ -15,5 +16,9 @@ public class OverworldScreen extends Screen {
     }
     @Override public void render() {
         map.render();
+    }
+
+    @Override public void show() {
+        Game.game.audio.playMusic("bgm/route29.ogg");
     }
 }

@@ -14,6 +14,7 @@ public interface Pokemon {
     int getLevel();
 //    int getFriendship();
     Ability getAbility();
+    int getAbilitySpeciesIndex();
     // markings
     // language
     int[] getEVs();
@@ -235,6 +236,10 @@ public interface Pokemon {
             for (Type type : types)
                 efficiency += getEfficiencyAgainst(type);
             return efficiency;
+        }
+        public boolean within(Type[] types) {
+            for (Type type : types) if (type == this) return true;
+            return false;
         }
 
         @Override public String toString() {

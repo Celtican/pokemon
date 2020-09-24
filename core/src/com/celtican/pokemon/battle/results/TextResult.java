@@ -18,6 +18,6 @@ public class TextResult extends Result {
             parent.nextResult();
     }
     @Override public void render() {
-        Game.game.canvas.drawText(2, 2, progress > 0 ? text.substring(0, progress) : text);
+        Game.game.canvas.drawText(5, 25, progress > 0 ? text.substring(0, progress) : text);
     }
 }
