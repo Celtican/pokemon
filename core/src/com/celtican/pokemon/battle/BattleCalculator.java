@@ -16,11 +16,6 @@ import java.util.function.Consumer;
 
 public class BattleCalculator {
 
-    public final static boolean DEBUG_DAMAGE = true;
-    public final static boolean DEBUG_POKEMON_GENERATION = true;
-    public final static boolean DEBUG_POKEMON_PERFECT_STATS = false;
-    public final static boolean USE_SCALED_EXP_FORMULA = false;
-
     private final BattleScreen screen;
 
     private final BattleParty[] parties;
@@ -213,18 +208,20 @@ public class BattleCalculator {
 
         if (move.accuracy != 100) {
             boolean missed = false;
-            switch (move.index) {
-                default:
-                    if (move.accuracy == -1) break;
-                    float accuracy = (calcStatWithStageAccuracy(move.accuracy/100f, user.statBoosts[5], defender.statBoosts[6]));
-                    if (MathUtils.random() >= accuracy)
-                        missed = true;
-                    break;
-                case 12: // guillotine
-                    if (user.getLevel() < defender.getLevel() || MathUtils.random(99) >= (user.getLevel() - defender.getLevel() + 30))
-                        missed = true;
-                    break;
+            if (move.index == 12) { // guillotine
+                if (user.getLevel() < defender.getLevel() || MathUtils.random(99) >= (user.getLevel() - defender.getLevel() + 30))
+                    missed = true;
+            } else if (move.accuracy != -1) {
+                float accuracy = (calcStatWithStageAccuracy(move.accuracy/100f, user.statBoosts[5], defender.statBoosts[6]));
+                if (MathUtils.random() >= accuracy)
+                    missed = true;
             }
+//            switch (move.index) {
+//                default:
+//                    break;
+//                case 12: // guillotine
+//                    break;
+//            }
             if (missed) {
                 new TextResult(defender.getName() + " avoided the attack!");
                 return;
@@ -381,8 +378,8 @@ public class BattleCalculator {
             int baseDamage = (2*attacker.getLevel()/5 + 2)*bp*atk/def/50 + 2;
             if (isCrit) baseDamage = baseDamage * 3 / 2;
 
-            int[] damages = new int[DEBUG_DAMAGE ? 16 : 1];
-            if(DEBUG_DAMAGE) {
+            int[] damages = new int[Game.game.doLogDamage ? 16 : 1];
+            if(Game.game.doLogDamage) {
                 for (int i = 0; i < 16; i++) {
                     damages[i] = baseDamage * (85 + i) / 100;
                 }
@@ -403,7 +400,7 @@ public class BattleCalculator {
                 if (damages[i] <= 0) damages[i] = 1;
             }
 
-            if (DEBUG_DAMAGE) {
+            if (Game.game.doLogDamage) {
                 StringBuilder builder = new StringBuilder(attacker.getName()).append(" uses ").append(move.name)
                         .append(" against ").append(defender.getName()).append(". Damage: [");
                 for (int i = 0; i < 16; i++) {
@@ -413,7 +410,7 @@ public class BattleCalculator {
                 }
                 Game.logInfo(builder.toString());
             }
-            return new DamageResult(DEBUG_DAMAGE ? damages[MathUtils.random(15)] : damages[0], isCrit, efficiency);
+            return new DamageResult(Game.game.doLogDamage ? damages[MathUtils.random(15)] : damages[0], isCrit, efficiency);
         }
     }
     private int calcSpeed(BattlePokemon pokemon, boolean considerAction) { // considerAction additionally considers trick room
@@ -494,7 +491,7 @@ public class BattleCalculator {
         float tradeMultiplier = 1; // or 1.5/1.7 if victor is from domestic/international trade
         float postEvolutionMultiplier = 1; // or 1.2 if the victor's level is higher than needed to evolve
 
-        if (USE_SCALED_EXP_FORMULA) {
+        if (Game.USE_SCALED_EXP_FORMULA) {
             return (int)(((int)(trainerMultiplier * expYield * faintedLevel / expShareDivider / 5) *
                     (int)(Math.pow(2 * faintedLevel + 10, 2.5)/Math.pow(faintedLevel + victorLevel + 10, 2.5)) + 1) *
                     tradeMultiplier * luckyEggMultiplier * genericMultiplier * affectionMultiplier * postEvolutionMultiplier);

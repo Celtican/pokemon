@@ -13,6 +13,7 @@ public class Game extends ApplicationAdapter {
 
 	public static final String version = "PreAlpha v0";
 
+	public final static boolean USE_SCALED_EXP_FORMULA = false;
 	public static final boolean JSON_PRETTY_PRINT = true;
 	public static final byte TARGET_FRAME_RATE = 60;
 	public static final float MILLIS_PER_FRAME = (1f/TARGET_FRAME_RATE*1000);
@@ -28,7 +29,12 @@ public class Game extends ApplicationAdapter {
 
 	public Map map;
 
+	public boolean isDebug;
 	public boolean isIDE;
+	public boolean doLogDamage;
+	public boolean doLogPokemonGeneration;
+	public boolean doGeneratePokemonWithPerfectStats;
+
 	public byte pixelSize = 0;
 	public int frame = 0;
 	public Screen screen;
@@ -44,6 +50,9 @@ public class Game extends ApplicationAdapter {
 		data = new DataHandler();
 		input = new InputHandler();
 		audio = new AudioHandler();
+
+		doLogDamage = isDebug;
+		doLogPokemonGeneration = isDebug;
 
 		Pokemon.Type.setupTypes(); // set up type weaknesses and whatnot
 

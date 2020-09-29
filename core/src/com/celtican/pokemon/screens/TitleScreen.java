@@ -1,11 +1,10 @@
 package com.celtican.pokemon.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.utils.graphics.Button;
 import com.celtican.pokemon.utils.data.Vector2Int;
+import com.celtican.pokemon.utils.graphics.Button;
 
 public class TitleScreen extends Screen {
     private final Array<Button> buttons;
@@ -13,9 +12,11 @@ public class TitleScreen extends Screen {
     public TitleScreen() {
         buttons = new Array<>();
         addButton("Exit", () -> Gdx.app.exit());
-        addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
-        addButton("Edit Map", () -> Game.game.switchScreens(new EditMapScreen()));
-        addButton("Battle!", () -> Game.game.switchScreens(new BattleScreen()));
+        if (Game.game.isDebug) {
+            addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
+            addButton("Edit Map", () -> Game.game.switchScreens(new EditMapScreen()));
+            addButton("Battle!", () -> Game.game.switchScreens(new BattleScreen()));
+        }
         addButton("Play", () -> Game.game.switchScreens(new OverworldScreen()));
     }
 

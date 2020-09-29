@@ -2,7 +2,6 @@ package com.celtican.pokemon.utils.data;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.battle.BattleCalculator;
 
 public class PCPokemon implements Pokemon {
 
@@ -34,7 +33,7 @@ public class PCPokemon implements Pokemon {
 //        ppUsed = new int[4];
 //        ppUps = new int[4];
         ivs = new int[6];
-        if (BattleCalculator.DEBUG_POKEMON_PERFECT_STATS) {
+        if (Game.game.doGeneratePokemonWithPerfectStats) {
             for (int i = 0; i < 6; i++) ivs[i] = 31;
             nature = Nature.SERIOUS;
         } else {
@@ -43,7 +42,7 @@ public class PCPokemon implements Pokemon {
         }
         nickname = null;
         isShiny = MathUtils.random(9) == 0;
-        if (BattleCalculator.DEBUG_POKEMON_GENERATION) {
+        if (Game.game.doLogPokemonGeneration) {
             Game.logInfo("Generated a level " + level + " " + species.getName() + ". ivs: [" +
                     ivs[0] + ", " + ivs[1] + ", " + ivs[2] + ", " + ivs[3] + ", " + ivs[4] + ", " + ivs[5] +
                     "]. nature: " + nature.toString());
