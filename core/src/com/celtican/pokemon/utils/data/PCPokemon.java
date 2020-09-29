@@ -4,9 +4,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.BattleCalculator;
 
-public class PokemonPC implements Pokemon {
+public class PCPokemon implements Pokemon {
 
-    public PokemonPC(Pokemon base) {
+    public PCPokemon(Pokemon base) {
         species = base.getSpecies().getIndex();
         experience = base.getExperience();
         abilitySpeciesIndex = base.getAbilitySpeciesIndex();
@@ -14,7 +14,7 @@ public class PokemonPC implements Pokemon {
         Move[] moves = base.getMoves();
         this.moves = new int[4];
         for (int i = 0; i < 4; i++)
-            this.moves[i] = moves[i].index;
+            this.moves[i] = moves[i] == null ? -1 : moves[i].index;
 //        ppUsed = pokemon.getMovesRemainingPP();
 //        ppUps = pokemon.getMovesPPUps();
         ivs = base.getIVs();
@@ -22,13 +22,16 @@ public class PokemonPC implements Pokemon {
         nature = base.getNature();
         isShiny = base.isShiny();
     }
-    public PokemonPC(Species species, int level) {
+    public PCPokemon(Species species, int level) {
         this.species = species.getIndex();
         experience = species.getExperienceGrowth().getExpFromLevel(level);
         abilitySpeciesIndex = Species.getRandomWhichAbility();
         evs = new int[6];
-        moves = new int[] {1, 0, 0, 0};
-        ppUsed = new int[4];
+        moves = new int[4];
+        moves[0] = 7;
+        for (int i = 1; i < 4; i++)
+            moves[i] = Game.game.data.getRandomMove().index;
+//        ppUsed = new int[4];
 //        ppUps = new int[4];
         ivs = new int[6];
         if (BattleCalculator.DEBUG_POKEMON_PERFECT_STATS) {
@@ -80,10 +83,10 @@ public class PokemonPC implements Pokemon {
     @Override public int getStat(int stat) {
         return Pokemon.getStat(stat, getSpecies().getStat(stat), getIVs()[stat], getEVs()[stat], getLevel(), getNature());
     }
-    @Override public int getCurHP() {
+    @Override public int getHP() {
         return getStat(0);
     } // pokemonpc discards hp information
-    @Override public void setCurHP(int hp) {}
+    @Override public void setHP(int hp) {}
     private int[] moves;
     @Override public Move[] getMoves() {
         Move[] moves = new Move[4];
@@ -97,7 +100,7 @@ public class PokemonPC implements Pokemon {
     @Override public Move getMove(int move) {
         return Game.game.data.getMove(moves[move]);
     }
-    private int[] ppUsed;
+//    private int[] ppUsed;
 //    @Override public int[] getMovesPPUsed() {}
 //    @Override public int[] getMovesRemainingPP() {
 //        return new int[0]; // todo

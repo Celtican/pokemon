@@ -143,7 +143,7 @@ public class EditMapScreen extends Screen {
             getTextInput(width == 0 ? "width" : height == 0 ? "height" : "layers");
         }
         @Override public void canceled() {
-            Game.game.switchScreens(new MainMenuScreen());
+            Game.game.switchScreens(new TitleScreen());
         }
 
         private void getTextInput(String forWhat) {

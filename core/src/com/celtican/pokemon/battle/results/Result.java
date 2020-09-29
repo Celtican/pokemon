@@ -9,6 +9,7 @@ public abstract class Result {
 
     public Result() {
         parent = ((BattleScreen)Game.game.screen).resultHandler;
+        parent.addResult(this);
     }
 
     public boolean start() {

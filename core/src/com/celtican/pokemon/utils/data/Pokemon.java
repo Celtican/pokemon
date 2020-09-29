@@ -6,6 +6,9 @@ import com.celtican.pokemon.battle.BattlePokemon;
 import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public interface Pokemon {
+
+    float animationSpeed = 1000f/12;
+
     Species getSpecies();
 //    int getHeldItem();
 //    int getOTID();
@@ -25,8 +28,8 @@ public interface Pokemon {
     int[] getStats();
     int getStat(int stat);
 
-    int getCurHP();
-    void setCurHP(int hp);
+    int getHP();
+    void setHP(int hp);
     Move[] getMoves();
     Move getMove(int move);
 //    int[] getMovesPPUsed();
@@ -62,7 +65,7 @@ public interface Pokemon {
 
     default AnimatedTexture getAnimatedTexture(boolean forward) {
         return new AnimatedTexture("spritesheets/pokemon/" + getSpecies().getIndex() + ".atlas",
-                (forward ? "F" : "B") + (isShiny() ? "S" : ""), 1000f/12);
+                (forward ? "F" : "B") + (isShiny() ? "S" : ""), animationSpeed);
     }
 
     static int getStat(int stat, int base, int iv, int ev, int level, Nature nature) {
@@ -217,7 +220,7 @@ public interface Pokemon {
     enum Type {
 
         NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK, BUG, GHOST, STEEL, FIRE, WATER,
-        GRASS, ELECTRIC, PSYCHIC, ICE, DRAGON, DARK, FAIRY, TYPELESS, ROOST;
+        GRASS, ELECTRIC, PSYCHIC, ICE, DRAGON, DARK, FAIRY, NONE, ROOST;
 
         private Type[] weakAgainst;
         private Type[] superEffectiveAgainst;
@@ -294,27 +297,52 @@ public interface Pokemon {
             DARK.setSuperEffectiveAgainst(new Type[]{GHOST, PSYCHIC});
             FAIRY.setSuperEffectiveAgainst(new Type[]{FIGHTING, DRAGON, DARK});
 
-            TYPELESS.setWeakAgainst(nullArray);
-            TYPELESS.setSuperEffectiveAgainst(nullArray);
+            NONE.setWeakAgainst(nullArray);
+            NONE.setSuperEffectiveAgainst(nullArray);
             ROOST.setWeakAgainst(nullArray);
             ROOST.setSuperEffectiveAgainst(nullArray);
         }
     }
     enum StatusCondition {
-        HEALTHY, BURN, FREEZE, PARALYSIS, SLEEP, POISON, TOXIC_1, TOXIC_2, TOXIC_3, TOXIC_4, TOXIC_5, TOXIC_6, TOXIC_7, TOXIC_8,
-        TOXIC_9, TOXIC_10, TOXIC_11, TOXIC_12, TOXIC_13, TOXIC_14, TOXIC_15, TOXIC_16;
+        HEALTHY, BURN, FREEZE, PARALYSIS, SLEEP_0, SLEEP_1, SLEEP_2, SLEEP_3, POISON, TOXIC_1, TOXIC_2, TOXIC_3, TOXIC_4,
+        TOXIC_5, TOXIC_6, TOXIC_7, TOXIC_8, TOXIC_9, TOXIC_10, TOXIC_11, TOXIC_12, TOXIC_13, TOXIC_14, TOXIC_15, TOXIC_16;
 
-        public void addToxicCounter(BattlePokemon pokemon) {
+        static public void incrementToxic(BattlePokemon pokemon) {
             if (pokemon.statusCondition.isToxic()) {
                 if (pokemon.statusCondition.ordinal() + 1 < StatusCondition.values().length)
                     pokemon.statusCondition = StatusCondition.values()[pokemon.statusCondition.ordinal() + 1];
-            } else
-                Game.logWarning("Attempted to increment toxic counter when pokemon isn't under the effects of toxic!");
+            } else Game.logWarning("Attempted to increment toxic counter when pokemon isn't under the effects of toxic.");
         }
         public boolean isToxic() {
             switch (this) {
-                case HEALTHY: case BURN: case FREEZE: case PARALYSIS: case SLEEP: case POISON: return false;
-                default: return true;
+                case TOXIC_1: case TOXIC_2: case TOXIC_3: case TOXIC_4: case TOXIC_5: case TOXIC_6: case TOXIC_7: case TOXIC_8:
+                case TOXIC_9: case TOXIC_10: case TOXIC_11: case TOXIC_12: case TOXIC_13: case TOXIC_14: case TOXIC_15: case TOXIC_16:
+                    return true;
+                default: return false;
+            }
+        }
+
+        static public StatusCondition getRandomSleepCount() {
+            switch (MathUtils.random(2)) {
+                default: case 0: return SLEEP_1;
+                case 1: return SLEEP_2;
+                case 2: return SLEEP_3;
+            }
+        }
+        static public boolean decrementSleep(BattlePokemon pokemon) {
+            if (pokemon.statusCondition.isSleep()) {
+                if (pokemon.statusCondition == SLEEP_0) {
+                    pokemon.statusCondition = HEALTHY;
+                    return true;
+                }
+                pokemon.statusCondition = StatusCondition.values()[pokemon.statusCondition.ordinal() - 1];
+            } else Game.logError("Attempted to decrement sleep counter when pokemon isn't sleeping.");
+            return false;
+        }
+        public boolean isSleep() {
+            switch (this) {
+                case SLEEP_0: case SLEEP_1: case SLEEP_2: case SLEEP_3: return true;
+                default: return false;
             }
         }
     }

@@ -7,6 +7,7 @@ public class BattleParty {
     public Array<PokemonDisplay> displayMembers;
     public BattlePokemon[] members;
     public int numBattling;
+    public int escapeAttempts = 0;
 
     public BattleParty(BattlePokemon[] members, int numBattling, int i) {
         this.i = i;

@@ -2,14 +2,15 @@ package com.celtican.pokemon.battle.results;
 
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.BattlePokemon;
+import com.celtican.pokemon.battle.PokemonDisplay;
 
 public class HealthbarResult extends WaitResult {
-    final int party;
-    final int partyMemberSlot;
-    final int targetHP;
+    private final int party;
+    private final int partyMemberSlot;
+    private final int targetHP;
 
     public HealthbarResult(BattlePokemon pokemon) {
-        this(pokemon, pokemon.getCurHP());
+        this(pokemon, pokemon.getHP());
     }
     public HealthbarResult(BattlePokemon pokemon, int curHP) {
         super(Game.TARGET_FRAME_RATE);
@@ -19,7 +20,9 @@ public class HealthbarResult extends WaitResult {
     }
 
     @Override public boolean start() {
-        parent.screen.parties[party].displayMembers.get(partyMemberSlot).healthBar.setTargetHP(targetHP);
+        PokemonDisplay display = parent.screen.parties[party].displayMembers.get(partyMemberSlot);
+        display.healthBar.setTargetHP(targetHP);
+        display.pokemon.hp = targetHP;
         return false;
     }
 }

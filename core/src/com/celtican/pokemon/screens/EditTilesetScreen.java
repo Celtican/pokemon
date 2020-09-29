@@ -26,12 +26,12 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
         askForInput();
     }
 
-    @Override public void update() {
-        if (!loaded)
-            return;
+//    @Override public void update() {
+//        if (!loaded)
+//            return;
 //        tileButtons.forEach(Button::update);
 //        buttons.forEach(Button::update);
-    }
+//    }
     @Override public void render() {
         if (!loaded)
             return;
@@ -115,7 +115,7 @@ public class EditTilesetScreen extends Screen implements Input.TextInputListener
         }
     }
     @Override public void canceled() {
-        Game.game.switchScreens(new MainMenuScreen());
+        Game.game.switchScreens(new TitleScreen());
     }
 
     private void createButtons(TextureAtlas atlas, String fileName) {

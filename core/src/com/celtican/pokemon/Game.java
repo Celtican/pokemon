@@ -33,6 +33,7 @@ public class Game extends ApplicationAdapter {
 	public int frame = 0;
 	public Screen screen;
 	private Screen screenToSwitchTo;
+	public boolean isFastForward = false;
 
 	@Override public void create () {
 		logInfo("Launching Pokemon Game " + version);
@@ -73,7 +74,11 @@ public class Game extends ApplicationAdapter {
 			assets.update();
 			audio.update();
 			if (screen != null)
-				screen.update();
+				if (isFastForward)
+					for (int i = 0; i < 10; i++)
+						screen.update();
+				else
+					screen.update();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -3,7 +3,6 @@ package com.celtican.pokemon.battle;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.battle.results.Result;
 import com.celtican.pokemon.screens.BattleScreen;
-import com.celtican.pokemon.utils.graphics.Button;
 
 public class ResultHandler {
 
@@ -33,8 +32,7 @@ public class ResultHandler {
         while (goToNextResult) {
             goToNextResult = false;
             results.removeIndex(0);
-            if (results.isEmpty()) screen.buttons.forEach(Button::show);
-            else if (results.first().start()) goToNextResult = true;
+            if (results.notEmpty() && results.first().start()) goToNextResult = true;
         }
         if (hasResults()) results.first().update();
     }

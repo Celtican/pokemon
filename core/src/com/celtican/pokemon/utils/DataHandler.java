@@ -1,27 +1,27 @@
 package com.celtican.pokemon.utils;
 
 import com.badlogic.gdx.utils.Array;
-import com.celtican.pokemon.utils.data.Ability;
-import com.celtican.pokemon.utils.data.Move;
-import com.celtican.pokemon.utils.data.Pokemon;
-import com.celtican.pokemon.utils.data.Species;
+import com.celtican.pokemon.utils.data.*;
 
 public class DataHandler {
+    public final PlayerData player;
     private final Array<Species> species;
     private final Array<Move> moves;
     private final Array<Ability> abilities;
 
     public DataHandler() {
+        player = new PlayerData();
         species = new Array<>();
-        moves = new Array<>();
-        abilities = new Array<>();
+        moves = new Array<>(1000);
+        abilities = new Array<>(300);
     }
 
     public Species getRandomSpecies() {
-        Species species = null;
-        while (species == null || species == getNullSpecies()) {
-            species = this.species.random();
-        }
+        Species species;
+
+        do species = this.species.random();
+        while (species == null || species == getNullSpecies());
+
         return species;
     }
     public Species getSpecies(int index) {
@@ -37,13 +37,29 @@ public class DataHandler {
             return moves.get(index);
         return null;
     }
-    public Move getNullMove() {
+    public Move getRandomMove() {
+        Move move;
+
+        do move = moves.random();
+        while (move == null || move == getStruggle());
+
+        return move;
+    }
+    public Move getStruggle() {
         return moves.get(0);
     }
     public Ability getAbility(int index) {
         if (index > 0 && index < abilities.size)
             return abilities.get(index);
         return getNullAbility();
+    }
+    public Ability getRandomAbility() {
+        Ability ability;
+
+        do ability = abilities.random();
+        while (ability == null || ability == getNullAbility());
+
+        return ability;
     }
     public Ability getNullAbility() {
         return abilities.get(0);

@@ -1,5 +1,7 @@
 package com.celtican.pokemon.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Array;
@@ -12,6 +14,8 @@ public class AudioHandler {
 
     private Array<Music> fadingOut = new Array<>();
     private Music curPlaying;
+    private boolean soundMuted = false;
+    private boolean musicMuted = true;
 
     public float soundVolume = 0.25f;
     public float musicVolume = 0.25f;
@@ -20,9 +24,14 @@ public class AudioHandler {
         playSound(Game.game.assets.get(fileLocation, Sound.class));
     }
     public void playSound(Sound sound) {
-        if (sound == null)
-            return;
+        if (sound == null || soundMuted) return;
         sound.play(soundVolume);
+    }
+    public void toggleSoundMuted() {
+        soundMuted = !soundMuted;
+    }
+    public boolean isSoundMuted() {
+        return soundMuted;
     }
 
     public void playMusic(String fileLocation) {
@@ -30,18 +39,40 @@ public class AudioHandler {
     }
     public void playMusic(Music music) {
         if (curPlaying != null) {
+            if (curPlaying == music) return;
             fadingOut.add(curPlaying);
             curPlaying = null;
         }
         if (music != null) {
+            fadingOut.removeValue(music, true);
             music.setLooping(true);
             music.play();
-            music.setVolume(FADE_IN_AMOUNT * musicVolume);
+            music.setVolume(musicMuted ? 0 : FADE_IN_AMOUNT * musicVolume);
             curPlaying = music;
         }
     }
+    public void stopMusic() {
+        playMusic((Music)null);
+    }
+    public void toggleMusicMuted() {
+        musicMuted = !musicMuted;
+        if (musicMuted) {
+            fadingOut.forEach(music -> {
+                music.stop();
+                fadingOut.removeValue(music, true);
+            });
+            curPlaying.setVolume(0);
+        } else {
+            curPlaying.setVolume(musicVolume);
+        }
+    }
+    public boolean isMusicMuted() {
+        return musicMuted;
+    }
 
     public void update() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) toggleMusicMuted();
+        if (musicMuted) return;
         fadingOut.forEach(music -> {
             music.setVolume(Math.max(music.getVolume() - FADE_OUT_AMOUNT*musicVolume, 0));
             if (music.getVolume() == 0) {

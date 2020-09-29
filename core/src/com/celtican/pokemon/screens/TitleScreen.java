@@ -1,15 +1,16 @@
 package com.celtican.pokemon.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.utils.graphics.Button;
 import com.celtican.pokemon.utils.data.Vector2Int;
 
-public class MainMenuScreen extends Screen {
+public class TitleScreen extends Screen {
     private final Array<Button> buttons;
 
-    public MainMenuScreen() {
+    public TitleScreen() {
         buttons = new Array<>();
         addButton("Exit", () -> Gdx.app.exit());
         addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
@@ -45,6 +46,7 @@ public class MainMenuScreen extends Screen {
     }
     @Override public void show() {
         buttons.forEach(Button::show);
+        Game.game.audio.stopMusic();
     }
     @Override public void hide() {
         buttons.forEach(Button::hide);

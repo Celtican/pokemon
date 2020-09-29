@@ -39,7 +39,7 @@ public class Move {
     public final int basePP; // this is the final PP divided by 5. For example, Mega Punch's final PP is 20 without PP Ups, so its basePP is 4
     public final int basePower;
     public final int accuracy;
-    public final int[] effects;
+    public final Effect effect;
 
     /*
 
@@ -76,7 +76,7 @@ public class Move {
     */
 
     public Move(int index, String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest,
-                Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, int[] effects, String flags
+                Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Effect effect
                 /*boolean crit, boolean multi, boolean doubleHit, boolean authentic, boolean charge, boolean contact,
                 boolean defrost, boolean distance, boolean gravity, boolean heal, boolean mirror, boolean nonsky,
                 boolean protect, boolean punch, boolean recharge, boolean reflectable, boolean snatch, boolean sound,
@@ -90,7 +90,7 @@ public class Move {
         this.basePP = basePP;
         this.basePower = basePower;
         this.accuracy = accuracy;
-        this.effects = effects;
+        this.effect = effect;
         for (String s : flags.split(",")) switch (s.trim().toLowerCase()) {
             case "crit": crit = true; break;
             case "multi": multi = true; break;
@@ -117,7 +117,7 @@ public class Move {
             case "bullet": bullet = true; break;
             case "pulse": pulse = true; break;
 
-            default: Game.logWarning("Move flag \"" + s + "\" does not exist. (Check the Move class and initializers in LoadingScreen)");
+            default: Game.logError("Move flag \"" + s + "\" does not exist.");
         }
 //        this.crit = crit;
 //        this.multi = multi;
@@ -142,5 +142,19 @@ public class Move {
 //        this.powder = powder;
 //        this.bullet = bullet;
 //        this.pulse = pulse;
+    }
+
+    public static abstract class Effect {
+        public final int chance;
+        public Effect(int chance) {
+            this.chance = chance;
+        }
+    }
+    public static class EffectStatusCondition extends Effect {
+        public final Pokemon.StatusCondition statusCondition;
+        public EffectStatusCondition(int chance, Pokemon.StatusCondition statusCondition) {
+            super(chance);
+            this.statusCondition = statusCondition;
+        }
     }
 }

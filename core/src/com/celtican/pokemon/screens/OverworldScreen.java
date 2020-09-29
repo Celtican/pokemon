@@ -5,10 +5,13 @@ import com.celtican.pokemon.overworld.Map;
 
 public class OverworldScreen extends Screen {
 
-    public Map map;
+    public final Map map;
 
     public OverworldScreen() {
         map = Map.fromFileLocation("overworld/maps/sample.json");
+    }
+    public OverworldScreen(Map map) {
+        this.map = map;
     }
 
     @Override public void update() {

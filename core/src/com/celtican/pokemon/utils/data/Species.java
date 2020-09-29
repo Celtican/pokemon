@@ -63,7 +63,8 @@ public class Species {
         return type2;
     }
     public Pokemon.Type[] getTypes() {
-        return new Pokemon.Type[] {type1, type2};
+        if (getType2() == Pokemon.Type.NONE) return new Pokemon.Type[]{getType1()};
+        else return new Pokemon.Type[]{getType1(), getType2()};
     }
     private final int[] abilities;
     public Ability getAbility(int which) {

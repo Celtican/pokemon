@@ -1,5 +1,6 @@
 package com.celtican.pokemon.battle;
 
+import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.utils.data.Ability;
 import com.celtican.pokemon.utils.data.Move;
 import com.celtican.pokemon.utils.data.Pokemon;
@@ -14,7 +15,7 @@ public class BattlePokemon implements Pokemon {
         ability = base.getAbility();
         evs = base.getEVs();
         stats = base.getStats();
-        curHP = base.getCurHP();
+        curHP = base.getHP();
         moves = base.getMoves();
         ivs = base.getIVs();
         nickname = base.getNickname();
@@ -25,6 +26,7 @@ public class BattlePokemon implements Pokemon {
         this.partyMemberSlot = partyMemberSlot;
         this.originalPartyMemberSlot = partyMemberSlot;
         types = species.getTypes().clone();
+        seen = party == 0 ? null : new Array<>();
     }
 
     public int party;
@@ -34,8 +36,15 @@ public class BattlePokemon implements Pokemon {
     public Action action;
     public int speed;
     public Type[] types;
-    public int[] statBoosts = new int[7]; // atk, def, spa, spd, spe, acc, eva
+    public final int[] statBoosts = new int[7]; // atk, def, spa, spd, spe, acc, eva
     public StatusCondition statusCondition = StatusCondition.HEALTHY;
+    public int expGained = 0;
+    public final Array<BattlePokemon> seen;
+
+    public boolean hasType(Type type) {
+        for (Type t : types) if (t == type) return true;
+        return false;
+    }
 
     private Species species;
     @Override public Species getSpecies() {
@@ -69,10 +78,10 @@ public class BattlePokemon implements Pokemon {
         return stats[stat];
     }
     private int curHP;
-    @Override public int getCurHP() {
+    @Override public int getHP() {
         return curHP;
     }
-    @Override public void setCurHP(int hp) {
+    @Override public void setHP(int hp) {
         if (hp < 0) curHP = 0;
         else if (hp > getStat(0)) curHP = getStat(0);
         else curHP = hp;
@@ -121,4 +130,10 @@ public class BattlePokemon implements Pokemon {
         }
     }
     public static class RunAction implements Action {}
+    public static class SwitchAction implements Action {
+        public final int slot;
+        public SwitchAction(int to) {
+            this.slot = to;
+        }
+    }
 }

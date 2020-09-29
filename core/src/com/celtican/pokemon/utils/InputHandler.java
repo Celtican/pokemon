@@ -9,7 +9,7 @@ import com.celtican.pokemon.utils.graphics.Button;
 
 public class InputHandler {
 
-    private final Array<Button> buttons;
+    public final Array<Button> buttons;
     private final Vector2Int mouse;
 
     public InputHandler() {
@@ -18,6 +18,8 @@ public class InputHandler {
     }
 
     public void update() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) Game.game.isFastForward = !Game.game.isFastForward;
+
         Array<Button> buttons = new Array<>(this.buttons);
         int newX = Gdx.input.getX() / Game.game.pixelSize;
         int newY = (Gdx.graphics.getHeight()-Gdx.input.getY())/Game.game.pixelSize;

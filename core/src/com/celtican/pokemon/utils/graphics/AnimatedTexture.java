@@ -10,12 +10,14 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
     private float millisPerFrame;
     private float curMillis = 0;
 
+    public boolean isPaused = false;
+
     private AnimatedTexture() {
         renderable = new Renderable();
     }
     public AnimatedTexture(String fileName, String regionName, float millisPerFrame) {
-        setTexture(fileName, regionName);
         setSpeed(millisPerFrame);
+        setTexture(fileName, regionName);
     }
     public static AnimatedTexture fromString(String s) {
         AnimatedTexture t = new AnimatedTexture();
@@ -29,8 +31,8 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
             return;
         }
         try {
-            setTexture(parts[0], parts[1]);
             millisPerFrame = Float.parseFloat(parts[2]);
+            setTexture(parts[0], parts[1]);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -137,12 +139,17 @@ public class AnimatedTexture implements /*Json.Serializable, */Renderable {
             this.regions = regions;
             this.fileName = fileName;
             advanceFrame();
+            if (region == null) region = regions.first();
         }
 
         private void advanceFrame() {
+            if (isPaused) return;
             curMillis += Game.MILLIS_PER_FRAME;
-            curFrame = (int)(curMillis / millisPerFrame) % getNumFrames();
-            region = regions.get(curFrame);
+            if (curMillis >= millisPerFrame) {
+                curFrame = (curFrame + (int)(curMillis/millisPerFrame))%getNumFrames();
+                curMillis %= millisPerFrame;
+                region = regions.get(curFrame);
+            }
         }
 
         @Override public void render(int x, int y) {
