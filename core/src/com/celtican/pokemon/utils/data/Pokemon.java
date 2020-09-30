@@ -132,6 +132,13 @@ public interface Pokemon {
             this.expTable = expTable;
         }
 
+        public float getProgressToNextLevel(int exp) {
+            int curLevel = getLevelFromExp(exp);
+            int begin = getExpFromLevel(curLevel);
+            int end = getExpFromLevel(curLevel + 1);
+
+            return (float)(exp-begin) / (end-begin);
+        }
         public int getLevelFromExp(int exp) {
             for (int i = 0; i < 100; i++) if (exp < expTable[i]) return i;
             return 100;

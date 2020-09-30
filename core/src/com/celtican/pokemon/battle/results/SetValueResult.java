@@ -2,7 +2,7 @@ package com.celtican.pokemon.battle.results;
 
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.BattlePokemon;
-import com.celtican.pokemon.battle.PokemonDisplay;
+import com.celtican.pokemon.battle.DisplayPokemon;
 import com.celtican.pokemon.utils.data.Pokemon;
 
 public class SetValueResult extends Result {
@@ -12,6 +12,10 @@ public class SetValueResult extends Result {
     private final Object value;
 
     public SetValueResult(BattlePokemon pokemon, Type type, Object value) {
+        this(pokemon, type, value, true);
+    }
+    public SetValueResult(BattlePokemon pokemon, Type type, Object value, boolean addToArray) {
+        super(addToArray);
         party = pokemon.party;
         partySlot = pokemon.partyMemberSlot;
         this.type = type;
@@ -19,7 +23,7 @@ public class SetValueResult extends Result {
     }
 
     @Override public boolean start() {
-        PokemonDisplay display = parent.screen.parties[party].displayMembers.get(partySlot);
+        DisplayPokemon display = parent.screen.parties[party].displayMembers.get(partySlot);
         switch (type) {
             default:
                 Game.logError("Unhandled type for SetValueResult.");

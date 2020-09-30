@@ -3,21 +3,38 @@ package com.celtican.pokemon.battle.results;
 import com.celtican.pokemon.Game;
 
 public class TextResult extends Result {
-    private final String text;
-
+    private String text;
     private int progress;
 
+    public TextResult() {
+        this(null, true);
+    }
+    public TextResult(boolean addToArray) {
+        this(null, addToArray);
+    }
     public TextResult(String text) {
+        this(text, true);
+    }
+    public TextResult(String text, boolean addToArray) {
+        super(addToArray);
+        setText(text);
+    }
+
+    public void setText(String text) {
         this.text = text;
+        progress = 0;
+    }
+
+    public boolean isFinished() {
+        return progress == -1;
     }
 
     @Override public void update() {
-        if (++progress > text.length())
-            progress = - Game.TARGET_FRAME_RATE;
-        if (progress == 0)
-            parent.nextResult();
+        if (progress == -1) {
+            if (inArray) parent.nextResult();
+        } else if (++progress > text.length()) progress = -Game.TARGET_FRAME_RATE;
     }
     @Override public void render() {
-        Game.game.canvas.drawText(5, 25, progress > 0 ? text.substring(0, progress) : text);
+        if (progress != 0) Game.game.canvas.drawText(5, 25, progress > 0 ? text.substring(0, progress) : text);
     }
 }

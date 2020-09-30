@@ -7,7 +7,7 @@ import com.celtican.pokemon.utils.data.Pokemon;
 import com.celtican.pokemon.utils.data.Vector2Int;
 import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
-public class PokemonDisplay {
+public class DisplayPokemon {
 
     public AnimatedTexture texture;
     public PokemonData pokemon;
@@ -16,7 +16,7 @@ public class PokemonDisplay {
     public HealthBar healthBar;
     public boolean hide = false;
 
-    public PokemonDisplay(BattlePokemon pokemon, boolean isFoe) {
+    public DisplayPokemon(BattlePokemon pokemon, boolean isFoe) {
         this.isFoe = isFoe;
         changePokemon(pokemon);
     }

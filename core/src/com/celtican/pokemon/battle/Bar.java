@@ -2,8 +2,8 @@ package com.celtican.pokemon.battle;
 
 public abstract class Bar {
 
-    protected float targetValue;
-    protected float curValue;
+    public float targetValue;
+    public float curValue;
 
     protected Bar(float startValue) {
         setValue(startValue);

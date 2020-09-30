@@ -6,10 +6,15 @@ import com.celtican.pokemon.screens.BattleScreen;
 
 public abstract class Result {
     protected final ResultHandler parent;
+    public boolean inArray;
 
     public Result() {
+        this(true);
+    }
+    public Result(boolean addToArray) {
         parent = ((BattleScreen)Game.game.screen).resultHandler;
-        parent.addResult(this);
+        inArray = addToArray;
+        if (addToArray) parent.addResult(this);
     }
 
     public boolean start() {

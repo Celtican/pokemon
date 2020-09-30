@@ -16,6 +16,7 @@ public class BattleScreen extends Screen {
 
     public final BattleCalculator calculator;
     public final ResultHandler resultHandler;
+    public boolean endBattle = false;
     private int actionI = 0;
     private boolean playingResults = false;
     private boolean waitingForCalculator = false;
@@ -41,7 +42,7 @@ public class BattleScreen extends Screen {
         for (int i = 0; i < parties.length; i++)
             for (int j = 0; j < parties[i].numBattling; j++)
                 if (parties[i].members[j] != null)
-                    parties[i].displayMembers.add(new PokemonDisplay(parties[i].members[j], i != 0));
+                    parties[i].displayMembers.add(new DisplayPokemon(parties[i].members[j], i != 0));
 
         buttonTexture = new Texture("spritesheets/battle.atlas", "button");
         buttons = new Array<>();
@@ -49,7 +50,7 @@ public class BattleScreen extends Screen {
     }
 
     @Override public void update() {
-        for (BattleParty party : parties) party.displayMembers.forEach(PokemonDisplay::update);
+        for (BattleParty party : parties) party.displayMembers.forEach(DisplayPokemon::update);
         if (playingResults) {
             if (resultHandler.hasResults()) {
                 resultHandler.update();
@@ -58,11 +59,14 @@ public class BattleScreen extends Screen {
                 buttonSlide = 0;
                 buttons.forEach(Button::show);
             }
+        } else if (!waitingForCalculator && endBattle) {
+            if (Game.game.map != null) Game.game.switchScreens(new OverworldScreen());
+            else Game.game.switchScreens(new TitleScreen());
         }
     }
     @Override public void render() {
-        for (int i = parties.length-1; i >= 0; i--) parties[i].displayMembers.forEach(PokemonDisplay::renderTexture);
-        for (int i = parties.length-1; i >= 0; i--) parties[i].displayMembers.forEach(PokemonDisplay::renderHealth);
+        for (int i = parties.length-1; i >= 0; i--) parties[i].displayMembers.forEach(DisplayPokemon::renderTexture);
+        for (int i = parties.length-1; i >= 0; i--) parties[i].displayMembers.forEach(DisplayPokemon::renderHealth);
         if (playingResults) {
             if (resultHandler.hasResults()) {
                 resultHandler.render();
@@ -157,8 +161,8 @@ public class BattleScreen extends Screen {
         switch (menuType) {
             case MAIN:
                 addButton("Redo", () -> {
-                    parties[0].members[0] = new BattlePokemon(new PCPokemon(Game.game.data.getRandomSpecies(), 15), 0, 0);
-                    Game.game.switchScreens(new BattleScreen());
+                    parties[0].members[0].setHP(9999999);
+                    Game.game.switchScreens(new TitleScreen());
                 });
                 if (actionI == 0) addButton("Run", () -> addAction(new BattlePokemon.RunAction(), true));
                 else addButton("Back", () -> {actionI--; makeMenu(MenuType.MAIN);});

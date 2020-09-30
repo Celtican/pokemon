@@ -82,11 +82,13 @@ public class BattleCalculator {
             if (pokemon.statusCondition == Pokemon.StatusCondition.POISON) {
                 inflictDamage(pokemon, pokemon.getStat(0)/8);
                 new TextResult(pokemon.getName() + " was hurt by its poison!");
+                handleFaint(pokemon);
             } else if (pokemon.statusCondition.isToxic()) {
                 inflictDamage(pokemon, pokemon.getStat(0)*(pokemon.statusCondition.ordinal()-8)/16);
                 Pokemon.StatusCondition.incrementToxic(pokemon);
                 setStatusCondition(pokemon, pokemon.statusCondition);
                 new TextResult(pokemon.getName() + " was hurt by its poison!");
+                handleFaint(pokemon);
             }
         });
         // Burn
@@ -94,6 +96,7 @@ public class BattleCalculator {
             if (pokemon.statusCondition == Pokemon.StatusCondition.BURN) {
                 inflictDamage(pokemon, pokemon.getStat(0)/16);
                 new TextResult(pokemon.getName() + " is hurt by its burn!");
+                handleFaint(pokemon);
             }
         });
         // Nightmare
@@ -216,12 +219,6 @@ public class BattleCalculator {
                 if (MathUtils.random() >= accuracy)
                     missed = true;
             }
-//            switch (move.index) {
-//                default:
-//                    break;
-//                case 12: // guillotine
-//                    break;
-//            }
             if (missed) {
                 new TextResult(defender.getName() + " avoided the attack!");
                 return;
@@ -251,6 +248,7 @@ public class BattleCalculator {
             if (damage.effectiveness > 0) new TextResult("It's super effective!");
             else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
             new TextResult("Hit " + numHits + (numHits == 1 ? " time!" : " times!"));
+            handleFaint(defender);
         } else {
             DamageResult damage = calcDamage(user, defender, move);
             inflictDamage(defender, damage);
@@ -530,6 +528,7 @@ public class BattleCalculator {
         } else {
             // this is a user pokemon. each pokemon that saw it no longer gives the fainted pokemon exp if that pokemon faints
             forEachPokemonOnField(false, compPokemon -> compPokemon.seen.removeValue(pokemon, true));
+            pokemon.expGained = 0;
         }
         return true;
     }

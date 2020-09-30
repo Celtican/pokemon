@@ -56,7 +56,8 @@ public class Game extends ApplicationAdapter {
 
 		Pokemon.Type.setupTypes(); // set up type weaknesses and whatnot
 
-		switchScreens(new LoadingScreen());
+		screen = new LoadingScreen();
+		screen.show();
 	}
 
 	@Override public void render () {
@@ -67,27 +68,21 @@ public class Game extends ApplicationAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (screenToSwitchTo != null) {
-			try {
-				if (screen != null)
-					screen.hide();
-				screen = screenToSwitchTo;
-				screenToSwitchTo = null;
-				screen.show();
-				screen.resize(canvas.getWidth(), canvas.getHeight());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		try {
 			assets.update();
 			audio.update();
 			if (screen != null)
-				if (isFastForward)
-					for (int i = 0; i < 10; i++)
-						screen.update();
-				else
+				for (int i = 0; i < (isFastForward ? 10 : 1); i++) {
 					screen.update();
+					if (screenToSwitchTo != null) {
+						if (screen != null)
+							screen.hide();
+						screen = screenToSwitchTo;
+						screenToSwitchTo = null;
+						screen.show();
+						screen.resize(canvas.getWidth(), canvas.getHeight());
+					}
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -8,7 +8,8 @@ public class OverworldScreen extends Screen {
     public final Map map;
 
     public OverworldScreen() {
-        map = Map.fromFileLocation("overworld/maps/sample.json");
+        if (Game.game.map == null) map = Map.fromFileLocation("overworld/maps/sample.json");
+        else map = Game.game.map;
     }
     public OverworldScreen(Map map) {
         this.map = map;

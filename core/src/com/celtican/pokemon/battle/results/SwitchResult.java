@@ -1,7 +1,7 @@
 package com.celtican.pokemon.battle.results;
 
 import com.celtican.pokemon.battle.BattlePokemon;
-import com.celtican.pokemon.battle.PokemonDisplay;
+import com.celtican.pokemon.battle.DisplayPokemon;
 
 public class SwitchResult extends Result {
     private final int party;
@@ -9,16 +9,20 @@ public class SwitchResult extends Result {
     private final BattlePokemon newActivePokemon;
 
     public SwitchResult(BattlePokemon newActivePokemon) {
-        this(newActivePokemon, false);
+        this(newActivePokemon, false, true);
     }
     public SwitchResult(BattlePokemon newActivePokemon, boolean hide) {
+        this(newActivePokemon, hide, true);
+    }
+    public SwitchResult(BattlePokemon newActivePokemon, boolean hide, boolean addToArray) {
+        super(addToArray);
         party = newActivePokemon.party;
         slot = newActivePokemon.partyMemberSlot;
         this.newActivePokemon = hide ? null : newActivePokemon;
     }
 
     @Override public boolean start() {
-        PokemonDisplay display = parent.screen.parties[party].displayMembers.get(slot);
+        DisplayPokemon display = parent.screen.parties[party].displayMembers.get(slot);
         if (newActivePokemon == null) {
             display.hide = true;
         } else {

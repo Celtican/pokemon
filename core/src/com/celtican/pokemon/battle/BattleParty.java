@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class BattleParty {
     public final int i;
-    public Array<PokemonDisplay> displayMembers;
+    public Array<DisplayPokemon> displayMembers;
     public BattlePokemon[] members;
     public int numBattling;
     public int escapeAttempts = 0;

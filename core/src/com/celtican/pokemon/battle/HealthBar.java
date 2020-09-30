@@ -15,12 +15,13 @@ public class HealthBar extends Bar {
     private static final Color LIGHT_RED    = new Color(0xff4273ff);
     private static final Color DARK_RED     = new Color(0xa54a5aff);
 
-    private final static float delta = 1f/Game.TARGET_FRAME_RATE;
+    private final static float DELTA = 1f/Game.TARGET_FRAME_RATE;
 
-    public final PokemonDisplay master;
+    public final DisplayPokemon master;
     private final Texture texture;
+    public ExpBar expBar;
 
-    protected HealthBar(PokemonDisplay master) {
+    protected HealthBar(DisplayPokemon master) {
         super(1);
         this.master = master;
         master.healthBar = this;
@@ -34,15 +35,17 @@ public class HealthBar extends Bar {
     }
 
     @Override public void update() {
+        if (expBar != null) expBar.update();
         super.update();
     }
     @Override public void render() {
+        if (expBar != null) expBar.render();
         if (master.isFoe) renderFoe();
         else renderAlly();
     }
 
     @Override protected float getDelta() {
-        return delta;
+        return DELTA;
     }
 
     public void setTargetHP(int hp) {
@@ -59,9 +62,7 @@ public class HealthBar extends Bar {
     }
 
     private void renderAlly() {
-        Vector2Int pos = master.getScreenPos();
-        pos.x -= texture.getWidth()/2;
-        pos.y += master.texture.getHeight()*2 + 2;
+        Vector2Int pos = getPos();
         texture.render(pos.x, pos.y);
 
         Color colorDark;
@@ -90,9 +91,7 @@ public class HealthBar extends Bar {
         Game.game.canvas.drawSmallText(pos.x+23, pos.y+6, master.pokemon.name);
     }
     private void renderFoe() {
-        Vector2Int pos = master.getScreenPos();
-        pos.x -= texture.getWidth()/2;
-        pos.y += master.texture.getHeight() + 1;
+        Vector2Int pos = getPos();
         texture.render(pos.x, pos.y);
 
         Color colorDark;
@@ -135,56 +134,11 @@ public class HealthBar extends Bar {
         if (master.pokemon.status != Pokemon.StatusCondition.HEALTHY) Game.game.canvas.resetColor();
     }
 
-//    private PokemonDisplay master;
-//    private Texture texture;
-//
-//    private float percentFull = 1;
-//    private String name;
-//
-//    public HealthBar(PokemonDisplay pokemonDisplay) {
-//        pokemonDisplay.healthBar = this;
-//        master = pokemonDisplay;
-//        texture = new Texture("spritesheets/battle.atlas", master.isFoe ? "foeHealthBar" : "allyHealthBar");
-//        name = master.pokemon.getName();
-//    }
-//
-//    public void update() {
-//        percentFull -= 0.01f;
-//        if (percentFull < 0) percentFull = 1;
-//    }
-//    public void render() {
-//        Vector2Int pos = master.getScreenPos();
-//        pos.x -= texture.getWidth()/2;
-//        if (master.isFoe) pos.y += master.texture.getHeight() + 1;
-//        else pos.y += master.texture.getHeight()*2 + 2;
-//        texture.render(pos.x, pos.y);
-//
-//        if (percentFull <= 0.2f) Game.game.canvas.setColor(Color.RED);
-//        else if (percentFull <= 0.5f) Game.game.canvas.setColor(Color.YELLOW);
-//        else Game.game.canvas.setColor(Color.GREEN);
-//
-//        if (master.isFoe) {
-//            int fill = MathUtils.round(percentFull * 75);
-//            if (percentFull > 0 && fill == 0) fill = 1;
-//            else if (percentFull < 1 && fill == 75) fill = 0;
-//            Game.game.canvas.drawRect(pos.x+1, pos.y+4, Math.min(fill, 15), 1);
-//            Game.game.canvas.drawRect(pos.x+2, pos.y+3, Math.min(fill, 15), 1);
-//            Game.game.canvas.drawRect(pos.x+3, pos.y+2, fill, 1);
-//            Game.game.canvas.drawRect(pos.x+4, pos.y+1, fill, 1);
-//            Game.game.canvas.resetColor();
-//            Game.game.canvas.drawSmallText(pos.x+18, pos.y+4, name);
-//        } else {
-//            int fill = MathUtils.round(percentFull*100);
-//            if (percentFull > 0 && fill == 0) fill = 1;
-//            else if (percentFull < 1 && fill == 100) fill = 0;
-//            Game.game.canvas.drawRect(pos.x+1, pos.y+6, Math.min(fill, 20), 1);
-//            Game.game.canvas.drawRect(pos.x+2, pos.y+5, Math.min(fill, 20), 1);
-//            Game.game.canvas.drawRect(pos.x+3, pos.y+4, fill, 1);
-//            Game.game.canvas.drawRect(pos.x+4, pos.y+3, fill, 1);
-//            Game.game.canvas.drawRect(pos.x+85, pos.y+2, Math.max(fill-80, 0), 1);
-//            Game.game.canvas.drawRect(pos.x+86, pos.y+1, Math.max(fill-80, 0), 1);
-//            Game.game.canvas.resetColor();
-//            Game.game.canvas.drawSmallText(pos.x+23, pos.y+6, name);
-//        }
-//    }
+    public Vector2Int getPos() {
+        Vector2Int pos = master.getScreenPos();
+        pos.x -= texture.getWidth()/2;
+        if (master.isFoe) pos.y += master.texture.getHeight() + 1;
+        else pos.y += master.texture.getHeight() + master.texture.getHeight() + 1;
+        return pos;
+    }
 }

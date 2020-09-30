@@ -4,6 +4,10 @@ public class WaitResult extends Result {
     int time;
 
     public WaitResult(int time) {
+        this(time, true);
+    }
+    public WaitResult(int time, boolean addToArray) {
+        super(addToArray);
         this.time = time;
     }
 

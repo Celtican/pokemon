@@ -54,9 +54,17 @@ public class BattlePokemon implements Pokemon {
     @Override public int getExperience() {
         return experience;
     }
+    public int gainExp() {
+        experience += expGained;
+        expGained = 0;
+        return species.getExperienceGrowth().getLevelFromExp(experience);
+    }
     private int level;
     @Override public int getLevel() {
         return level;
+    }
+    public void setLevel() {
+        level = species.getExperienceGrowth().getLevelFromExp(experience);
     }
     private Ability ability;
     @Override public Ability getAbility() {

@@ -27,6 +27,13 @@ public class AudioHandler {
         if (sound == null || soundMuted) return;
         sound.play(soundVolume);
     }
+    public void stopSound(String fileLocation) {
+        stopSound(Game.game.assets.get(fileLocation, Sound.class));
+    }
+    public void stopSound(Sound sound) {
+        if (sound == null || soundMuted) return;
+        sound.stop();
+    }
     public void toggleSoundMuted() {
         soundMuted = !soundMuted;
     }
