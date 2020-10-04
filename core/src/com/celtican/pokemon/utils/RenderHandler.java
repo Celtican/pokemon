@@ -146,17 +146,25 @@ public class RenderHandler {
         font.draw(batch, text, x * Game.game.pixelSize, (y+11) * Game.game.pixelSize);
     }
     public void drawText(int x, int y, String text, Color color) {
-        font.setColor(color);
-        drawText(x, y, text);
-        font.setColor(Color.WHITE);
+        if (color == null)
+            drawText(x, y, text);
+        else {
+            font.setColor(color);
+            drawText(x, y, text);
+            font.setColor(Color.WHITE);
+        }
     }
     public void drawSmallText(int x, int y, String text) {
         fontSmall.draw(batch, text.replace(" ", "  "), x * Game.game.pixelSize, (y+9) * Game.game.pixelSize);
     }
     public void drawSmallText(int x, int y, String text, Color color) {
-        fontSmall.setColor(color);
-        drawSmallText(x, y, text);
-        fontSmall.setColor(Color.WHITE);
+        if (color == null)
+            drawSmallText(x, y, text);
+        else {
+            fontSmall.setColor(color);
+            drawSmallText(x, y, text);
+            fontSmall.setColor(Color.WHITE);
+        }
     }
 
     public void setClearColor(Color color) {

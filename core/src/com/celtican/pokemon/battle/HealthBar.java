@@ -88,7 +88,27 @@ public class HealthBar extends Bar {
         Game.game.canvas.drawRect(pos.x+85, pos.y+2, Math.max(fill-80, 0), 1);
         Game.game.canvas.drawRect(pos.x+86, pos.y+1, Math.max(fill-80, 0), 1);
         Game.game.canvas.resetColor();
-        Game.game.canvas.drawSmallText(pos.x+23, pos.y+6, master.pokemon.name);
+        Color color;
+        if (master.pokemon.status == Pokemon.StatusCondition.HEALTHY)
+            color = null;
+        else {
+            switch (master.pokemon.status) {
+                case BURN: color = Color.RED; break;
+                case POISON: color = Color.PINK; break;
+                case FREEZE: color = Color.BLUE; break;
+                case PARALYSIS: color = Color.YELLOW; break;
+                default:
+                    if (master.pokemon.status.isToxic()) color = Color.PURPLE;
+                    else if (master.pokemon.status.isSleep()) color = Color.GRAY;
+                    else {
+                        Game.logError("Unhandled status condition: " + master.pokemon.status);
+                        color = null;
+                    }
+            }
+        }
+        Game.game.canvas.drawSmallText(pos.x+23, pos.y+6, master.pokemon.name, color);
+        int levelWidth = Game.game.canvas.getWidthOfSmallText(Integer.toString(master.pokemon.pokemon.getLevel()))/2;
+        Game.game.canvas.drawSmallText(pos.x+9 - levelWidth/2, pos.y+8, Integer.toString(master.pokemon.pokemon.getLevel()));
     }
     private void renderFoe() {
         Vector2Int pos = getPos();
@@ -115,23 +135,27 @@ public class HealthBar extends Bar {
         Game.game.canvas.setColor(colorDark);
         Game.game.canvas.drawRect(pos.x+4, pos.y+1, fill, 1);
         Game.game.canvas.resetColor();
-        if (master.pokemon.status != Pokemon.StatusCondition.HEALTHY) {
+        Color color;
+        if (master.pokemon.status == Pokemon.StatusCondition.HEALTHY)
+            color = null;
+        else {
             switch (master.pokemon.status) {
-                case BURN: Game.game.canvas.setColor(Color.RED); break;
-                case POISON: Game.game.canvas.setColor(Color.PINK); break;
-                case FREEZE: Game.game.canvas.setColor(Color.BLUE); break;
-                case PARALYSIS: Game.game.canvas.setColor(Color.YELLOW); break;
+                case BURN: color = Color.RED; break;
+                case POISON: color = Color.PINK; break;
+                case FREEZE: color = Color.BLUE; break;
+                case PARALYSIS: color = Color.YELLOW; break;
                 default:
-                    if (master.pokemon.status.isToxic())
-                        Game.game.canvas.setColor(Color.PURPLE);
-                    else if (master.pokemon.status.isSleep())
-                        Game.game.canvas.setColor(Color.GRAY);
-                    else
+                    if (master.pokemon.status.isToxic()) color = Color.PURPLE;
+                    else if (master.pokemon.status.isSleep()) color = Color.GRAY;
+                    else {
                         Game.logError("Unhandled status condition: " + master.pokemon.status);
+                        color = null;
+                    }
             }
         }
-        Game.game.canvas.drawSmallText(pos.x+18, pos.y+4, master.pokemon.name);
-        if (master.pokemon.status != Pokemon.StatusCondition.HEALTHY) Game.game.canvas.resetColor();
+        Game.game.canvas.drawSmallText(pos.x+18, pos.y+4, master.pokemon.name, color);
+        int levelWidth = Game.game.canvas.getWidthOfSmallText(Integer.toString(master.pokemon.pokemon.getLevel()))/2;
+        Game.game.canvas.drawSmallText(pos.x+6 - levelWidth/2, pos.y+6, Integer.toString(master.pokemon.pokemon.getLevel()));
     }
 
     public Vector2Int getPos() {
