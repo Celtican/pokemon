@@ -36,7 +36,7 @@ public class BattleScreen extends Screen {
                 userParty.members[i] = new BattlePokemon(Game.game.data.player.party[i], 0, i);
         }
         BattleParty compParty = new BattleParty(new BattlePokemon[6], 1, 1);
-        compParty.members[0] = new BattlePokemon(new PCPokemon(Game.game.data.getRandomSpecies(), 15), 1, 0);
+        compParty.members[0] = new BattlePokemon(new PCPokemon(userParty.members[0].getLevel()-2), 1, 0);
         parties = new BattleParty[] {userParty, compParty};
         calculator = new BattleCalculator(this, parties);
         for (int i = 0; i < parties.length; i++)

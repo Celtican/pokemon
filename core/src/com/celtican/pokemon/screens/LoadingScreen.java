@@ -20,9 +20,9 @@ import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.ERRATIC;
 import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.MEDIUM_SLOW;
 import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.FEMALE_IS_RARE;
 import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.GENDERLESS;
-import static com.celtican.pokemon.utils.data.Pokemon.MoveCategory.PHYSICAL;
-import static com.celtican.pokemon.utils.data.Pokemon.MoveCategory.SPECIAL;
+import static com.celtican.pokemon.utils.data.Pokemon.MoveCategory.*;
 import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.ADJACENT;
+import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.ALL_ADJACENT_FOES;
 import static com.celtican.pokemon.utils.data.Pokemon.Type.*;
 
 public class LoadingScreen extends Screen {
@@ -153,825 +153,834 @@ public class LoadingScreen extends Screen {
     }
     private void addSpecies() {
         Game.game.data.addSpecies("Nullomon", GENDERLESS, NORMAL, NORMAL, EggGroup.UNDISCOVERED, EggGroup.UNDISCOVERED, ERRATIC,
-                0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 1, 1, 1, 0, 0, 0, 0, 0, 0);
+                0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                -1, -1, null, null);
         Game.game.data.addSpecies("Bulbasaur", FEMALE_IS_RARE, GRASS, POISON, EggGroup.MONSTER, EggGroup.GRASS, MEDIUM_SLOW,
-                65, 65, 34, 34, 45, 49, 49, 65, 65, 45, 45, 50, 46, 0, 0, 0, 1, 0, 0);
+                65, 65, 34, 34, 45, 49, 49, 65, 65, 45, 45, 50, 46, 0, 0, 0, 1, 0, 0,
+                2, 16, new int[] {33, 45, 22, 74, 73, 75, 77, 79, 402, 36, 230, 235, 388, 38, 76}, new int[] {0, 0, 3, 6, 9, 12, 15, 15, 18, 21, 24, 27, 30, 33, 36});
         Game.game.data.addSpecies("Ivysaur", FEMALE_IS_RARE, GRASS, POISON, EggGroup.MONSTER, EggGroup.GRASS, MEDIUM_SLOW,
-                65, 65, 34, 34, 60, 62, 63, 80, 80, 60, 45, 50, 142, 0, 0, 0, 1, 0, 0);
+                65, 65, 34, 34, 60, 62, 63, 80, 80, 60, 45, 50, 142, 0, 0, 0, 1, 0, 0,
+                3, 32, new int[] {33, 45, 22, 74, 73, 75, 77, 79, 402, 36, 230, 235, 388, 38, 76}, new int[] {0, 0, 0, 0, 9, 12, 15, 15, 20, 25, 30, 35, 40, 45, 50});
         Game.game.data.addSpecies("Venusaur", FEMALE_IS_RARE, GRASS, POISON, EggGroup.MONSTER, EggGroup.GRASS, MEDIUM_SLOW,
-                65, 65, 34, 34, 80, 82, 83, 100, 100, 80, 45, 50, 236, 0, 0, 0, 2, 1, 0);
+                65, 65, 34, 34, 80, 82, 83, 100, 100, 80, 45, 50, 236, 0, 0, 0, 2, 1, 0,
+                -1, -1, new int[] {572, 572, 80, 33, 45, 22, 74, 73, 75, 77, 79, 402, 36, 230, 235, 388, 38, 76}, new int[] {-1, 0, 0, 0, 0, 0, 0, 9, 12, 15, 15, 20, 25, 30, 37, 44, 51, 58});
         Game.game.data.addSpecies("Charmander", FEMALE_IS_RARE, FIRE, NONE, EggGroup.MONSTER, EggGroup.DRAGON, MEDIUM_SLOW,
-                66, 66, 94, 94, 39, 52, 43, 60, 50, 65, 45, 50, 62, 0, 0, 0, 0, 0, 1);
+                66, 66, 94, 94, 39, 52, 43, 60, 50, 65, 45, 50, 62, 0, 0, 0, 0, 0, 1,
+                4, 16, new int[] {10, 45, 52, 108, 225, 424, 163, 53, 184, 83, 517, 394}, new int[] {0, 0, 4, 8, 12, 17, 20, 24, 28, 32, 36, 40});
         Game.game.data.addSpecies("Charmeleon", FEMALE_IS_RARE, FIRE, NONE, EggGroup.MONSTER, EggGroup.DRAGON, MEDIUM_SLOW,
-                66, 66, 94, 94, 58, 64, 58, 80, 65, 80, 45, 50, 142, 0, 0, 0, 1, 0, 1);
+                66, 66, 94, 94, 58, 64, 58, 80, 65, 80, 45, 50, 142, 0, 0, 0, 1, 0, 1,
+                5, 36, new int[] {10, 45, 52, 108, 225, 424, 163, 53, 184, 83, 517, 394}, new int[] {0, 0, 0, 0, 12, 19, 24, 30, 37, 42, 48, 54});
         Game.game.data.addSpecies("Charizard", FEMALE_IS_RARE, FIRE, FLYING, EggGroup.MONSTER, EggGroup.DRAGON, MEDIUM_SLOW,
-                66, 66, 94, 94, 78, 84, 78, 109, 85, 100, 45, 50, 240, 0, 0, 0, 3, 0, 0);
+                66, 66, 94, 94, 78, 84, 78, 109, 85, 100, 45, 50, 240, 0, 0, 0, 3, 0, 0,
+                -1, -1, new int[] {403, 403, 337, 257, 10, 45, 52, 108, 12, 424, 163, 53, 184, 46, 517, 394}, new int[] {-1, 0, 0, 0, 0, 0, 0, 0, 12, 19, 24, 30, 39, 46, 54, 62});
         Game.game.data.addSpecies("Squirtle", FEMALE_IS_RARE, WATER, NONE, EggGroup.MONSTER, EggGroup.WATER1, MEDIUM_SLOW,
-                67, 67, 44, 44, 44, 48, 65, 50, 64, 43, 45, 50, 63, 0, 0, 1, 0, 0, 0);
+                67, 67, 44, 44, 44, 48, 65, 50, 64, 43, 45, 50, 63, 0, 0, 1, 0, 0, 0,
+                8, 16, new int[] {33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {0, 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36});
         Game.game.data.addSpecies("Wartortle", FEMALE_IS_RARE, WATER, NONE, EggGroup.MONSTER, EggGroup.WATER1, MEDIUM_SLOW,
-                67, 67, 44, 44, 59, 63, 80, 65, 80, 58, 45, 50, 142, 0, 0, 1, 0, 1, 0);
+                67, 67, 44, 44, 59, 63, 80, 65, 80, 58, 45, 50, 142, 0, 0, 1, 0, 1, 0,
+                9, 36, new int[] {33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {0, 0, 0, 0, 9, 12, 15, 20, 25, 30, 35, 40, 45, 50});
         Game.game.data.addSpecies("Blastoise", FEMALE_IS_RARE, WATER, NONE, EggGroup.MONSTER, EggGroup.WATER1, MEDIUM_SLOW,
-                67, 67, 44, 44, 79, 83, 100,85, 105, 78, 45, 50, 239, 0, 0, 0, 0, 3, 0);
+                67, 67, 44, 44, 79, 83, 100,85, 105, 78, 45, 50, 239, 0, 0, 0, 0, 3, 0,
+                -1, -1, new int[] {430, 33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {-1, 0, 0, 0, 0, 0, 9, 12, 15, 20, 25, 30, 35, 42, 49, 56});
     }
     private void addMoves() {
-        Move struggle = new Move(0, "Struggle", NONE, PHYSICAL, TOUGH, ADJACENT, -1, 50, -1, "protect, mirror", null);
-        Game.game.data.addMove(struggle);
-        Game.game.data.addMove(new Move(1, "Pound", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null));
-        Game.game.data.addMove(new Move(2, "Karate Chop", FIGHTING, PHYSICAL, TOUGH, ADJACENT, 5, 50, 100, "contact, protect, mirror, crit", null));
-        Game.game.data.addMove(new Move(3, "Double Slap", NORMAL, PHYSICAL, CUTE, ADJACENT, 2, 15, 85, "contact, protect, mirror, multi", null));
-        Game.game.data.addMove(new Move(4, "Comet Punch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 18, 85, "contact, mirror, punch, multi", null));
-        Game.game.data.addMove(new Move(5, "Mega Punch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 80, 85, "contact, protect, mirror, punch", null));
-        Game.game.data.addMove(new Move(6, "Pay Day", NORMAL, PHYSICAL, CLEVER, ADJACENT, 4, 40, 100, "protect, mirror", null)); // todo make Pay Day add pokedollars to funds
-        Game.game.data.addMove(new Move(7, "Fire Punch", FIRE, PHYSICAL, TOUGH, ADJACENT, 3 ,75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(10, StatusCondition.BURN)));
-        Game.game.data.addMove(new Move(8, "Ice Punch", FIRE, PHYSICAL, BEAUTIFUL, ADJACENT, 3, 75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(10, StatusCondition.FREEZE)));
-        Game.game.data.addMove(new Move(9, "Thunder Punch", ELECTRIC, PHYSICAL, COOL, ADJACENT, 3, 75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(10, StatusCondition.PARALYSIS)));
-        Game.game.data.addMove(new Move(10, "Scratch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null));
-        Game.game.data.addMove(new Move(11, "Vise Grip", NORMAL, PHYSICAL, TOUGH, ADJACENT, 6, 55, 100, "contact, protect, mirror", null));
-        Game.game.data.addMove(new Move(12, "Guillotine", NORMAL, PHYSICAL, COOL, ADJACENT, 1, -1, 30, "contact, protect, mirror", null));
-        Game.game.data.addMove(struggle); // Razor Wind
-        Game.game.data.addMove(struggle); // Swords Dance
-        Game.game.data.addMove(struggle); // Cut
-        Game.game.data.addMove(struggle); // Gust*
-        Game.game.data.addMove(struggle); //         Wing Attack
-        Game.game.data.addMove(struggle); //         Whirlwind
-        Game.game.data.addMove(struggle); // Fly
-        Game.game.data.addMove(struggle); //         Bind
-        Game.game.data.addMove(struggle); // Slam
-        Game.game.data.addMove(struggle); // Vine Whip
-        Game.game.data.addMove(struggle); // Stomp
-        Game.game.data.addMove(struggle); // Double Kick
-        Game.game.data.addMove(struggle); // Mega Kick
-        Game.game.data.addMove(struggle); // Jump Kick
-        Game.game.data.addMove(struggle); // Rolling Kick
-        Game.game.data.addMove(struggle); // Sand Attack*
-        Game.game.data.addMove(struggle); // Headbutt
-        Game.game.data.addMove(struggle); // Horn Attack
-        Game.game.data.addMove(struggle); // Fury Attack
-        Game.game.data.addMove(struggle); // Horn Drill
-        Game.game.data.addMove(struggle); // Tackle
-        Game.game.data.addMove(struggle); // Body Slam
-        Game.game.data.addMove(struggle); // Wrap
-        Game.game.data.addMove(struggle); // Take Down
-        Game.game.data.addMove(struggle); // Thrash
-        Game.game.data.addMove(struggle); // Double-Edge
-        Game.game.data.addMove(struggle); // Tail Whip
-        Game.game.data.addMove(struggle); // Poison Sting
-        Game.game.data.addMove(struggle); // Twineedle
-        Game.game.data.addMove(struggle); // Pin Missile
-        Game.game.data.addMove(struggle); // Leer
-        Game.game.data.addMove(struggle); // Bite*
-        Game.game.data.addMove(struggle); //         Growl
-        Game.game.data.addMove(struggle); // Roar
-        Game.game.data.addMove(struggle); //         Sing
-        Game.game.data.addMove(struggle); // Supersonic
-        Game.game.data.addMove(struggle); // Sonic Boom
-        Game.game.data.addMove(struggle); // Disable
-        Game.game.data.addMove(struggle); //         Acid
-        Game.game.data.addMove(struggle); // Ember
-        Game.game.data.addMove(struggle); //         Flamethrower
-        Game.game.data.addMove(struggle); // Mist
-        Game.game.data.addMove(struggle); // Water Gun
-        Game.game.data.addMove(struggle); // Hydro Pump
-        Game.game.data.addMove(struggle); // Surf
-        Game.game.data.addMove(struggle); // Ice Beam
-        Game.game.data.addMove(struggle); // Blizzard
-        Game.game.data.addMove(struggle); //         Psybeam
-        Game.game.data.addMove(struggle); // Bubble Beam
-        Game.game.data.addMove(struggle); // Aurora Beam
-        Game.game.data.addMove(struggle); // Hyper Beam
-        Game.game.data.addMove(struggle); // Peck
-        Game.game.data.addMove(struggle); // Drill Peck
-        Game.game.data.addMove(struggle); // Submission
-        Game.game.data.addMove(struggle); // Low Kick
-        Game.game.data.addMove(struggle); // Counter
-        Game.game.data.addMove(new Move(69, "Seismic Toss", FIGHTING, PHYSICAL, TOUGH, ADJACENT, 4, -1, 100, "contact, protect, mirror, nonsky", null)); // Seismic Toss
-        Game.game.data.addMove(struggle); // Strength
-        Game.game.data.addMove(struggle); //         Absorb
-        Game.game.data.addMove(struggle); // Mega Drain
-        Game.game.data.addMove(struggle); // Leech Seed
-        Game.game.data.addMove(struggle); // Growth
-        Game.game.data.addMove(struggle); // Razor Leaf
-        Game.game.data.addMove(struggle); // Solar Beam
-        Game.game.data.addMove(struggle); // Poison Powder
-        Game.game.data.addMove(struggle); // Stun Spore
-        Game.game.data.addMove(struggle); // Sleep Powder
-        Game.game.data.addMove(struggle); // Petal Dance
-        Game.game.data.addMove(struggle); // String Shot
-        Game.game.data.addMove(struggle); // Dragon Rage
-        Game.game.data.addMove(struggle); // Fire Spin
-        Game.game.data.addMove(struggle); // Thunder Shock
-        Game.game.data.addMove(struggle); // Thunderbolt
-        Game.game.data.addMove(struggle); // Thunder Wave
-        Game.game.data.addMove(struggle); // Thunder
-        Game.game.data.addMove(struggle); // Rock Throw
-        Game.game.data.addMove(struggle); // Earthquake
-        Game.game.data.addMove(struggle); //         Fissure
-        Game.game.data.addMove(struggle); // Dig
-        Game.game.data.addMove(struggle); //         Toxic
-        Game.game.data.addMove(struggle); // Confusion
-        Game.game.data.addMove(struggle); //         Psychic
-        Game.game.data.addMove(struggle); // Hypnosis
-        Game.game.data.addMove(struggle); //         Meditate
-        Game.game.data.addMove(struggle); // Agility
-        Game.game.data.addMove(struggle); // Quick Attack
-        Game.game.data.addMove(struggle); // Rage
-        Game.game.data.addMove(struggle); //         Teleport
-        Game.game.data.addMove(new Move(101, "Night Shade", GHOST, SPECIAL, CLEVER, ADJACENT, 3, -1, 100, "protect, mirror", null));
-        Game.game.data.addMove(struggle); // Mimic
-        Game.game.data.addMove(struggle); //         Screech
-        Game.game.data.addMove(struggle); // Double Team
-        Game.game.data.addMove(struggle); // Recover
-        Game.game.data.addMove(struggle); //         Harden
-        Game.game.data.addMove(struggle); // Minimize
-        Game.game.data.addMove(struggle); //         Smokescreen
-        Game.game.data.addMove(struggle); // Confuse Ray
-        Game.game.data.addMove(struggle); // Withdraw
-        Game.game.data.addMove(struggle); // Defense Curl
-        Game.game.data.addMove(struggle); // Barrier
-        Game.game.data.addMove(struggle); // Light Screen
-        Game.game.data.addMove(struggle); // Haze
-        Game.game.data.addMove(struggle); //         Reflect
-        Game.game.data.addMove(struggle); // Focus Energy
-        Game.game.data.addMove(struggle); // Bide
-        Game.game.data.addMove(struggle); //         Metronome
-        Game.game.data.addMove(struggle); // Mirror Move
-        Game.game.data.addMove(struggle); // Self-Destruct
-        Game.game.data.addMove(struggle); // Egg Bomb
-        Game.game.data.addMove(struggle); // Lick
-        Game.game.data.addMove(struggle); //         Smog
-        Game.game.data.addMove(struggle); // Sludge
-        Game.game.data.addMove(struggle); // Bone Club
-        Game.game.data.addMove(struggle); // Fire Blast
-        Game.game.data.addMove(struggle); // Waterfall
-        Game.game.data.addMove(struggle); //         Clamp
-        Game.game.data.addMove(struggle); // Swift
-        Game.game.data.addMove(struggle); // Skull Bash
-        Game.game.data.addMove(struggle); // Spike Cannon
-        Game.game.data.addMove(struggle); // Constrict
-        Game.game.data.addMove(struggle); //         Amnesia
-        Game.game.data.addMove(struggle); // Kinesis
-        Game.game.data.addMove(struggle); // Soft-Boiled
-        Game.game.data.addMove(struggle); // High Jump Kick
-        Game.game.data.addMove(struggle); //         Glare
-        Game.game.data.addMove(struggle); // Dream Eater
-        Game.game.data.addMove(struggle); // Poison Gas
-        Game.game.data.addMove(struggle); // Barrage
-        Game.game.data.addMove(struggle); // Leech Life
-        Game.game.data.addMove(struggle); // Lovely Kiss
-        Game.game.data.addMove(struggle); // Sky Attack
-        Game.game.data.addMove(struggle); // Transform
-        Game.game.data.addMove(struggle); //         Bubble
-        Game.game.data.addMove(struggle); // Dizzy Punch
-        Game.game.data.addMove(struggle); // Spore
-        Game.game.data.addMove(struggle); //         Flash
-        Game.game.data.addMove(struggle); // Psywave
-        Game.game.data.addMove(struggle); //         Splash
-        Game.game.data.addMove(struggle); // Acid Armor
-        Game.game.data.addMove(struggle); // Crabhammer
-        Game.game.data.addMove(struggle); //         Explosion
-        Game.game.data.addMove(struggle); // Fury Swipes
-        Game.game.data.addMove(struggle); // Bonemerang
-        Game.game.data.addMove(struggle); //         Rest
-        Game.game.data.addMove(struggle); // Rock Slide
-        Game.game.data.addMove(struggle); // Hyper Fang
-        Game.game.data.addMove(struggle); // Sharpen
-        Game.game.data.addMove(struggle); //         Conversion
-        Game.game.data.addMove(struggle); // Tri Attack
-        Game.game.data.addMove(struggle); // Super Fang
-        Game.game.data.addMove(struggle); // Slash
-        Game.game.data.addMove(struggle); //         Substitute
-        Game.game.data.addMove(struggle); // Struggle
-        Game.game.data.addMove(struggle); //         Sketch
-        Game.game.data.addMove(struggle); // Triple Kick
-        Game.game.data.addMove(struggle); // Thief
-        Game.game.data.addMove(struggle); // Spider Web
-        Game.game.data.addMove(struggle); // Mind Reader
-        Game.game.data.addMove(struggle); // Nightmare
-        Game.game.data.addMove(struggle); // Flame Wheel
-        Game.game.data.addMove(struggle); // Snore
-        Game.game.data.addMove(struggle); // Curse*
-        Game.game.data.addMove(struggle); //         Flail
-        Game.game.data.addMove(struggle); // Conversion 2
-        Game.game.data.addMove(struggle); // Aeroblast
-        Game.game.data.addMove(struggle); // Cotton Spore
-        Game.game.data.addMove(struggle); // Reversal
-        Game.game.data.addMove(struggle); //         Spite
-        Game.game.data.addMove(struggle); // Powder Snow
-        Game.game.data.addMove(struggle); // Protect
-        Game.game.data.addMove(struggle); // Mach Punch
-        Game.game.data.addMove(struggle); // Scary Face
-        Game.game.data.addMove(struggle); // Feint Attack
-        Game.game.data.addMove(struggle); // Sweet Kiss*
-        Game.game.data.addMove(struggle); // Belly Drum
-        Game.game.data.addMove(struggle); // Sludge Bomb
-        Game.game.data.addMove(struggle); // Mud-Slap
-        Game.game.data.addMove(struggle); // Octazooka
-        Game.game.data.addMove(struggle); //         Spikes
-        Game.game.data.addMove(struggle); // Zap Cannon
-        Game.game.data.addMove(struggle); // Foresight
-        Game.game.data.addMove(struggle); // Destiny Bond
-        Game.game.data.addMove(struggle); // Perish Song
-        Game.game.data.addMove(struggle); // Icy Wind
-        Game.game.data.addMove(struggle); // Detect
-        Game.game.data.addMove(struggle); // Bone Rush
-        Game.game.data.addMove(struggle); // Lock-On
-        Game.game.data.addMove(struggle); // Outrage
-        Game.game.data.addMove(struggle); //         Sandstorm
-        Game.game.data.addMove(struggle); // Giga Drain
-        Game.game.data.addMove(struggle); // Endure
-        Game.game.data.addMove(struggle); // Charm*
-        Game.game.data.addMove(struggle); //         Rollout
-        Game.game.data.addMove(struggle); // False Swipe
-        Game.game.data.addMove(struggle); // Swagger
-        Game.game.data.addMove(struggle); // Milk Drink
-        Game.game.data.addMove(struggle); // Spark
-        Game.game.data.addMove(struggle); // Fury Cutter
-        Game.game.data.addMove(struggle); // Steel Wing
-        Game.game.data.addMove(struggle); // Mean Look
-        Game.game.data.addMove(struggle); // Attract
-        Game.game.data.addMove(struggle); // Sleep Talk
-        Game.game.data.addMove(struggle); // Heal Bell
-        Game.game.data.addMove(struggle); // Return
-        Game.game.data.addMove(struggle); //         Present
-        Game.game.data.addMove(struggle); // Frustration
-        Game.game.data.addMove(struggle); //         Safeguard
-        Game.game.data.addMove(struggle); // Pain Split
-        Game.game.data.addMove(struggle); // Sacred Fire
-        Game.game.data.addMove(struggle); // Magnitude
-        Game.game.data.addMove(struggle); // Dynamic Punch
-        Game.game.data.addMove(struggle); // Megahorn
-        Game.game.data.addMove(struggle); // Dragon Breath
-        Game.game.data.addMove(struggle); // Baton Pass
-        Game.game.data.addMove(struggle); // Encore
-        Game.game.data.addMove(struggle); //         Pursuit
-        Game.game.data.addMove(struggle); // Rapid Spin
-        Game.game.data.addMove(struggle); // Sweet Scent
-        Game.game.data.addMove(struggle); // Iron Tail
-        Game.game.data.addMove(struggle); // Metal Claw
-        Game.game.data.addMove(struggle); // Vital Throw
-        Game.game.data.addMove(struggle); // Morning Sun
-        Game.game.data.addMove(struggle); // Synthesis
-        Game.game.data.addMove(struggle); // Moonlight*
-        Game.game.data.addMove(struggle); //         Hidden Power
-        Game.game.data.addMove(struggle); // Cross Chop
-        Game.game.data.addMove(struggle); // Twister
-        Game.game.data.addMove(struggle); // Rain Dance
-        Game.game.data.addMove(struggle); // Sunny Day
-        Game.game.data.addMove(struggle); // Crunch
-        Game.game.data.addMove(struggle); // Mirror Coat
-        Game.game.data.addMove(struggle); // Psych Up
-        Game.game.data.addMove(struggle); // Extreme Speed
-        Game.game.data.addMove(struggle); // Ancient Power
-        Game.game.data.addMove(struggle); // Shadow Ball
-        Game.game.data.addMove(struggle); // Future Sight
-        Game.game.data.addMove(struggle); // Rock Smash
-        Game.game.data.addMove(struggle); // Whirlpool
-        Game.game.data.addMove(struggle); // Beat Up
-        Game.game.data.addMove(struggle); // Fake Out
-        Game.game.data.addMove(struggle); // Uproar
-        Game.game.data.addMove(struggle); //         Stockpile
-        Game.game.data.addMove(struggle); // Spit Up
-        Game.game.data.addMove(struggle); // Swallow
-        Game.game.data.addMove(struggle); // Heat Wave
-        Game.game.data.addMove(struggle); // Hail
-        Game.game.data.addMove(struggle); //         Torment
-        Game.game.data.addMove(struggle); // Flatter
-        Game.game.data.addMove(struggle); // Will-O-Wisp
-        Game.game.data.addMove(struggle); // Memento
-        Game.game.data.addMove(struggle); //         Facade
-        Game.game.data.addMove(struggle); // Focus Punch
-        Game.game.data.addMove(struggle); // Smelling Salts
-        Game.game.data.addMove(struggle); // Follow Me
-        Game.game.data.addMove(struggle); // Nature Power
-        Game.game.data.addMove(struggle); // Charge
-        Game.game.data.addMove(struggle); //         Taunt
-        Game.game.data.addMove(struggle); // Helping Hand
-        Game.game.data.addMove(struggle); // Trick
-        Game.game.data.addMove(struggle); // Role Play
-        Game.game.data.addMove(struggle); // Wish
-        Game.game.data.addMove(struggle); //         Assist
-        Game.game.data.addMove(struggle); // Ingrain
-        Game.game.data.addMove(struggle); //         Superpower
-        Game.game.data.addMove(struggle); // Magic Coat
-        Game.game.data.addMove(struggle); // Recycle
-        Game.game.data.addMove(struggle); //         Revenge
-        Game.game.data.addMove(struggle); // Brick Break
-        Game.game.data.addMove(struggle); // Yawn
-        Game.game.data.addMove(struggle); // Knock Off
-        Game.game.data.addMove(struggle); // Endeavor
-        Game.game.data.addMove(struggle); //         Eruption
-        Game.game.data.addMove(struggle); // Skill Swap
-        Game.game.data.addMove(struggle); // Imprison
-        Game.game.data.addMove(struggle); //         Refresh
-        Game.game.data.addMove(struggle); // Grudge
-        Game.game.data.addMove(struggle); //         Snatch
-        Game.game.data.addMove(struggle); // Secret Power
-        Game.game.data.addMove(struggle); // Dive
-        Game.game.data.addMove(struggle); // Arm Thrust
-        Game.game.data.addMove(struggle); // Camouflage
-        Game.game.data.addMove(struggle); // Tail Glow
-        Game.game.data.addMove(struggle); // Luster Purge
-        Game.game.data.addMove(struggle); // Mist Ball
-        Game.game.data.addMove(struggle); // Feather Dance
-        Game.game.data.addMove(struggle); // Teeter Dance
-        Game.game.data.addMove(struggle); // Blaze Kick
-        Game.game.data.addMove(struggle); // Mud Sport
-        Game.game.data.addMove(struggle); // Ice Ball
-        Game.game.data.addMove(struggle); // Needle Arm
-        Game.game.data.addMove(struggle); // Slack Off
-        Game.game.data.addMove(struggle); // Hyper Voice
-        Game.game.data.addMove(struggle); // Poison Fang
-        Game.game.data.addMove(struggle); // Crush Claw
-        Game.game.data.addMove(struggle); // Blast Burn
-        Game.game.data.addMove(struggle); // Hydro Cannon
-        Game.game.data.addMove(struggle); // Meteor Mash
-        Game.game.data.addMove(struggle); // Astonish
-        Game.game.data.addMove(struggle); // Weather Ball
-        Game.game.data.addMove(struggle); // Aromatherapy
-        Game.game.data.addMove(struggle); // Fake Tears
-        Game.game.data.addMove(struggle); // Air Cutter
-        Game.game.data.addMove(struggle); // Overheat
-        Game.game.data.addMove(struggle); // Odor Sleuth
-        Game.game.data.addMove(struggle); // Rock Tomb
-        Game.game.data.addMove(struggle); // Silver Wind
-        Game.game.data.addMove(struggle); // Metal Sound
-        Game.game.data.addMove(struggle); // Grass Whistle
-        Game.game.data.addMove(struggle); // Tickle
-        Game.game.data.addMove(struggle); // Cosmic Power
-        Game.game.data.addMove(struggle); // Water Spout
-        Game.game.data.addMove(struggle); // Signal Beam
-        Game.game.data.addMove(struggle); // Shadow Punch
-        Game.game.data.addMove(struggle); // Extrasensory
-        Game.game.data.addMove(struggle); // Sky Uppercut
-        Game.game.data.addMove(struggle); // Sand Tomb
-        Game.game.data.addMove(struggle); // Sheer Cold
-        Game.game.data.addMove(struggle); // Muddy Water
-        Game.game.data.addMove(struggle); // Bullet Seed
-        Game.game.data.addMove(struggle); // Aerial Ace
-        Game.game.data.addMove(struggle); // Icicle Spear
-        Game.game.data.addMove(struggle); // Iron Defense
-        Game.game.data.addMove(struggle); // Block
-        Game.game.data.addMove(struggle); //         Howl
-        Game.game.data.addMove(struggle); // Dragon Claw
-        Game.game.data.addMove(struggle); // Frenzy Plant
-        Game.game.data.addMove(struggle); // Bulk Up
-        Game.game.data.addMove(struggle); // Bounce
-        Game.game.data.addMove(struggle); // Mud Shot
-        Game.game.data.addMove(struggle); // Poison Tail
-        Game.game.data.addMove(struggle); // Covet
-        Game.game.data.addMove(struggle); // Volt Tackle
-        Game.game.data.addMove(struggle); // Magical Leaf
-        Game.game.data.addMove(struggle); // Water Sport
-        Game.game.data.addMove(struggle); // Calm Mind
-        Game.game.data.addMove(struggle); // Leaf Blade
-        Game.game.data.addMove(struggle); // Dragon Dance
-        Game.game.data.addMove(struggle); // Rock Blast
-        Game.game.data.addMove(struggle); // Shock Wave
-        Game.game.data.addMove(struggle); // Water Pulse
-        Game.game.data.addMove(struggle); // Doom Desire
-        Game.game.data.addMove(struggle); // Psycho Boost
-        Game.game.data.addMove(struggle); // Roost
-        Game.game.data.addMove(struggle); //         Gravity
-        Game.game.data.addMove(struggle); // Miracle Eye
-        Game.game.data.addMove(struggle); // Wake-Up Slap
-        Game.game.data.addMove(struggle); // Hammer Arm
-        Game.game.data.addMove(struggle); // Gyro Ball
-        Game.game.data.addMove(struggle); // Healing Wish
-        Game.game.data.addMove(struggle); // Brine
-        Game.game.data.addMove(struggle); // Natural Gift
-        Game.game.data.addMove(struggle); // Feint
-        Game.game.data.addMove(struggle); //         Pluck
-        Game.game.data.addMove(struggle); // Tailwind
-        Game.game.data.addMove(struggle); //         Acupressure
-        Game.game.data.addMove(struggle); // Metal Burst
-        Game.game.data.addMove(struggle); // U-turn
-        Game.game.data.addMove(struggle); // Close Combat
-        Game.game.data.addMove(struggle); // Payback
-        Game.game.data.addMove(struggle); //         Assurance
-        Game.game.data.addMove(struggle); // Embargo
-        Game.game.data.addMove(struggle); //         Fling
-        Game.game.data.addMove(struggle); // Psycho Shift
-        Game.game.data.addMove(struggle); // Trump Card
-        Game.game.data.addMove(struggle); // Heal Block
-        Game.game.data.addMove(struggle); // Wring Out
-        Game.game.data.addMove(struggle); // Power Trick
-        Game.game.data.addMove(struggle); // Gastro Acid
-        Game.game.data.addMove(struggle); // Lucky Chant
-        Game.game.data.addMove(struggle); // Me First
-        Game.game.data.addMove(struggle); // Copycat
-        Game.game.data.addMove(struggle); // Power Swap
-        Game.game.data.addMove(struggle); // Guard Swap
-        Game.game.data.addMove(struggle); // Punishment
-        Game.game.data.addMove(struggle); // Last Resort
-        Game.game.data.addMove(struggle); // Worry Seed
-        Game.game.data.addMove(struggle); // Sucker Punch
-        Game.game.data.addMove(struggle); // Toxic Spikes
-        Game.game.data.addMove(struggle); // Heart Swap
-        Game.game.data.addMove(struggle); // Aqua Ring
-        Game.game.data.addMove(struggle); // Magnet Rise
-        Game.game.data.addMove(struggle); // Flare Blitz
-        Game.game.data.addMove(struggle); // Force Palm
-        Game.game.data.addMove(struggle); // Aura Sphere
-        Game.game.data.addMove(struggle); // Rock Polish
-        Game.game.data.addMove(struggle); // Poison Jab
-        Game.game.data.addMove(struggle); // Dark Pulse
-        Game.game.data.addMove(struggle); // Night Slash
-        Game.game.data.addMove(struggle); // Aqua Tail
-        Game.game.data.addMove(struggle); // Seed Bomb
-        Game.game.data.addMove(struggle); // Air Slash
-        Game.game.data.addMove(struggle); // X-Scissor
-        Game.game.data.addMove(struggle); // Bug Buzz
-        Game.game.data.addMove(struggle); // Dragon Pulse
-        Game.game.data.addMove(struggle); // Dragon Rush
-        Game.game.data.addMove(struggle); // Power Gem
-        Game.game.data.addMove(struggle); // Drain Punch
-        Game.game.data.addMove(struggle); // Vacuum Wave
-        Game.game.data.addMove(struggle); // Focus Blast
-        Game.game.data.addMove(struggle); // Energy Ball
-        Game.game.data.addMove(struggle); // Brave Bird
-        Game.game.data.addMove(struggle); // Earth Power
-        Game.game.data.addMove(struggle); // Switcheroo
-        Game.game.data.addMove(struggle); // Giga Impact
-        Game.game.data.addMove(struggle); // Nasty Plot
-        Game.game.data.addMove(struggle); // Bullet Punch
-        Game.game.data.addMove(struggle); // Avalanche
-        Game.game.data.addMove(struggle); // Ice Shard
-        Game.game.data.addMove(struggle); // Shadow Claw
-        Game.game.data.addMove(struggle); // Thunder Fang
-        Game.game.data.addMove(struggle); // Ice Fang
-        Game.game.data.addMove(struggle); // Fire Fang
-        Game.game.data.addMove(struggle); // Shadow Sneak
-        Game.game.data.addMove(struggle); // Mud Bomb
-        Game.game.data.addMove(struggle); // Psycho Cut
-        Game.game.data.addMove(struggle); // Zen Headbutt
-        Game.game.data.addMove(struggle); // Mirror Shot
-        Game.game.data.addMove(struggle); // Flash Cannon
-        Game.game.data.addMove(struggle); // Rock Climb
-        Game.game.data.addMove(struggle); // Defog
-        Game.game.data.addMove(struggle); // Trick Room
-        Game.game.data.addMove(struggle); // Draco Meteor
-        Game.game.data.addMove(struggle); // Discharge
-        Game.game.data.addMove(struggle); // Lava Plume
-        Game.game.data.addMove(struggle); // Leaf Storm
-        Game.game.data.addMove(struggle); // Power Whip
-        Game.game.data.addMove(struggle); // Rock Wrecker
-        Game.game.data.addMove(struggle); // Cross Poison
-        Game.game.data.addMove(struggle); // Gunk Shot
-        Game.game.data.addMove(struggle); // Iron Head
-        Game.game.data.addMove(struggle); // Magnet Bomb
-        Game.game.data.addMove(struggle); // Stone Edge
-        Game.game.data.addMove(struggle); // Captivate
-        Game.game.data.addMove(struggle); // Stealth Rock
-        Game.game.data.addMove(struggle); // Grass Knot
-        Game.game.data.addMove(struggle); // Chatter
-        Game.game.data.addMove(struggle); //         Judgment
-        Game.game.data.addMove(struggle); // Bug Bite
-        Game.game.data.addMove(struggle); // Charge Beam
-        Game.game.data.addMove(struggle); // Wood Hammer
-        Game.game.data.addMove(struggle); // Aqua Jet
-        Game.game.data.addMove(struggle); // Attack Order
-        Game.game.data.addMove(struggle); // Defend Order
-        Game.game.data.addMove(struggle); // Heal Order
-        Game.game.data.addMove(struggle); // Head Smash
-        Game.game.data.addMove(struggle); // Double Hit
-        Game.game.data.addMove(struggle); // Roar of Time
-        Game.game.data.addMove(struggle); // Spacial Rend
-        Game.game.data.addMove(struggle); // Lunar Dance
-        Game.game.data.addMove(struggle); // Crush Grip
-        Game.game.data.addMove(struggle); // Magma Storm
-        Game.game.data.addMove(struggle); // Dark Void
-        Game.game.data.addMove(struggle); // Seed Flare
-        Game.game.data.addMove(struggle); // Ominous Wind
-        Game.game.data.addMove(struggle); // Shadow Force
-        Game.game.data.addMove(struggle); // Hone Claws
-        Game.game.data.addMove(struggle); // Wide Guard
-        Game.game.data.addMove(struggle); // Guard Split
-        Game.game.data.addMove(struggle); // Power Split
-        Game.game.data.addMove(struggle); // Wonder Room
-        Game.game.data.addMove(struggle); // Psyshock
-        Game.game.data.addMove(struggle); //         Venoshock
-        Game.game.data.addMove(struggle); // Autotomize
-        Game.game.data.addMove(struggle); // Rage Powder
-        Game.game.data.addMove(struggle); // Telekinesis
-        Game.game.data.addMove(struggle); // Magic Room
-        Game.game.data.addMove(struggle); // Smack Down
-        Game.game.data.addMove(struggle); // Storm Throw
-        Game.game.data.addMove(struggle); // Flame Burst
-        Game.game.data.addMove(struggle); // Sludge Wave
-        Game.game.data.addMove(struggle); // Quiver Dance
-        Game.game.data.addMove(struggle); // Heavy Slam
-        Game.game.data.addMove(struggle); // Synchronoise
-        Game.game.data.addMove(struggle); // Electro Ball
-        Game.game.data.addMove(struggle); // Soak
-        Game.game.data.addMove(struggle); // Flame Charge
-        Game.game.data.addMove(struggle); // Coil
-        Game.game.data.addMove(struggle); // Low Sweep
-        Game.game.data.addMove(struggle); // Acid Spray
-        Game.game.data.addMove(struggle); // Foul Play
-        Game.game.data.addMove(struggle); // Simple Beam
-        Game.game.data.addMove(struggle); // Entrainment
-        Game.game.data.addMove(struggle); // After You
-        Game.game.data.addMove(struggle); // Round
-        Game.game.data.addMove(struggle); // Echoed Voice
-        Game.game.data.addMove(struggle); // Chip Away
-        Game.game.data.addMove(struggle); // Clear Smog
-        Game.game.data.addMove(struggle); // Stored Power
-        Game.game.data.addMove(struggle); // Quick Guard
-        Game.game.data.addMove(struggle); // Ally Switch
-        Game.game.data.addMove(struggle); // Scald
-        Game.game.data.addMove(struggle); // Shell Smash
-        Game.game.data.addMove(struggle); // Heal Pulse
-        Game.game.data.addMove(struggle); // Hex
-        Game.game.data.addMove(struggle); // Sky Drop
-        Game.game.data.addMove(struggle); // Shift Gear
-        Game.game.data.addMove(struggle); // Circle Throw
-        Game.game.data.addMove(struggle); // Incinerate
-        Game.game.data.addMove(struggle); //         Quash
-        Game.game.data.addMove(struggle); // Acrobatics
-        Game.game.data.addMove(struggle); // Reflect Type
-        Game.game.data.addMove(struggle); // Retaliate
-        Game.game.data.addMove(struggle); // Final Gambit
-        Game.game.data.addMove(struggle); // Bestow
-        Game.game.data.addMove(struggle); //         Inferno
-        Game.game.data.addMove(struggle); // Water Pledge
-        Game.game.data.addMove(struggle); // Fire Pledge
-        Game.game.data.addMove(struggle); // Grass Pledge
-        Game.game.data.addMove(struggle); // Volt Switch
-        Game.game.data.addMove(struggle); // Struggle Bug
-        Game.game.data.addMove(struggle); // Bulldoze
-        Game.game.data.addMove(struggle); // Frost Breath
-        Game.game.data.addMove(struggle); // Dragon Tail
-        Game.game.data.addMove(struggle); // Work Up
-        Game.game.data.addMove(struggle); // Electroweb
-        Game.game.data.addMove(struggle); // Wild Charge
-        Game.game.data.addMove(struggle); // Drill Run
-        Game.game.data.addMove(struggle); // Dual Chop
-        Game.game.data.addMove(struggle); // Heart Stamp
-        Game.game.data.addMove(struggle); // Horn Leech
-        Game.game.data.addMove(struggle); // Sacred Sword
-        Game.game.data.addMove(struggle); // Razor Shell
-        Game.game.data.addMove(struggle); // Heat Crash
-        Game.game.data.addMove(struggle); // Leaf Tornado
-        Game.game.data.addMove(struggle); // Steamroller
-        Game.game.data.addMove(struggle); // Cotton Guard
-        Game.game.data.addMove(struggle); // Night Daze
-        Game.game.data.addMove(struggle); // Psystrike
-        Game.game.data.addMove(struggle); // Tail Slap
-        Game.game.data.addMove(struggle); // Hurricane
-        Game.game.data.addMove(struggle); // Head Charge
-        Game.game.data.addMove(struggle); // Gear Grind
-        Game.game.data.addMove(struggle); // Searing Shot
-        Game.game.data.addMove(struggle); // Techno Blast
-        Game.game.data.addMove(struggle); // Relic Song
-        Game.game.data.addMove(struggle); // Secret Sword
-        Game.game.data.addMove(struggle); // Glaciate
-        Game.game.data.addMove(struggle); // Bolt Strike
-        Game.game.data.addMove(struggle); // Blue Flare
-        Game.game.data.addMove(struggle); // Fiery Dance
-        Game.game.data.addMove(struggle); // Freeze Shock
-        Game.game.data.addMove(struggle); // Ice Burn
-        Game.game.data.addMove(struggle); // Snarl
-        Game.game.data.addMove(struggle); // Icicle Crash
-        Game.game.data.addMove(struggle); // V-create
-        Game.game.data.addMove(struggle); // Fusion Flare
-        Game.game.data.addMove(struggle); // Fusion Bolt
-        Game.game.data.addMove(struggle); // Flying Press
-        Game.game.data.addMove(struggle); // Mat Block
-        Game.game.data.addMove(struggle); // Belch
-        Game.game.data.addMove(struggle); //         Rototiller
-        Game.game.data.addMove(struggle); // Sticky Web
-        Game.game.data.addMove(struggle); // Fell Stinger
-        Game.game.data.addMove(struggle); // Phantom Force
-        Game.game.data.addMove(struggle); // Trick-or-Treat
-        Game.game.data.addMove(struggle); // Noble Roar
-        Game.game.data.addMove(struggle); // Ion Deluge
-        Game.game.data.addMove(struggle); // Parabolic Charge
-        Game.game.data.addMove(struggle); // Forest's Curse
-        Game.game.data.addMove(struggle); // Petal Blizzard
-        Game.game.data.addMove(struggle); // Freeze-Dry
-        Game.game.data.addMove(struggle); // Disarming Voice
-        Game.game.data.addMove(struggle); // Parting Shot
-        Game.game.data.addMove(struggle); // Topsy-Turvy
-        Game.game.data.addMove(struggle); // Draining Kiss
-        Game.game.data.addMove(struggle); // Crafty Shield
-        Game.game.data.addMove(struggle); // Flower Shield
-        Game.game.data.addMove(struggle); // Grassy Terrain
-        Game.game.data.addMove(struggle); // Misty Terrain
-        Game.game.data.addMove(struggle); // Electrify
-        Game.game.data.addMove(struggle); // Play Rough
-        Game.game.data.addMove(struggle); // Fairy Wind
-        Game.game.data.addMove(struggle); // Moonblast
-        Game.game.data.addMove(struggle); //         Boomburst
-        Game.game.data.addMove(struggle); // Fairy Lock
-        Game.game.data.addMove(struggle); // King's Shield
-        Game.game.data.addMove(struggle); // Play Nice
-        Game.game.data.addMove(struggle); // Confide
-        Game.game.data.addMove(struggle); // Diamond Storm
-        Game.game.data.addMove(struggle); // Steam Eruption
-        Game.game.data.addMove(struggle); // Hyperspace Hole
-        Game.game.data.addMove(struggle); // Water Shuriken*
-        Game.game.data.addMove(struggle); // Mystical Fire
-        Game.game.data.addMove(struggle); // Spiky Shield
-        Game.game.data.addMove(struggle); // Aromatic Mist
-        Game.game.data.addMove(struggle); // Eerie Impulse
-        Game.game.data.addMove(struggle); // Venom Drench
-        Game.game.data.addMove(struggle); // Powder
-        Game.game.data.addMove(struggle); //         Geomancy
-        Game.game.data.addMove(struggle); // Magnetic Flux
-        Game.game.data.addMove(struggle); // Happy Hour
-        Game.game.data.addMove(struggle); // Electric Terrain
-        Game.game.data.addMove(struggle); // Dazzling Gleam
-        Game.game.data.addMove(struggle); // Celebrate
-        Game.game.data.addMove(struggle); // Hold Hands
-        Game.game.data.addMove(struggle); // Baby-Doll Eyes
-        Game.game.data.addMove(struggle); //         Nuzzle
-        Game.game.data.addMove(struggle); // Hold Back
-        Game.game.data.addMove(struggle); // Infestation
-        Game.game.data.addMove(struggle); // Power-Up Punch
-        Game.game.data.addMove(struggle); // Oblivion Wing
-        Game.game.data.addMove(struggle); // Thousand Arrows
-        Game.game.data.addMove(struggle); // Thousand Waves
-        Game.game.data.addMove(struggle); // Land's Wrath
-        Game.game.data.addMove(struggle); // Light of Ruin
-        Game.game.data.addMove(struggle); // Origin Pulse
-        Game.game.data.addMove(struggle); // Precipice Blades
-        Game.game.data.addMove(struggle); // Dragon Ascent
-        Game.game.data.addMove(struggle); // Hyperspace Fury
-        Game.game.data.addMove(struggle); // Breakneck Blitz
-        Game.game.data.addMove(struggle); // Breakneck Blitz
-        Game.game.data.addMove(struggle); // All-Out Pummeling
-        Game.game.data.addMove(struggle); // All-Out Pummeling
-        Game.game.data.addMove(struggle); // Supersonic Skystrike
-        Game.game.data.addMove(struggle); // Supersonic Skystrike
-        Game.game.data.addMove(struggle); // Acid Downpour
-        Game.game.data.addMove(struggle); // Acid Downpour
-        Game.game.data.addMove(struggle); // Tectonic Rage
-        Game.game.data.addMove(struggle); // Tectonic Rage
-        Game.game.data.addMove(struggle); // Continental Crush
-        Game.game.data.addMove(struggle); // Continental Crush
-        Game.game.data.addMove(struggle); // Savage Spin-Out
-        Game.game.data.addMove(struggle); // Savage Spin-Out
-        Game.game.data.addMove(struggle); // Never-Ending Nightmare
-        Game.game.data.addMove(struggle); // Never-Ending Nightmare
-        Game.game.data.addMove(struggle); // Corkscrew Crash
-        Game.game.data.addMove(struggle); // Corkscrew Crash
-        Game.game.data.addMove(struggle); // Inferno Overdrive
-        Game.game.data.addMove(struggle); // Inferno Overdrive
-        Game.game.data.addMove(struggle); // Hydro Vortex
-        Game.game.data.addMove(struggle); // Hydro Vortex
-        Game.game.data.addMove(struggle); // Bloom Doom
-        Game.game.data.addMove(struggle); // Bloom Doom
-        Game.game.data.addMove(struggle); // Gigavolt Havoc
-        Game.game.data.addMove(struggle); // Gigavolt Havoc
-        Game.game.data.addMove(struggle); // Shattered Psyche
-        Game.game.data.addMove(struggle); // Shattered Psyche
-        Game.game.data.addMove(struggle); // Subzero Slammer
-        Game.game.data.addMove(struggle); // Subzero Slammer
-        Game.game.data.addMove(struggle); // Devastating Drake
-        Game.game.data.addMove(struggle); // Devastating Drake
-        Game.game.data.addMove(struggle); // Black Hole Eclipse
-        Game.game.data.addMove(struggle); // Black Hole Eclipse
-        Game.game.data.addMove(struggle); // Twinkle Tackle
-        Game.game.data.addMove(struggle); // Twinkle Tackle
-        Game.game.data.addMove(struggle); // Catastropika
-        Game.game.data.addMove(struggle); // Shore Up
-        Game.game.data.addMove(struggle); // First Impression
-        Game.game.data.addMove(struggle); // Baneful Bunker
-        Game.game.data.addMove(struggle); // Spirit Shackle
-        Game.game.data.addMove(struggle); // Darkest Lariat
-        Game.game.data.addMove(struggle); // Sparkling Aria
-        Game.game.data.addMove(struggle); // Ice Hammer
-        Game.game.data.addMove(struggle); // Floral Healing
-        Game.game.data.addMove(struggle); // High Horsepower
-        Game.game.data.addMove(struggle); // Strength Sap
-        Game.game.data.addMove(struggle); // Solar Blade
-        Game.game.data.addMove(struggle); // Leafage
-        Game.game.data.addMove(struggle); //         Spotlight
-        Game.game.data.addMove(struggle); // Toxic Thread
-        Game.game.data.addMove(struggle); // Laser Focus
-        Game.game.data.addMove(struggle); // Gear Up
-        Game.game.data.addMove(struggle); // Throat Chop
-        Game.game.data.addMove(struggle); // Pollen Puff
-        Game.game.data.addMove(struggle); // Anchor Shot
-        Game.game.data.addMove(struggle); // Psychic Terrain
-        Game.game.data.addMove(struggle); // Lunge
-        Game.game.data.addMove(struggle); // Fire Lash
-        Game.game.data.addMove(struggle); // Power Trip
-        Game.game.data.addMove(struggle); // Burn Up
-        Game.game.data.addMove(struggle); // Speed Swap
-        Game.game.data.addMove(struggle); // Smart Strike
-        Game.game.data.addMove(struggle); // Purify
-        Game.game.data.addMove(struggle); // Revelation Dance
-        Game.game.data.addMove(struggle); // Core Enforcer
-        Game.game.data.addMove(struggle); // Trop Kick
-        Game.game.data.addMove(struggle); // Instruct
-        Game.game.data.addMove(struggle); // Beak Blast
-        Game.game.data.addMove(struggle); // Clanging Scales
-        Game.game.data.addMove(struggle); // Dragon Hammer
-        Game.game.data.addMove(struggle); // Brutal Swing
-        Game.game.data.addMove(struggle); // Aurora Veil
-        Game.game.data.addMove(struggle); // Sinister Arrow Raid
-        Game.game.data.addMove(struggle); // Malicious Moonsault
-        Game.game.data.addMove(struggle); // Oceanic Operetta
-        Game.game.data.addMove(struggle); // Guardian of Alola
-        Game.game.data.addMove(struggle); // Soul-Stealing 7-Star Strike
-        Game.game.data.addMove(struggle); // Stoked Sparksurfer
-        Game.game.data.addMove(struggle); // Pulverizing Pancake
-        Game.game.data.addMove(struggle); // Extreme Evoboost
-        Game.game.data.addMove(struggle); // Genesis Supernova
-        Game.game.data.addMove(struggle); // Shell Trap
-        Game.game.data.addMove(struggle); // Fleur Cannon
-        Game.game.data.addMove(struggle); // Psychic Fangs
-        Game.game.data.addMove(struggle); // Stomping Tantrum
-        Game.game.data.addMove(struggle); // Shadow Bone
-        Game.game.data.addMove(struggle); // Accelerock
-        Game.game.data.addMove(struggle); //         Liquidation
-        Game.game.data.addMove(struggle); // Prismatic Laser
-        Game.game.data.addMove(struggle); // Spectral Thief
-        Game.game.data.addMove(struggle); // Sunsteel Strike
-        Game.game.data.addMove(struggle); // Moongeist Beam
-        Game.game.data.addMove(struggle); // Tearful Look
-        Game.game.data.addMove(struggle); // Zing Zap
-        Game.game.data.addMove(struggle); // Nature's Madness
-        Game.game.data.addMove(struggle); // Multi-Attack
-        Game.game.data.addMove(struggle); // 10,000,000 Volt Thunderbolt
-        Game.game.data.addMove(struggle); // Mind Blown
-        Game.game.data.addMove(struggle); // Plasma Fists
-        Game.game.data.addMove(struggle); // Photon Geyser
-        Game.game.data.addMove(struggle); // Light That Burns the Sky
-        Game.game.data.addMove(struggle); // Searing Sunraze Smash
-        Game.game.data.addMove(struggle); // Menacing Moonraze Maelstrom
-        Game.game.data.addMove(struggle); // Let's Snuggle Forever
-        Game.game.data.addMove(struggle); // Splintered Stormshards
-        Game.game.data.addMove(struggle); // Clangorous Soulblaze
-        Game.game.data.addMove(struggle); // Zippy Zap
-        Game.game.data.addMove(struggle); // Splishy Splash
-        Game.game.data.addMove(struggle); // Floaty Fall
-        Game.game.data.addMove(struggle); // Pika Papow
-        Game.game.data.addMove(struggle); // Bouncy Bubble
-        Game.game.data.addMove(struggle); // Buzzy Buzz
-        Game.game.data.addMove(struggle); // Sizzly Slide
-        Game.game.data.addMove(struggle); // Glitzy Glow
-        Game.game.data.addMove(struggle); // Baddy Bad
-        Game.game.data.addMove(struggle); // Sappy Seed
-        Game.game.data.addMove(struggle); // Freezy Frost
-        Game.game.data.addMove(struggle); // Sparkly Swirl
-        Game.game.data.addMove(struggle); // Veevee Volley
-        Game.game.data.addMove(struggle); // Double Iron Bash
-        Game.game.data.addMove(struggle); // Max Guard
-        Game.game.data.addMove(struggle); // Dynamax Cannon
-        Game.game.data.addMove(struggle); // Snipe Shot
-        Game.game.data.addMove(struggle); // Jaw Lock
-        Game.game.data.addMove(struggle); // Stuff Cheeks
-        Game.game.data.addMove(struggle); // No Retreat
-        Game.game.data.addMove(struggle); // Tar Shot
-        Game.game.data.addMove(struggle); // Magic Powder
-        Game.game.data.addMove(struggle); // Dragon Darts
-        Game.game.data.addMove(struggle); // Teatime
-        Game.game.data.addMove(struggle); //         Octolock
-        Game.game.data.addMove(struggle); // Bolt Beak
-        Game.game.data.addMove(struggle); // Fishious Rend
-        Game.game.data.addMove(struggle); // Court Change
-        Game.game.data.addMove(struggle); // Max Flare
-        Game.game.data.addMove(struggle); // Max Flutterby
-        Game.game.data.addMove(struggle); // Max Lightning
-        Game.game.data.addMove(struggle); // Max Strike
-        Game.game.data.addMove(struggle); // Max Knuckle
-        Game.game.data.addMove(struggle); // Max Phantasm
-        Game.game.data.addMove(struggle); // Max Hailstorm
-        Game.game.data.addMove(struggle); // Max Ooze
-        Game.game.data.addMove(struggle); // Max Geyser
-        Game.game.data.addMove(struggle); // Max Airstream
-        Game.game.data.addMove(struggle); // Max Starfall
-        Game.game.data.addMove(struggle); // Max Wyrmwind
-        Game.game.data.addMove(struggle); // Max Mindstorm
-        Game.game.data.addMove(struggle); // Max Rockfall
-        Game.game.data.addMove(struggle); // Max Quake
-        Game.game.data.addMove(struggle); // Max Darkness
-        Game.game.data.addMove(struggle); // Max Overgrowth
-        Game.game.data.addMove(struggle); // Max Steelspike
-        Game.game.data.addMove(struggle); // Clangorous Soul
-        Game.game.data.addMove(struggle); // Body Press
-        Game.game.data.addMove(struggle); // Decorate
-        Game.game.data.addMove(struggle); // Drum Beating
-        Game.game.data.addMove(struggle); // Snap Trap
-        Game.game.data.addMove(struggle); // Pyro Ball
-        Game.game.data.addMove(struggle); // Behemoth Blade
-        Game.game.data.addMove(struggle); // Behemoth Bash
-        Game.game.data.addMove(struggle); // Aura Wheel
-        Game.game.data.addMove(struggle); // Breaking Swipe
-        Game.game.data.addMove(struggle); // Branch Poke
-        Game.game.data.addMove(struggle); // Overdrive
-        Game.game.data.addMove(struggle); // Apple Acid
-        Game.game.data.addMove(struggle); // Grav Apple
-        Game.game.data.addMove(struggle); // Spirit Break
-        Game.game.data.addMove(struggle); // Strange Steam
-        Game.game.data.addMove(struggle); // Life Dew
-        Game.game.data.addMove(struggle); // Obstruct
-        Game.game.data.addMove(struggle); // False Surrender
-        Game.game.data.addMove(struggle); // Meteor Assault
-        Game.game.data.addMove(struggle); // Eternabeam
-        Game.game.data.addMove(struggle); // Steel Beam
+        Game.game.data.addMove("Struggle", NONE, PHYSICAL, TOUGH, ADJACENT, -1, 50, -1, "protect, mirror", null);
+        Game.game.data.addMove("Pound", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null);
+        Game.game.data.addMove("Karate Chop", FIGHTING, PHYSICAL, TOUGH, ADJACENT, 5, 50, 100, "contact, protect, mirror, crit", null);
+        Game.game.data.addMove("Double Slap", NORMAL, PHYSICAL, CUTE, ADJACENT, 2, 15, 85, "contact, protect, mirror, multi", null);
+        Game.game.data.addMove("Comet Punch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 18, 85, "contact, mirror, punch, multi", null);
+        Game.game.data.addMove("Mega Punch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 80, 85, "contact, protect, mirror, punch", null);
+        Game.game.data.addMove("Pay Day", NORMAL, PHYSICAL, CLEVER, ADJACENT, 4, 40, 100, "protect, mirror", null); // todo make Pay Day add pokedollars to funds
+        Game.game.data.addMove("Fire Punch", FIRE, PHYSICAL, TOUGH, ADJACENT, 3 ,75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(100, StatusCondition.BURN));
+        Game.game.data.addMove("Ice Punch", FIRE, PHYSICAL, BEAUTIFUL, ADJACENT, 3, 75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(10, StatusCondition.FREEZE));
+        Game.game.data.addMove("Thunder Punch", ELECTRIC, PHYSICAL, COOL, ADJACENT, 3, 75, 100, "contact, protect, mirror, punch", new Move.EffectStatusCondition(10, StatusCondition.PARALYSIS));
+        Game.game.data.addMove("Scratch", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null);
+        Game.game.data.addMove("Vise Grip", NORMAL, PHYSICAL, TOUGH, ADJACENT, 6, 55, 100, "contact, protect, mirror", null);
+        Game.game.data.addMove("Guillotine", NORMAL, PHYSICAL, COOL, ADJACENT, 1, -1, 30, "contact, protect, mirror", null);
+        Game.game.data.addMove("Razor Wind");
+        Game.game.data.addMove("Swords Dance");
+        Game.game.data.addMove("Cut");
+        Game.game.data.addMove("Gust");
+        Game.game.data.addMove("Wing Attack");
+        Game.game.data.addMove("Whirlwind");
+        Game.game.data.addMove("Fly");
+        Game.game.data.addMove("Bind");
+        Game.game.data.addMove("Slam");
+        Game.game.data.addMove("Vine Whip", GRASS, PHYSICAL, COOL, ADJACENT, 5, 45, 100, "contact, protect, mirror", null);
+        Game.game.data.addMove("Stomp");
+        Game.game.data.addMove("Double Kick");
+        Game.game.data.addMove("Mega Kick");
+        Game.game.data.addMove("Jump Kick");
+        Game.game.data.addMove("Rolling Kick");
+        Game.game.data.addMove("Sand Attack");
+        Game.game.data.addMove("Headbutt");
+        Game.game.data.addMove("Horn Attack");
+        Game.game.data.addMove("Fury Attack");
+        Game.game.data.addMove("Horn Drill");
+        Game.game.data.addMove("Tackle", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null);
+        Game.game.data.addMove("Body Slam");
+        Game.game.data.addMove("Wrap");
+        Game.game.data.addMove("Take Down");
+        Game.game.data.addMove("Thrash");
+        Game.game.data.addMove("Double-Edge");
+        Game.game.data.addMove("Tail Whip");
+        Game.game.data.addMove("Poison Sting");
+        Game.game.data.addMove("Twineedle");
+        Game.game.data.addMove("Pin Missile");
+        Game.game.data.addMove("Leer");
+        Game.game.data.addMove("Bite");
+        Game.game.data.addMove("Growl", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 8, -1, 100, "protect, reflectable, mirror, sound, authentic", null);
+        Game.game.data.addMove("Roar");
+        Game.game.data.addMove("Sing");
+        Game.game.data.addMove("Supersonic");
+        Game.game.data.addMove("Sonic Boom");
+        Game.game.data.addMove("Disable");
+        Game.game.data.addMove("Acid");
+        Game.game.data.addMove("Ember");
+        Game.game.data.addMove("Flamethrower");
+        Game.game.data.addMove("Mist");
+        Game.game.data.addMove("Water Gun");
+        Game.game.data.addMove("Hydro Pump");
+        Game.game.data.addMove("Surf");
+        Game.game.data.addMove("Ice Beam");
+        Game.game.data.addMove("Blizzard");
+        Game.game.data.addMove("Psybeam");
+        Game.game.data.addMove("Bubble Beam");
+        Game.game.data.addMove("Aurora Beam");
+        Game.game.data.addMove("Hyper Beam");
+        Game.game.data.addMove("Peck");
+        Game.game.data.addMove("Drill Peck");
+        Game.game.data.addMove("Submission");
+        Game.game.data.addMove("Low Kick");
+        Game.game.data.addMove("Counter");
+        Game.game.data.addMove("Seismic Toss", FIGHTING, PHYSICAL, TOUGH, ADJACENT, 4, -1, 100, "contact, protect, mirror, nonsky", null);
+        Game.game.data.addMove("Strength");
+        Game.game.data.addMove("Absorb");
+        Game.game.data.addMove("Mega Drain");
+        Game.game.data.addMove("Leech Seed");
+        Game.game.data.addMove("Growth");
+        Game.game.data.addMove("Razor Leaf");
+        Game.game.data.addMove("Solar Beam");
+        Game.game.data.addMove("Poison Powder");
+        Game.game.data.addMove("Stun Spore");
+        Game.game.data.addMove("Sleep Powder");
+        Game.game.data.addMove("Petal Dance");
+        Game.game.data.addMove("String Shot");
+        Game.game.data.addMove("Dragon Rage");
+        Game.game.data.addMove("Fire Spin");
+        Game.game.data.addMove("Thunder Shock");
+        Game.game.data.addMove("Thunderbolt");
+        Game.game.data.addMove("Thunder Wave");
+        Game.game.data.addMove("Thunder");
+        Game.game.data.addMove("Rock Throw");
+        Game.game.data.addMove("Earthquake");
+        Game.game.data.addMove("Fissure");
+        Game.game.data.addMove("Dig");
+        Game.game.data.addMove("Toxic");
+        Game.game.data.addMove("Confusion");
+        Game.game.data.addMove("Psychic");
+        Game.game.data.addMove("Hypnosis");
+        Game.game.data.addMove("Meditate");
+        Game.game.data.addMove("Agility");
+        Game.game.data.addMove("Quick Attack");
+        Game.game.data.addMove("Rage");
+        Game.game.data.addMove("Teleport");
+        Game.game.data.addMove("Night Shade", GHOST, SPECIAL, CLEVER, ADJACENT, 3, -1, 100, "protect, mirror", null);
+        Game.game.data.addMove("Mimic");
+        Game.game.data.addMove("Screech");
+        Game.game.data.addMove("Double Team");
+        Game.game.data.addMove("Recover");
+        Game.game.data.addMove("Harden");
+        Game.game.data.addMove("Minimize");
+        Game.game.data.addMove("Smokescreen");
+        Game.game.data.addMove("Confuse Ray");
+        Game.game.data.addMove("Withdraw");
+        Game.game.data.addMove("Defense Curl");
+        Game.game.data.addMove("Barrier");
+        Game.game.data.addMove("Light Screen");
+        Game.game.data.addMove("Haze");
+        Game.game.data.addMove("Reflect");
+        Game.game.data.addMove("Focus Energy");
+        Game.game.data.addMove("Bide");
+        Game.game.data.addMove("Metronome");
+        Game.game.data.addMove("Mirror Move");
+        Game.game.data.addMove("Self-Destruct");
+        Game.game.data.addMove("Egg Bomb");
+        Game.game.data.addMove("Lick");
+        Game.game.data.addMove("Smog");
+        Game.game.data.addMove("Sludge");
+        Game.game.data.addMove("Bone Club");
+        Game.game.data.addMove("Fire Blast");
+        Game.game.data.addMove("Waterfall");
+        Game.game.data.addMove("Clamp");
+        Game.game.data.addMove("Swift");
+        Game.game.data.addMove("Skull Bash");
+        Game.game.data.addMove("Spike Cannon");
+        Game.game.data.addMove("Constrict");
+        Game.game.data.addMove("Amnesia");
+        Game.game.data.addMove("Kinesis");
+        Game.game.data.addMove("Soft-Boiled");
+        Game.game.data.addMove("High Jump Kick");
+        Game.game.data.addMove("Glare");
+        Game.game.data.addMove("Dream Eater");
+        Game.game.data.addMove("Poison Gas");
+        Game.game.data.addMove("Barrage");
+        Game.game.data.addMove("Leech Life");
+        Game.game.data.addMove("Lovely Kiss");
+        Game.game.data.addMove("Sky Attack");
+        Game.game.data.addMove("Transform");
+        Game.game.data.addMove("Bubble");
+        Game.game.data.addMove("Dizzy Punch");
+        Game.game.data.addMove("Spore");
+        Game.game.data.addMove("Flash");
+        Game.game.data.addMove("Psywave");
+        Game.game.data.addMove("Splash");
+        Game.game.data.addMove("Acid Armor");
+        Game.game.data.addMove("Crabhammer");
+        Game.game.data.addMove("Explosion");
+        Game.game.data.addMove("Fury Swipes");
+        Game.game.data.addMove("Bonemerang");
+        Game.game.data.addMove("Rest");
+        Game.game.data.addMove("Rock Slide");
+        Game.game.data.addMove("Hyper Fang");
+        Game.game.data.addMove("Sharpen");
+        Game.game.data.addMove("Conversion");
+        Game.game.data.addMove("Tri Attack");
+        Game.game.data.addMove("Super Fang");
+        Game.game.data.addMove("Slash");
+        Game.game.data.addMove("Substitute");
+        Game.game.data.addMove("Struggle");
+        Game.game.data.addMove("Sketch");
+        Game.game.data.addMove("Triple Kick");
+        Game.game.data.addMove("Thief");
+        Game.game.data.addMove("Spider Web");
+        Game.game.data.addMove("Mind Reader");
+        Game.game.data.addMove("Nightmare");
+        Game.game.data.addMove("Flame Wheel");
+        Game.game.data.addMove("Snore");
+        Game.game.data.addMove("Curse*");
+        Game.game.data.addMove("Flail");
+        Game.game.data.addMove("Conversion 2");
+        Game.game.data.addMove("Aeroblast");
+        Game.game.data.addMove("Cotton Spore");
+        Game.game.data.addMove("Reversal");
+        Game.game.data.addMove("Spite");
+        Game.game.data.addMove("Powder Snow");
+        Game.game.data.addMove("Protect");
+        Game.game.data.addMove("Mach Punch");
+        Game.game.data.addMove("Scary Face");
+        Game.game.data.addMove("Feint Attack");
+        Game.game.data.addMove("Sweet Kiss*");
+        Game.game.data.addMove("Belly Drum");
+        Game.game.data.addMove("Sludge Bomb");
+        Game.game.data.addMove("Mud-Slap");
+        Game.game.data.addMove("Octazooka");
+        Game.game.data.addMove("Spikes");
+        Game.game.data.addMove("Zap Cannon");
+        Game.game.data.addMove("Foresight");
+        Game.game.data.addMove("Destiny Bond");
+        Game.game.data.addMove("Perish Song");
+        Game.game.data.addMove("Icy Wind");
+        Game.game.data.addMove("Detect");
+        Game.game.data.addMove("Bone Rush");
+        Game.game.data.addMove("Lock-On");
+        Game.game.data.addMove("Outrage");
+        Game.game.data.addMove("Sandstorm");
+        Game.game.data.addMove("Giga Drain");
+        Game.game.data.addMove("Endure");
+        Game.game.data.addMove("Charm*");
+        Game.game.data.addMove("Rollout");
+        Game.game.data.addMove("False Swipe");
+        Game.game.data.addMove("Swagger");
+        Game.game.data.addMove("Milk Drink");
+        Game.game.data.addMove("Spark");
+        Game.game.data.addMove("Fury Cutter");
+        Game.game.data.addMove("Steel Wing");
+        Game.game.data.addMove("Mean Look");
+        Game.game.data.addMove("Attract");
+        Game.game.data.addMove("Sleep Talk");
+        Game.game.data.addMove("Heal Bell");
+        Game.game.data.addMove("Return");
+        Game.game.data.addMove("Present");
+        Game.game.data.addMove("Frustration");
+        Game.game.data.addMove("Safeguard");
+        Game.game.data.addMove("Pain Split");
+        Game.game.data.addMove("Sacred Fire");
+        Game.game.data.addMove("Magnitude");
+        Game.game.data.addMove("Dynamic Punch");
+        Game.game.data.addMove("Megahorn");
+        Game.game.data.addMove("Dragon Breath");
+        Game.game.data.addMove("Baton Pass");
+        Game.game.data.addMove("Encore");
+        Game.game.data.addMove("Pursuit");
+        Game.game.data.addMove("Rapid Spin");
+        Game.game.data.addMove("Sweet Scent");
+        Game.game.data.addMove("Iron Tail");
+        Game.game.data.addMove("Metal Claw");
+        Game.game.data.addMove("Vital Throw");
+        Game.game.data.addMove("Morning Sun");
+        Game.game.data.addMove("Synthesis");
+        Game.game.data.addMove("Moonlight*");
+        Game.game.data.addMove("Hidden Power");
+        Game.game.data.addMove("Cross Chop");
+        Game.game.data.addMove("Twister");
+        Game.game.data.addMove("Rain Dance");
+        Game.game.data.addMove("Sunny Day");
+        Game.game.data.addMove("Crunch");
+        Game.game.data.addMove("Mirror Coat");
+        Game.game.data.addMove("Psych Up");
+        Game.game.data.addMove("Extreme Speed");
+        Game.game.data.addMove("Ancient Power");
+        Game.game.data.addMove("Shadow Ball");
+        Game.game.data.addMove("Future Sight");
+        Game.game.data.addMove("Rock Smash");
+        Game.game.data.addMove("Whirlpool");
+        Game.game.data.addMove("Beat Up");
+        Game.game.data.addMove("Fake Out");
+        Game.game.data.addMove("Uproar");
+        Game.game.data.addMove("Stockpile");
+        Game.game.data.addMove("Spit Up");
+        Game.game.data.addMove("Swallow");
+        Game.game.data.addMove("Heat Wave");
+        Game.game.data.addMove("Hail");
+        Game.game.data.addMove("Torment");
+        Game.game.data.addMove("Flatter");
+        Game.game.data.addMove("Will-O-Wisp");
+        Game.game.data.addMove("Memento");
+        Game.game.data.addMove("Facade");
+        Game.game.data.addMove("Focus Punch");
+        Game.game.data.addMove("Smelling Salts");
+        Game.game.data.addMove("Follow Me");
+        Game.game.data.addMove("Nature Power");
+        Game.game.data.addMove("Charge");
+        Game.game.data.addMove("Taunt");
+        Game.game.data.addMove("Helping Hand");
+        Game.game.data.addMove("Trick");
+        Game.game.data.addMove("Role Play");
+        Game.game.data.addMove("Wish");
+        Game.game.data.addMove("Assist");
+        Game.game.data.addMove("Ingrain");
+        Game.game.data.addMove("Superpower");
+        Game.game.data.addMove("Magic Coat");
+        Game.game.data.addMove("Recycle");
+        Game.game.data.addMove("Revenge");
+        Game.game.data.addMove("Brick Break");
+        Game.game.data.addMove("Yawn");
+        Game.game.data.addMove("Knock Off");
+        Game.game.data.addMove("Endeavor");
+        Game.game.data.addMove("Eruption");
+        Game.game.data.addMove("Skill Swap");
+        Game.game.data.addMove("Imprison");
+        Game.game.data.addMove("Refresh");
+        Game.game.data.addMove("Grudge");
+        Game.game.data.addMove("Snatch");
+        Game.game.data.addMove("Secret Power");
+        Game.game.data.addMove("Dive");
+        Game.game.data.addMove("Arm Thrust");
+        Game.game.data.addMove("Camouflage");
+        Game.game.data.addMove("Tail Glow");
+        Game.game.data.addMove("Luster Purge");
+        Game.game.data.addMove("Mist Ball");
+        Game.game.data.addMove("Feather Dance");
+        Game.game.data.addMove("Teeter Dance");
+        Game.game.data.addMove("Blaze Kick");
+        Game.game.data.addMove("Mud Sport");
+        Game.game.data.addMove("Ice Ball");
+        Game.game.data.addMove("Needle Arm");
+        Game.game.data.addMove("Slack Off");
+        Game.game.data.addMove("Hyper Voice");
+        Game.game.data.addMove("Poison Fang");
+        Game.game.data.addMove("Crush Claw");
+        Game.game.data.addMove("Blast Burn");
+        Game.game.data.addMove("Hydro Cannon");
+        Game.game.data.addMove("Meteor Mash");
+        Game.game.data.addMove("Astonish");
+        Game.game.data.addMove("Weather Ball");
+        Game.game.data.addMove("Aromatherapy");
+        Game.game.data.addMove("Fake Tears");
+        Game.game.data.addMove("Air Cutter");
+        Game.game.data.addMove("Overheat");
+        Game.game.data.addMove("Odor Sleuth");
+        Game.game.data.addMove("Rock Tomb");
+        Game.game.data.addMove("Silver Wind");
+        Game.game.data.addMove("Metal Sound");
+        Game.game.data.addMove("Grass Whistle");
+        Game.game.data.addMove("Tickle");
+        Game.game.data.addMove("Cosmic Power");
+        Game.game.data.addMove("Water Spout");
+        Game.game.data.addMove("Signal Beam");
+        Game.game.data.addMove("Shadow Punch");
+        Game.game.data.addMove("Extrasensory");
+        Game.game.data.addMove("Sky Uppercut");
+        Game.game.data.addMove("Sand Tomb");
+        Game.game.data.addMove("Sheer Cold");
+        Game.game.data.addMove("Muddy Water");
+        Game.game.data.addMove("Bullet Seed");
+        Game.game.data.addMove("Aerial Ace");
+        Game.game.data.addMove("Icicle Spear");
+        Game.game.data.addMove("Iron Defense");
+        Game.game.data.addMove("Block");
+        Game.game.data.addMove("Howl");
+        Game.game.data.addMove("Dragon Claw");
+        Game.game.data.addMove("Frenzy Plant");
+        Game.game.data.addMove("Bulk Up");
+        Game.game.data.addMove("Bounce");
+        Game.game.data.addMove("Mud Shot");
+        Game.game.data.addMove("Poison Tail");
+        Game.game.data.addMove("Covet");
+        Game.game.data.addMove("Volt Tackle");
+        Game.game.data.addMove("Magical Leaf");
+        Game.game.data.addMove("Water Sport");
+        Game.game.data.addMove("Calm Mind");
+        Game.game.data.addMove("Leaf Blade");
+        Game.game.data.addMove("Dragon Dance");
+        Game.game.data.addMove("Rock Blast");
+        Game.game.data.addMove("Shock Wave");
+        Game.game.data.addMove("Water Pulse");
+        Game.game.data.addMove("Doom Desire");
+        Game.game.data.addMove("Psycho Boost");
+        Game.game.data.addMove("Roost");
+        Game.game.data.addMove("Gravity");
+        Game.game.data.addMove("Miracle Eye");
+        Game.game.data.addMove("Wake-Up Slap");
+        Game.game.data.addMove("Hammer Arm");
+        Game.game.data.addMove("Gyro Ball");
+        Game.game.data.addMove("Healing Wish");
+        Game.game.data.addMove("Brine");
+        Game.game.data.addMove("Natural Gift");
+        Game.game.data.addMove("Feint");
+        Game.game.data.addMove("Pluck");
+        Game.game.data.addMove("Tailwind");
+        Game.game.data.addMove("Acupressure");
+        Game.game.data.addMove("Metal Burst");
+        Game.game.data.addMove("U-turn");
+        Game.game.data.addMove("Close Combat");
+        Game.game.data.addMove("Payback");
+        Game.game.data.addMove("Assurance");
+        Game.game.data.addMove("Embargo");
+        Game.game.data.addMove("Fling");
+        Game.game.data.addMove("Psycho Shift");
+        Game.game.data.addMove("Trump Card");
+        Game.game.data.addMove("Heal Block");
+        Game.game.data.addMove("Wring Out");
+        Game.game.data.addMove("Power Trick");
+        Game.game.data.addMove("Gastro Acid");
+        Game.game.data.addMove("Lucky Chant");
+        Game.game.data.addMove("Me First");
+        Game.game.data.addMove("Copycat");
+        Game.game.data.addMove("Power Swap");
+        Game.game.data.addMove("Guard Swap");
+        Game.game.data.addMove("Punishment");
+        Game.game.data.addMove("Last Resort");
+        Game.game.data.addMove("Worry Seed");
+        Game.game.data.addMove("Sucker Punch");
+        Game.game.data.addMove("Toxic Spikes");
+        Game.game.data.addMove("Heart Swap");
+        Game.game.data.addMove("Aqua Ring");
+        Game.game.data.addMove("Magnet Rise");
+        Game.game.data.addMove("Flare Blitz");
+        Game.game.data.addMove("Force Palm");
+        Game.game.data.addMove("Aura Sphere");
+        Game.game.data.addMove("Rock Polish");
+        Game.game.data.addMove("Poison Jab");
+        Game.game.data.addMove("Dark Pulse");
+        Game.game.data.addMove("Night Slash");
+        Game.game.data.addMove("Aqua Tail");
+        Game.game.data.addMove("Seed Bomb");
+        Game.game.data.addMove("Air Slash");
+        Game.game.data.addMove("X-Scissor");
+        Game.game.data.addMove("Bug Buzz");
+        Game.game.data.addMove("Dragon Pulse");
+        Game.game.data.addMove("Dragon Rush");
+        Game.game.data.addMove("Power Gem");
+        Game.game.data.addMove("Drain Punch");
+        Game.game.data.addMove("Vacuum Wave");
+        Game.game.data.addMove("Focus Blast");
+        Game.game.data.addMove("Energy Ball");
+        Game.game.data.addMove("Brave Bird");
+        Game.game.data.addMove("Earth Power");
+        Game.game.data.addMove("Switcheroo");
+        Game.game.data.addMove("Giga Impact");
+        Game.game.data.addMove("Nasty Plot");
+        Game.game.data.addMove("Bullet Punch");
+        Game.game.data.addMove("Avalanche");
+        Game.game.data.addMove("Ice Shard");
+        Game.game.data.addMove("Shadow Claw");
+        Game.game.data.addMove("Thunder Fang");
+        Game.game.data.addMove("Ice Fang");
+        Game.game.data.addMove("Fire Fang");
+        Game.game.data.addMove("Shadow Sneak");
+        Game.game.data.addMove("Mud Bomb");
+        Game.game.data.addMove("Psycho Cut");
+        Game.game.data.addMove("Zen Headbutt");
+        Game.game.data.addMove("Mirror Shot");
+        Game.game.data.addMove("Flash Cannon");
+        Game.game.data.addMove("Rock Climb");
+        Game.game.data.addMove("Defog");
+        Game.game.data.addMove("Trick Room");
+        Game.game.data.addMove("Draco Meteor");
+        Game.game.data.addMove("Discharge");
+        Game.game.data.addMove("Lava Plume");
+        Game.game.data.addMove("Leaf Storm");
+        Game.game.data.addMove("Power Whip");
+        Game.game.data.addMove("Rock Wrecker");
+        Game.game.data.addMove("Cross Poison");
+        Game.game.data.addMove("Gunk Shot");
+        Game.game.data.addMove("Iron Head");
+        Game.game.data.addMove("Magnet Bomb");
+        Game.game.data.addMove("Stone Edge");
+        Game.game.data.addMove("Captivate");
+        Game.game.data.addMove("Stealth Rock");
+        Game.game.data.addMove("Grass Knot");
+        Game.game.data.addMove("Chatter");
+        Game.game.data.addMove("Judgment");
+        Game.game.data.addMove("Bug Bite");
+        Game.game.data.addMove("Charge Beam");
+        Game.game.data.addMove("Wood Hammer");
+        Game.game.data.addMove("Aqua Jet");
+        Game.game.data.addMove("Attack Order");
+        Game.game.data.addMove("Defend Order");
+        Game.game.data.addMove("Heal Order");
+        Game.game.data.addMove("Head Smash");
+        Game.game.data.addMove("Double Hit");
+        Game.game.data.addMove("Roar of Time");
+        Game.game.data.addMove("Spacial Rend");
+        Game.game.data.addMove("Lunar Dance");
+        Game.game.data.addMove("Crush Grip");
+        Game.game.data.addMove("Magma Storm");
+        Game.game.data.addMove("Dark Void");
+        Game.game.data.addMove("Seed Flare");
+        Game.game.data.addMove("Ominous Wind");
+        Game.game.data.addMove("Shadow Force");
+        Game.game.data.addMove("Hone Claws");
+        Game.game.data.addMove("Wide Guard");
+        Game.game.data.addMove("Guard Split");
+        Game.game.data.addMove("Power Split");
+        Game.game.data.addMove("Wonder Room");
+        Game.game.data.addMove("Psyshock");
+        Game.game.data.addMove("Venoshock");
+        Game.game.data.addMove("Autotomize");
+        Game.game.data.addMove("Rage Powder");
+        Game.game.data.addMove("Telekinesis");
+        Game.game.data.addMove("Magic Room");
+        Game.game.data.addMove("Smack Down");
+        Game.game.data.addMove("Storm Throw");
+        Game.game.data.addMove("Flame Burst");
+        Game.game.data.addMove("Sludge Wave");
+        Game.game.data.addMove("Quiver Dance");
+        Game.game.data.addMove("Heavy Slam");
+        Game.game.data.addMove("Synchronoise");
+        Game.game.data.addMove("Electro Ball");
+        Game.game.data.addMove("Soak");
+        Game.game.data.addMove("Flame Charge");
+        Game.game.data.addMove("Coil");
+        Game.game.data.addMove("Low Sweep");
+        Game.game.data.addMove("Acid Spray");
+        Game.game.data.addMove("Foul Play");
+        Game.game.data.addMove("Simple Beam");
+        Game.game.data.addMove("Entrainment");
+        Game.game.data.addMove("After You");
+        Game.game.data.addMove("Round");
+        Game.game.data.addMove("Echoed Voice");
+        Game.game.data.addMove("Chip Away");
+        Game.game.data.addMove("Clear Smog");
+        Game.game.data.addMove("Stored Power");
+        Game.game.data.addMove("Quick Guard");
+        Game.game.data.addMove("Ally Switch");
+        Game.game.data.addMove("Scald");
+        Game.game.data.addMove("Shell Smash");
+        Game.game.data.addMove("Heal Pulse");
+        Game.game.data.addMove("Hex");
+        Game.game.data.addMove("Sky Drop");
+        Game.game.data.addMove("Shift Gear");
+        Game.game.data.addMove("Circle Throw");
+        Game.game.data.addMove("Incinerate");
+        Game.game.data.addMove("Quash");
+        Game.game.data.addMove("Acrobatics");
+        Game.game.data.addMove("Reflect Type");
+        Game.game.data.addMove("Retaliate");
+        Game.game.data.addMove("Final Gambit");
+        Game.game.data.addMove("Bestow");
+        Game.game.data.addMove("Inferno");
+        Game.game.data.addMove("Water Pledge");
+        Game.game.data.addMove("Fire Pledge");
+        Game.game.data.addMove("Grass Pledge");
+        Game.game.data.addMove("Volt Switch");
+        Game.game.data.addMove("Struggle Bug");
+        Game.game.data.addMove("Bulldoze");
+        Game.game.data.addMove("Frost Breath");
+        Game.game.data.addMove("Dragon Tail");
+        Game.game.data.addMove("Work Up");
+        Game.game.data.addMove("Electroweb");
+        Game.game.data.addMove("Wild Charge");
+        Game.game.data.addMove("Drill Run");
+        Game.game.data.addMove("Dual Chop");
+        Game.game.data.addMove("Heart Stamp");
+        Game.game.data.addMove("Horn Leech");
+        Game.game.data.addMove("Sacred Sword");
+        Game.game.data.addMove("Razor Shell");
+        Game.game.data.addMove("Heat Crash");
+        Game.game.data.addMove("Leaf Tornado");
+        Game.game.data.addMove("Steamroller");
+        Game.game.data.addMove("Cotton Guard");
+        Game.game.data.addMove("Night Daze");
+        Game.game.data.addMove("Psystrike");
+        Game.game.data.addMove("Tail Slap");
+        Game.game.data.addMove("Hurricane");
+        Game.game.data.addMove("Head Charge");
+        Game.game.data.addMove("Gear Grind");
+        Game.game.data.addMove("Searing Shot");
+        Game.game.data.addMove("Techno Blast");
+        Game.game.data.addMove("Relic Song");
+        Game.game.data.addMove("Secret Sword");
+        Game.game.data.addMove("Glaciate");
+        Game.game.data.addMove("Bolt Strike");
+        Game.game.data.addMove("Blue Flare");
+        Game.game.data.addMove("Fiery Dance");
+        Game.game.data.addMove("Freeze Shock");
+        Game.game.data.addMove("Ice Burn");
+        Game.game.data.addMove("Snarl");
+        Game.game.data.addMove("Icicle Crash");
+        Game.game.data.addMove("V-create");
+        Game.game.data.addMove("Fusion Flare");
+        Game.game.data.addMove("Fusion Bolt");
+        Game.game.data.addMove("Flying Press");
+        Game.game.data.addMove("Mat Block");
+        Game.game.data.addMove("Belch");
+        Game.game.data.addMove("Rototiller");
+        Game.game.data.addMove("Sticky Web");
+        Game.game.data.addMove("Fell Stinger");
+        Game.game.data.addMove("Phantom Force");
+        Game.game.data.addMove("Trick-or-Treat");
+        Game.game.data.addMove("Noble Roar");
+        Game.game.data.addMove("Ion Deluge");
+        Game.game.data.addMove("Parabolic Charge");
+        Game.game.data.addMove("Forest's Curse");
+        Game.game.data.addMove("Petal Blizzard");
+        Game.game.data.addMove("Freeze-Dry");
+        Game.game.data.addMove("Disarming Voice");
+        Game.game.data.addMove("Parting Shot");
+        Game.game.data.addMove("Topsy-Turvy");
+        Game.game.data.addMove("Draining Kiss");
+        Game.game.data.addMove("Crafty Shield");
+        Game.game.data.addMove("Flower Shield");
+        Game.game.data.addMove("Grassy Terrain");
+        Game.game.data.addMove("Misty Terrain");
+        Game.game.data.addMove("Electrify");
+        Game.game.data.addMove("Play Rough");
+        Game.game.data.addMove("Fairy Wind");
+        Game.game.data.addMove("Moonblast");
+        Game.game.data.addMove("Boomburst");
+        Game.game.data.addMove("Fairy Lock");
+        Game.game.data.addMove("King's Shield");
+        Game.game.data.addMove("Play Nice");
+        Game.game.data.addMove("Confide");
+        Game.game.data.addMove("Diamond Storm");
+        Game.game.data.addMove("Steam Eruption");
+        Game.game.data.addMove("Hyperspace Hole");
+        Game.game.data.addMove("Water Shuriken*");
+        Game.game.data.addMove("Mystical Fire");
+        Game.game.data.addMove("Spiky Shield");
+        Game.game.data.addMove("Aromatic Mist");
+        Game.game.data.addMove("Eerie Impulse");
+        Game.game.data.addMove("Venom Drench");
+        Game.game.data.addMove("Powder");
+        Game.game.data.addMove("Geomancy");
+        Game.game.data.addMove("Magnetic Flux");
+        Game.game.data.addMove("Happy Hour");
+        Game.game.data.addMove("Electric Terrain");
+        Game.game.data.addMove("Dazzling Gleam");
+        Game.game.data.addMove("Celebrate");
+        Game.game.data.addMove("Hold Hands");
+        Game.game.data.addMove("Baby-Doll Eyes");
+        Game.game.data.addMove("Nuzzle");
+        Game.game.data.addMove("Hold Back");
+        Game.game.data.addMove("Infestation");
+        Game.game.data.addMove("Power-Up Punch");
+        Game.game.data.addMove("Oblivion Wing");
+        Game.game.data.addMove("Thousand Arrows");
+        Game.game.data.addMove("Thousand Waves");
+        Game.game.data.addMove("Land's Wrath");
+        Game.game.data.addMove("Light of Ruin");
+        Game.game.data.addMove("Origin Pulse");
+        Game.game.data.addMove("Precipice Blades");
+        Game.game.data.addMove("Dragon Ascent");
+        Game.game.data.addMove("Hyperspace Fury");
+        Game.game.data.addMove("Breakneck Blitz");
+        Game.game.data.addMove("Breakneck Blitz");
+        Game.game.data.addMove("All-Out Pummeling");
+        Game.game.data.addMove("All-Out Pummeling");
+        Game.game.data.addMove("Supersonic Skystrike");
+        Game.game.data.addMove("Supersonic Skystrike");
+        Game.game.data.addMove("Acid Downpour");
+        Game.game.data.addMove("Acid Downpour");
+        Game.game.data.addMove("Tectonic Rage");
+        Game.game.data.addMove("Tectonic Rage");
+        Game.game.data.addMove("Continental Crush");
+        Game.game.data.addMove("Continental Crush");
+        Game.game.data.addMove("Savage Spin-Out");
+        Game.game.data.addMove("Savage Spin-Out");
+        Game.game.data.addMove("Never-Ending Nightmare");
+        Game.game.data.addMove("Never-Ending Nightmare");
+        Game.game.data.addMove("Corkscrew Crash");
+        Game.game.data.addMove("Corkscrew Crash");
+        Game.game.data.addMove("Inferno Overdrive");
+        Game.game.data.addMove("Inferno Overdrive");
+        Game.game.data.addMove("Hydro Vortex");
+        Game.game.data.addMove("Hydro Vortex");
+        Game.game.data.addMove("Bloom Doom");
+        Game.game.data.addMove("Bloom Doom");
+        Game.game.data.addMove("Gigavolt Havoc");
+        Game.game.data.addMove("Gigavolt Havoc");
+        Game.game.data.addMove("Shattered Psyche");
+        Game.game.data.addMove("Shattered Psyche");
+        Game.game.data.addMove("Subzero Slammer");
+        Game.game.data.addMove("Subzero Slammer");
+        Game.game.data.addMove("Devastating Drake");
+        Game.game.data.addMove("Devastating Drake");
+        Game.game.data.addMove("Black Hole Eclipse");
+        Game.game.data.addMove("Black Hole Eclipse");
+        Game.game.data.addMove("Twinkle Tackle");
+        Game.game.data.addMove("Twinkle Tackle");
+        Game.game.data.addMove("Catastropika");
+        Game.game.data.addMove("Shore Up");
+        Game.game.data.addMove("First Impression");
+        Game.game.data.addMove("Baneful Bunker");
+        Game.game.data.addMove("Spirit Shackle");
+        Game.game.data.addMove("Darkest Lariat");
+        Game.game.data.addMove("Sparkling Aria");
+        Game.game.data.addMove("Ice Hammer");
+        Game.game.data.addMove("Floral Healing");
+        Game.game.data.addMove("High Horsepower");
+        Game.game.data.addMove("Strength Sap");
+        Game.game.data.addMove("Solar Blade");
+        Game.game.data.addMove("Leafage");
+        Game.game.data.addMove("Spotlight");
+        Game.game.data.addMove("Toxic Thread");
+        Game.game.data.addMove("Laser Focus");
+        Game.game.data.addMove("Gear Up");
+        Game.game.data.addMove("Throat Chop");
+        Game.game.data.addMove("Pollen Puff");
+        Game.game.data.addMove("Anchor Shot");
+        Game.game.data.addMove("Psychic Terrain");
+        Game.game.data.addMove("Lunge");
+        Game.game.data.addMove("Fire Lash");
+        Game.game.data.addMove("Power Trip");
+        Game.game.data.addMove("Burn Up");
+        Game.game.data.addMove("Speed Swap");
+        Game.game.data.addMove("Smart Strike");
+        Game.game.data.addMove("Purify");
+        Game.game.data.addMove("Revelation Dance");
+        Game.game.data.addMove("Core Enforcer");
+        Game.game.data.addMove("Trop Kick");
+        Game.game.data.addMove("Instruct");
+        Game.game.data.addMove("Beak Blast");
+        Game.game.data.addMove("Clanging Scales");
+        Game.game.data.addMove("Dragon Hammer");
+        Game.game.data.addMove("Brutal Swing");
+        Game.game.data.addMove("Aurora Veil");
+        Game.game.data.addMove("Sinister Arrow Raid");
+        Game.game.data.addMove("Malicious Moonsault");
+        Game.game.data.addMove("Oceanic Operetta");
+        Game.game.data.addMove("Guardian of Alola");
+        Game.game.data.addMove("Soul-Stealing 7-Star Strike");
+        Game.game.data.addMove("Stoked Sparksurfer");
+        Game.game.data.addMove("Pulverizing Pancake");
+        Game.game.data.addMove("Extreme Evoboost");
+        Game.game.data.addMove("Genesis Supernova");
+        Game.game.data.addMove("Shell Trap");
+        Game.game.data.addMove("Fleur Cannon");
+        Game.game.data.addMove("Psychic Fangs");
+        Game.game.data.addMove("Stomping Tantrum");
+        Game.game.data.addMove("Shadow Bone");
+        Game.game.data.addMove("Accelerock");
+        Game.game.data.addMove("Liquidation");
+        Game.game.data.addMove("Prismatic Laser");
+        Game.game.data.addMove("Spectral Thief");
+        Game.game.data.addMove("Sunsteel Strike");
+        Game.game.data.addMove("Moongeist Beam");
+        Game.game.data.addMove("Tearful Look");
+        Game.game.data.addMove("Zing Zap");
+        Game.game.data.addMove("Nature's Madness");
+        Game.game.data.addMove("Multi-Attack");
+        Game.game.data.addMove("10,000,000 Volt Thunderbolt");
+        Game.game.data.addMove("Mind Blown");
+        Game.game.data.addMove("Plasma Fists");
+        Game.game.data.addMove("Photon Geyser");
+        Game.game.data.addMove("Light That Burns the Sky");
+        Game.game.data.addMove("Searing Sunraze Smash");
+        Game.game.data.addMove("Menacing Moonraze Maelstrom");
+        Game.game.data.addMove("Let's Snuggle Forever");
+        Game.game.data.addMove("Splintered Stormshards");
+        Game.game.data.addMove("Clangorous Soulblaze");
+        Game.game.data.addMove("Zippy Zap");
+        Game.game.data.addMove("Splishy Splash");
+        Game.game.data.addMove("Floaty Fall");
+        Game.game.data.addMove("Pika Papow");
+        Game.game.data.addMove("Bouncy Bubble");
+        Game.game.data.addMove("Buzzy Buzz");
+        Game.game.data.addMove("Sizzly Slide");
+        Game.game.data.addMove("Glitzy Glow");
+        Game.game.data.addMove("Baddy Bad");
+        Game.game.data.addMove("Sappy Seed");
+        Game.game.data.addMove("Freezy Frost");
+        Game.game.data.addMove("Sparkly Swirl");
+        Game.game.data.addMove("Veevee Volley");
+        Game.game.data.addMove("Double Iron Bash");
+        Game.game.data.addMove("Max Guard");
+        Game.game.data.addMove("Dynamax Cannon");
+        Game.game.data.addMove("Snipe Shot");
+        Game.game.data.addMove("Jaw Lock");
+        Game.game.data.addMove("Stuff Cheeks");
+        Game.game.data.addMove("No Retreat");
+        Game.game.data.addMove("Tar Shot");
+        Game.game.data.addMove("Magic Powder");
+        Game.game.data.addMove("Dragon Darts");
+        Game.game.data.addMove("Teatime");
+        Game.game.data.addMove("Octolock");
+        Game.game.data.addMove("Bolt Beak");
+        Game.game.data.addMove("Fishious Rend");
+        Game.game.data.addMove("Court Change");
+        Game.game.data.addMove("Max Flare");
+        Game.game.data.addMove("Max Flutterby");
+        Game.game.data.addMove("Max Lightning");
+        Game.game.data.addMove("Max Strike");
+        Game.game.data.addMove("Max Knuckle");
+        Game.game.data.addMove("Max Phantasm");
+        Game.game.data.addMove("Max Hailstorm");
+        Game.game.data.addMove("Max Ooze");
+        Game.game.data.addMove("Max Geyser");
+        Game.game.data.addMove("Max Airstream");
+        Game.game.data.addMove("Max Starfall");
+        Game.game.data.addMove("Max Wyrmwind");
+        Game.game.data.addMove("Max Mindstorm");
+        Game.game.data.addMove("Max Rockfall");
+        Game.game.data.addMove("Max Quake");
+        Game.game.data.addMove("Max Darkness");
+        Game.game.data.addMove("Max Overgrowth");
+        Game.game.data.addMove("Max Steelspike");
+        Game.game.data.addMove("Clangorous Soul");
+        Game.game.data.addMove("Body Press");
+        Game.game.data.addMove("Decorate");
+        Game.game.data.addMove("Drum Beating");
+        Game.game.data.addMove("Snap Trap");
+        Game.game.data.addMove("Pyro Ball");
+        Game.game.data.addMove("Behemoth Blade");
+        Game.game.data.addMove("Behemoth Bash");
+        Game.game.data.addMove("Aura Wheel");
+        Game.game.data.addMove("Breaking Swipe");
+        Game.game.data.addMove("Branch Poke");
+        Game.game.data.addMove("Overdrive");
+        Game.game.data.addMove("Apple Acid");
+        Game.game.data.addMove("Grav Apple");
+        Game.game.data.addMove("Spirit Break");
+        Game.game.data.addMove("Strange Steam");
+        Game.game.data.addMove("Life Dew");
+        Game.game.data.addMove("Obstruct");
+        Game.game.data.addMove("False Surrender");
+        Game.game.data.addMove("Meteor Assault");
+        Game.game.data.addMove("Eternabeam");
+        Game.game.data.addMove("Steel Beam");
     }
     private void addAbilities() {
         Game.game.data.addAbility(new Ability(1, "Stench", "By releasing stench when attacking, this Pokémon may cause the target to flinch."));
@@ -1240,8 +1249,8 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(Game.game.data.getRandomSpecies(), 15);
-        Game.game.data.player.party[1] = new PartyPokemon(Game.game.data.getRandomSpecies(), 15);
+        Game.game.data.player.party[0] = new PartyPokemon(5);
+        Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());
     }

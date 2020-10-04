@@ -227,7 +227,7 @@ public interface Pokemon {
     enum Type {
 
         NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK, BUG, GHOST, STEEL, FIRE, WATER,
-        GRASS, ELECTRIC, PSYCHIC, ICE, DRAGON, DARK, FAIRY, NONE, ROOST;
+        GRASS, ELECTRIC, PSYCHIC, ICE, DRAGON, DARK, FAIRY, NONE, ROOST, DOES_NOT_EXIST;
 
         private Type[] weakAgainst;
         private Type[] superEffectiveAgainst;
@@ -308,6 +308,8 @@ public interface Pokemon {
             NONE.setSuperEffectiveAgainst(nullArray);
             ROOST.setWeakAgainst(nullArray);
             ROOST.setSuperEffectiveAgainst(nullArray);
+            DOES_NOT_EXIST.setWeakAgainst(nullArray);
+            DOES_NOT_EXIST.setSuperEffectiveAgainst(nullArray);
         }
     }
     enum StatusCondition {

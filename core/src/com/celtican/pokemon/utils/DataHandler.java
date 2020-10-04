@@ -41,7 +41,7 @@ public class DataHandler {
         Move move;
 
         do move = moves.random();
-        while (move == null || move == getStruggle());
+        while (move == null || move.type == Pokemon.Type.DOES_NOT_EXIST);
 
         return move;
     }
@@ -67,13 +67,17 @@ public class DataHandler {
 
     public void addSpecies(String name, Pokemon.GenderRatio genderRatio, Pokemon.Type type1, Pokemon.Type type2, Pokemon.EggGroup eggGroup1, Pokemon.EggGroup eggGroup2, Pokemon.ExpGrowth expGrowth,
                            int a1, int a2, int aH, int aE, int hp, int atk, int def, int spA, int spD, int spe,
-                           int captureRate, int baseHappiness, int expEarned, int evHP, int evAtk, int evDef, int evSpA, int evSpD, int evSpe) {
+                           int captureRate, int baseHappiness, int expEarned, int evHP, int evAtk, int evDef, int evSpA, int evSpD, int evSpe,
+                           int evolveIntoSpecies, int evolveAtLevel, int[] moves, int[] moveLevels) {
         species.add(new Species(species.size, name, genderRatio, captureRate, expGrowth, expEarned,
                 new byte[] {(byte)evHP, (byte)evAtk, (byte)evDef, (byte)evSpA, (byte)evSpD, (byte)evSpe}, baseHappiness, eggGroup1, eggGroup2,
-                type1, type2, new int[] {a1, a2, aH, aE}, new int[] {hp, atk, def, spA, spD, spe}));
+                type1, type2, new int[] {a1, a2, aH, aE}, new int[] {hp, atk, def, spA, spD, spe}, evolveIntoSpecies, evolveAtLevel, moves, moveLevels));
     }
-    public void addMove(Move move) {
-        moves.add(move);
+    public void addMove(String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest, Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Move.Effect effect) {
+        moves.add(new Move(moves.size, name, type, category, contest, targets, basePP, basePower, accuracy, flags, effect));
+    }
+    public void addMove(String name) {
+        moves.add(new Move(moves.size, name, Pokemon.Type.DOES_NOT_EXIST, Pokemon.MoveCategory.PHYSICAL, Pokemon.ContestType.CLEVER, Pokemon.MoveTargets.ADJACENT, 1, 50, 80, "protect, mirror", null));
     }
     public void addAbility(Ability ability) {
         abilities.add(ability);

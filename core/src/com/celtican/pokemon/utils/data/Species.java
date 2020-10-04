@@ -94,12 +94,26 @@ public class Species {
     public int getStat(int index) {
         return stats[index];
     }
-    // moves
-    // evolution
+    private final int evolveSpecies;
+    public Species getEvolveSpecies() {
+        return evolveSpecies < 1 ? null : Game.game.data.getSpecies(evolveSpecies);
+    }
+    private final int evolveLevel;
+    public int getEvolveLevel() {
+        return evolveLevel;
+    }
+    private final int[] moves;
+    public int[] getMoves() {
+        return moves;
+    }
+    public final int[] moveLevels;
+    public int[] getMoveLevels() {
+        return moveLevels;
+    }
 
     public Species(int index, String name, Pokemon.GenderRatio genderRatio, int captureRate, Pokemon.ExpGrowth expGrowth,
                    int expEarned, byte[] earnedEVs, int baseHappiness, Pokemon.EggGroup eggGroup1, Pokemon.EggGroup eggGroup2,
-                   Pokemon.Type type1, Pokemon.Type type2, int[] abilities, int[] stats) {
+                   Pokemon.Type type1, Pokemon.Type type2, int[] abilities, int[] stats, int evolveLevel, int evolveSpecies, int[] moves, int[] moveLevels) {
         this.index = index;
         this.name = name;
         this.genderRatio = genderRatio;
@@ -114,5 +128,9 @@ public class Species {
         this.type2 = type2;
         this.abilities = abilities;
         this.stats = stats;
+        this.evolveLevel = evolveLevel;
+        this.evolveSpecies = evolveSpecies;
+        this.moves = moves;
+        this.moveLevels = moveLevels;
     }
 }

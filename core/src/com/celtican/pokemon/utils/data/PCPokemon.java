@@ -21,15 +21,30 @@ public class PCPokemon implements Pokemon {
         nature = base.getNature();
         isShiny = base.isShiny();
     }
+    public PCPokemon(int level) {
+        this(Game.game.data.getSpecies(1), level);
+    }
     public PCPokemon(Species species, int level) {
         this.species = species.getIndex();
         experience = species.getExperienceGrowth().getExpFromLevel(level);
         abilitySpeciesIndex = Species.getRandomWhichAbility();
         evs = new int[6];
         moves = new int[4];
-        moves[0] = 7;
-        for (int i = 1; i < 4; i++)
-            moves[i] = Game.game.data.getRandomMove().index;
+        int[] speciesMoves = species.getMoves();
+        int[] speciesMoveLevels = species.getMoveLevels();
+        for (int i = speciesMoveLevels.length-1; i >=0; i--) {
+            if (level >= speciesMoveLevels[i]) {
+                boolean assigned = false;
+                for (int j = 0; j < 4; j++) {
+                    if (moves[j] == 0) {
+                        moves[j] = speciesMoves[i];
+                        assigned = true;
+                        break;
+                    }
+                }
+                if (!assigned) break;
+            }
+        }
 //        ppUsed = new int[4];
 //        ppUps = new int[4];
         ivs = new int[6];

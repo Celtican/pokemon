@@ -209,6 +209,11 @@ public class BattleCalculator {
             return;
         }
 
+        if (move.type == Pokemon.Type.DOES_NOT_EXIST) {
+            new TextResult("Not yet implemented");
+            return;
+        }
+
         if (move.accuracy != 100) {
             boolean missed = false;
             if (move.index == 12) { // guillotine
@@ -223,6 +228,17 @@ public class BattleCalculator {
                 new TextResult(defender.getName() + " avoided the attack!");
                 return;
             }
+        }
+
+        if (move.category == Pokemon.MoveCategory.STATUS) {
+            switch (move.index) {
+                default:
+                    Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
+                    break;
+                case 45:
+                    new TextResult("Lower attack, etc. etc.");
+            }
+            return;
         }
 
         if (move.multi || move.doubleHit) {
