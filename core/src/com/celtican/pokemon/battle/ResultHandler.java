@@ -8,6 +8,7 @@ public class ResultHandler {
 
     public final BattleScreen screen;
     public Array<Result> results;
+    public Result curResult;
     private boolean goToNextResult = false;
 
     public ResultHandler(BattleScreen battleScreen) {
@@ -29,15 +30,18 @@ public class ResultHandler {
     }
 
     public void update() {
+        if (curResult == null && results.notEmpty()) curResult = results.first();
         while (goToNextResult) {
             goToNextResult = false;
-            results.removeIndex(0);
-            if (results.notEmpty() && results.first().start()) goToNextResult = true;
+            if (results.notEmpty()) {
+                curResult = results.removeIndex(0);
+                if (curResult.start()) goToNextResult = true;
+            } else curResult = null;
         }
-        if (hasResults()) results.first().update();
+        if (curResult != null) curResult.update();
     }
 
     public void render() {
-        if (hasResults()) results.first().render();
+        if (curResult != null) curResult.render();
     }
 }
