@@ -35,7 +35,7 @@ public class LearnMovesResult extends Result {
 
     @Override public void update() {
         text.update();
-        if (text.isFinished()) {
+        if (text.text.isFinished()) {
             switch (stage) {
                 case LEARN_FIRST_MOVE:
                     Move[] curMoves = pokemon.getMoves();
@@ -122,7 +122,7 @@ public class LearnMovesResult extends Result {
                 break;
             default: Game.logError("Unhandled stage: " + stage); break;
         }
-        if (s != null) text.setText(s);
+        if (s != null) text.text.setText(s);
     }
     private void addButton(String text, Runnable runnable) {
         if (buttons == null) buttons = new Array<>();

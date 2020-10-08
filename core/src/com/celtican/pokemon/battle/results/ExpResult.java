@@ -29,7 +29,7 @@ public class ExpResult extends Result {
 
     @Override public boolean start() {
         if (expBar != null) return false;
-        text.setText(pokemon.getName() + " gained " + pokemon.expGained + " exp!");
+        text.text.setText(pokemon.getName() + " gained " + pokemon.expGained + " exp!");
         oldLevel = pokemon.getLevel();
         if (pokemon.partyMemberSlot < parent.screen.parties[pokemon.party].numBattling) {
             float from = pokemon.getSpecies().getExperienceGrowth().getProgressToNextLevel(pokemon.getExperience());
@@ -67,14 +67,14 @@ public class ExpResult extends Result {
         switch (stage) {
             case DISPLAY_GAINED_EXP_TEXT:
                 text.update();
-                if (text.isFinished()) {
+                if (text.text.isFinished()) {
                     if (expBar != null) {
                         expBar.canRise = true;
                         stage = Stage.EXP_RISE;
                         Game.game.audio.playSound("sfx/battleExpRise.ogg");
                     } else {
                         if (leveledUp) {
-                            text.setText(pokemon.getName() + " leveled up!");
+                            text.text.setText(pokemon.getName() + " leveled up!");
                             stage = Stage.DISPLAY_LEVEL_UP_TEXT;
                         } else {
                             parent.nextResult();
@@ -88,7 +88,7 @@ public class ExpResult extends Result {
                     Game.game.audio.stopSound("sfx/battleExpRise.ogg");
                     expBar.healthBar.overrideLevel = -1;
                     if (leveledUp) {
-                        text.setText("Level up!");
+                        text.text.setText("Level up!");
                         stage = Stage.DISPLAY_LEVEL_UP_TEXT;
                     } else {
                         new WaitResult(Game.TARGET_FRAME_RATE/2);
@@ -100,7 +100,7 @@ public class ExpResult extends Result {
             case DISPLAY_LEVEL_UP_TEXT:
                 text.update();
                 leveledUp = false;
-                if (text.isFinished()) {
+                if (text.text.isFinished()) {
                     if (expBar != null) {
                         expBar.curValue = 0;
                         expBar.setValue(pokemon.getSpecies().getExperienceGrowth().getProgressToNextLevel(pokemon.getExperience()));
