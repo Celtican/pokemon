@@ -22,4 +22,8 @@ public abstract class Result {
     } // returns true if immediately moving to next result
     public void update() {}
     public void render() {}
+
+    @Override public String toString() {
+        return getClass().getSimpleName();
+    }
 }

@@ -1,6 +1,7 @@
 package com.celtican.pokemon.battle;
 
 import com.badlogic.gdx.utils.Array;
+import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.results.Result;
 import com.celtican.pokemon.screens.BattleScreen;
 
@@ -17,9 +18,15 @@ public class ResultHandler {
     }
 
     public boolean hasResults() {
-        return results.notEmpty();
+        return !(curResult == null && results.isEmpty());
     }
     public void nextResult() {
+        nextResult(false);
+    }
+    public void nextResult(boolean keepCurResult) {
+        if (keepCurResult) {
+            results.add(curResult);
+        }
         goToNextResult = true;
     }
     public void addResult(Result result) {
@@ -30,11 +37,12 @@ public class ResultHandler {
     }
 
     public void update() {
-        if (curResult == null && results.notEmpty()) curResult = results.first();
+        if (curResult == null && results.notEmpty()) goToNextResult = true;
         while (goToNextResult) {
             goToNextResult = false;
             if (results.notEmpty()) {
                 curResult = results.removeIndex(0);
+                Game.logInfo(curResult.toString());
                 if (curResult.start()) goToNextResult = true;
             } else curResult = null;
         }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.*;
+import com.celtican.pokemon.battle.results.Result;
 import com.celtican.pokemon.utils.data.Move;
 import com.celtican.pokemon.utils.data.PCPokemon;
 import com.celtican.pokemon.utils.data.PartyPokemon;
@@ -55,6 +56,7 @@ public class BattleScreen extends Screen {
             if (resultHandler.hasResults()) {
                 resultHandler.update();
             } else {
+                Game.logInfo("-- End Turn --");
                 playingResults = false;
                 buttonSlide = 0;
                 buttons.forEach(Button::show);
@@ -151,6 +153,7 @@ public class BattleScreen extends Screen {
             actionI = 0;
             waitingForCalculator = true;
             buttons.forEach(Button::hide);
+            Game.logInfo("-- New Turn --");
             calculator.beginCalculateTurn();
         }
     }

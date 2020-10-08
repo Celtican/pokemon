@@ -22,7 +22,7 @@ public class TextResult extends Result {
 
     public void setText(String text) {
         this.text = text;
-        progress = 0;
+        progress = text == null ? -1 : 0;
     }
 
     public boolean isFinished() {
@@ -36,5 +36,9 @@ public class TextResult extends Result {
     }
     @Override public void render() {
         if (progress != 0) Game.game.canvas.drawText(5, 25, progress > 0 ? text.substring(0, progress) : text);
+    }
+
+    @Override public String toString() {
+        return super.toString() + " : \"" + text + "\"";
     }
 }

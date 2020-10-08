@@ -1,8 +1,11 @@
 package com.celtican.pokemon.battle.results;
 
+import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.BattlePokemon;
+import com.celtican.pokemon.battle.DisplayPokemon;
 import com.celtican.pokemon.battle.ExpBar;
+import com.celtican.pokemon.utils.data.Move;
 
 public class ExpResult extends Result {
 
@@ -13,6 +16,7 @@ public class ExpResult extends Result {
     private final TextResult text;
     private Stage stage = Stage.DISPLAY_GAINED_EXP_TEXT;
     private boolean leveledUp;
+    private int oldLevel;
 
     public ExpResult(BattlePokemon pokemon) {
         this(pokemon, true);
@@ -24,7 +28,9 @@ public class ExpResult extends Result {
     }
 
     @Override public boolean start() {
+        if (expBar != null) return false;
         text.setText(pokemon.getName() + " gained " + pokemon.expGained + " exp!");
+        oldLevel = pokemon.getLevel();
         if (pokemon.partyMemberSlot < parent.screen.parties[pokemon.party].numBattling) {
             float from = pokemon.getSpecies().getExperienceGrowth().getProgressToNextLevel(pokemon.getExperience());
             pokemon.gainExp();
@@ -35,7 +41,9 @@ public class ExpResult extends Result {
             } else {
                 to = pokemon.getSpecies().getExperienceGrowth().getProgressToNextLevel(pokemon.getExperience());
             }
-            expBar = new ExpBar(parent.screen.parties[pokemon.party].displayMembers.get(pokemon.partyMemberSlot), from, to);
+            DisplayPokemon display = parent.screen.parties[pokemon.party].displayMembers.get(pokemon.partyMemberSlot);
+            display.healthBar.overrideLevel = oldLevel;
+            expBar = new ExpBar(display, from, to);
         } else {
             pokemon.gainExp();
             if (pokemon.getLevel() != pokemon.getSpecies().getExperienceGrowth().getLevelFromExp(pokemon.getExperience())) {
@@ -75,13 +83,16 @@ public class ExpResult extends Result {
                 }
                 break;
             case EXP_RISE:
+                expBar.canRise = true;
                 if (expBar.isFinished()) {
                     Game.game.audio.stopSound("sfx/battleExpRise.ogg");
+                    expBar.healthBar.overrideLevel = -1;
                     if (leveledUp) {
                         text.setText("Level up!");
                         stage = Stage.DISPLAY_LEVEL_UP_TEXT;
                     } else {
-                        expBar.hide();
+                        new WaitResult(Game.TARGET_FRAME_RATE/2);
+                        parent.nextResult(true);
                         stage = Stage.HIDE_EXP;
                     }
                 }
@@ -94,13 +105,15 @@ public class ExpResult extends Result {
                         expBar.curValue = 0;
                         expBar.setValue(pokemon.getSpecies().getExperienceGrowth().getProgressToNextLevel(pokemon.getExperience()));
                         stage = Stage.EXP_RISE;
+                        levelUp();
                     } else {
                         parent.nextResult();
                     }
                 }
                 break;
             case HIDE_EXP:
-                if (expBar.isFinished()) {
+                expBar.hide();
+                if (expBar.isHidden()) {
                     new WaitResult(Game.TARGET_FRAME_RATE/2);
                     parent.nextResult();
                     expBar.healthBar.expBar = null;
@@ -112,6 +125,15 @@ public class ExpResult extends Result {
             case DISPLAY_GAINED_EXP_TEXT:
             case DISPLAY_LEVEL_UP_TEXT:
                 text.render();
+        }
+    }
+
+    private void levelUp() {
+        Array<Move> moves = LearnMovesResult.canLearnNewMoves(pokemon, oldLevel);
+        if (moves != null) {
+            new LearnMovesResult(pokemon, moves);
+            parent.nextResult(true);
+            expBar.canRise = false;
         }
     }
 

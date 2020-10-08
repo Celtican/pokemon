@@ -17,6 +17,7 @@ public class HealthBar extends Bar {
 
     private final static float DELTA = 1f/Game.TARGET_FRAME_RATE;
 
+    public int overrideLevel = -1;
     public final DisplayPokemon master;
     private final Texture texture;
     public ExpBar expBar;
@@ -108,7 +109,7 @@ public class HealthBar extends Bar {
         }
         Game.game.canvas.drawSmallText(pos.x+23, pos.y+6, master.pokemon.name, color);
         int levelWidth = Game.game.canvas.getWidthOfSmallText(Integer.toString(master.pokemon.pokemon.getLevel()))/2;
-        Game.game.canvas.drawSmallText(pos.x+9 - levelWidth/2, pos.y+8, Integer.toString(master.pokemon.pokemon.getLevel()));
+        Game.game.canvas.drawSmallText(pos.x+9 - levelWidth/2, pos.y+8, Integer.toString(overrideLevel > 0 ? overrideLevel : master.pokemon.pokemon.getLevel()));
     }
     private void renderFoe() {
         Vector2Int pos = getPos();
@@ -155,7 +156,7 @@ public class HealthBar extends Bar {
         }
         Game.game.canvas.drawSmallText(pos.x+18, pos.y+4, master.pokemon.name, color);
         int levelWidth = Game.game.canvas.getWidthOfSmallText(Integer.toString(master.pokemon.pokemon.getLevel()))/2;
-        Game.game.canvas.drawSmallText(pos.x+6 - levelWidth/2, pos.y+6, Integer.toString(master.pokemon.pokemon.getLevel()));
+        Game.game.canvas.drawSmallText(pos.x+6 - levelWidth/2, pos.y+6, Integer.toString(overrideLevel > 0 ? overrideLevel : master.pokemon.pokemon.getLevel()));
     }
 
     public Vector2Int getPos() {

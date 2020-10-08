@@ -38,7 +38,7 @@ public class Player extends Character {
         if (tiles != null)
             for (int i = 0; i < tiles.size; i++)
                 if (tiles.get(i).type == Tile.Type.GRASS) {
-                    if (MathUtils.random(4) == 0)
+                    if (MathUtils.random(2) == 0)
                         Game.game.switchScreens(new BattleScreen());
                     return;
                 }

@@ -214,12 +214,12 @@ public class BattleCalculator {
             return;
         }
 
-        if (move.accuracy != 100) {
+        if (move.accuracy > 0) {
             boolean missed = false;
             if (move.index == 12) { // guillotine
                 if (user.getLevel() < defender.getLevel() || MathUtils.random(99) >= (user.getLevel() - defender.getLevel() + 30))
                     missed = true;
-            } else if (move.accuracy != -1) {
+            } else {
                 float accuracy = (calcStatWithStageAccuracy(move.accuracy/100f, user.statBoosts[5], defender.statBoosts[6]));
                 if (MathUtils.random() >= accuracy)
                     missed = true;
@@ -500,7 +500,7 @@ public class BattleCalculator {
         float affectionMultiplier = 1; // or 1.2 if affection is 2 hearts or more
         int faintedLevel = fainted.getLevel();
         int victorLevel = victor.getLevel();
-        float genericMultiplier = 1; // for pass powers, o-powers, rotom powers, etc.
+        float genericMultiplier = Game.game.expMultiplier; // for pass powers, o-powers, rotom powers, etc.
         int expShareDivider = 1; // or 2 if victor did not participate but got exp through an exp share (the higher this number, the less exp given)
         float tradeMultiplier = 1; // or 1.5/1.7 if victor is from domestic/international trade
         float postEvolutionMultiplier = 1; // or 1.2 if the victor's level is higher than needed to evolve
@@ -521,18 +521,18 @@ public class BattleCalculator {
     private void inflictDamage(BattlePokemon pokemon, int damage) {
         pokemon.setHP(pokemon.getHP() - Math.max(damage, 1));
         new SoundResult("sfx/battleDamage.ogg");
-        new HealthbarResult(pokemon);
+        new HealthBarResult(pokemon);
     }
     private void inflictDamage(BattlePokemon pokemon, DamageResult damage) {
         pokemon.setHP(pokemon.getHP() - (Math.max(damage.damage, 1)));
         if (damage.isCrit || damage.effectiveness > 0) new SoundResult("sfx/battleDamageSuper.ogg");
         else if (damage.effectiveness < 0) new SoundResult("sfx/battleDamageWeak.ogg");
         else new SoundResult("sfx/battleDamage.ogg");
-        new HealthbarResult(pokemon);
+        new HealthBarResult(pokemon);
     }
     private void heal(BattlePokemon pokemon, int heal) {
         pokemon.setHP(pokemon.getHP() + Math.max(1, heal));
-        new HealthbarResult(pokemon);
+        new HealthBarResult(pokemon);
     }
     private boolean handleFaint(BattlePokemon pokemon) {
         if (pokemon.getHP() > 0)

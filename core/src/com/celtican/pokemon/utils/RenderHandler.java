@@ -73,7 +73,9 @@ public class RenderHandler {
         if (Game.game.screen != null)
             try {
                 Game.game.screen.render();
-                if (fontSmall != null) Game.game.canvas.drawSmallText(2, height-10, Integer.toString(Gdx.graphics.getFramesPerSecond()));
+                if (fontSmall != null) Game.game.canvas.drawSmallText(2, height-10,
+                        Integer.toString(Gdx.graphics.getFramesPerSecond()),
+                        Game.game.isFastForward ? Color.RED : Color.WHITE);
             } catch (Exception e) {
                 e.printStackTrace();
             }

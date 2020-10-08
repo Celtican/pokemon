@@ -29,6 +29,9 @@ public class ExpBar extends Bar {
     public void hide() {
         if (frame < 4) frame = 4;
     }
+    public boolean isHidden() {
+        return frame == 6;
+    }
 
     @Override public void update() {
         if (frame == 3 && canRise) super.update();

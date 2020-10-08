@@ -106,7 +106,7 @@ public class Species {
     public int[] getMoves() {
         return moves;
     }
-    public final int[] moveLevels;
+    private final int[] moveLevels;
     public int[] getMoveLevels() {
         return moveLevels;
     }

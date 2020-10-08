@@ -34,12 +34,16 @@ public class Game extends ApplicationAdapter {
 	public boolean doLogDamage;
 	public boolean doLogPokemonGeneration;
 	public boolean doGeneratePokemonWithPerfectStats;
+	public float expMultiplier;
 
 	public byte pixelSize = 0;
 	public int frame = 0;
 	public Screen screen;
 	private Screen screenToSwitchTo;
 	public boolean isFastForward = false;
+
+	private String previousError = null;
+	private int previousErrorCount = 0;
 
 	@Override public void create () {
 		logInfo("Launching Pokemon Game " + version);
@@ -53,6 +57,7 @@ public class Game extends ApplicationAdapter {
 
 		doLogDamage = isDebug;
 		doLogPokemonGeneration = isDebug;
+		expMultiplier = isDebug ? 5 : 1;
 
 		Pokemon.Type.setupTypes(); // set up type weaknesses and whatnot
 
@@ -130,6 +135,16 @@ public class Game extends ApplicationAdapter {
 		Gdx.app.log("info", message);
 	}
 	public static void logError(String message) {
-		new Exception(message).printStackTrace();
+		if (Game.game.previousError != null && Game.game.previousError.equals(message)) {
+			if (++Game.game.previousErrorCount == 2)
+				Game.logInfo("The error \"" + message + "\" is recurring.");
+			else if (Game.game.previousErrorCount % Game.TARGET_FRAME_RATE == 0)
+				Game.logInfo("The error \"" + message + "\" has occurred " + Game.game.previousErrorCount + " times.");
+			// todo: how to exit the thread without logging an error?
+		} else {
+			Game.game.previousError = message;
+			Game.game.previousErrorCount = 1;
+			new Exception(message).printStackTrace();
+		}
 	}
 }
