@@ -39,6 +39,7 @@ public class BattlePokemon implements Pokemon {
     public final int[] statBoosts = new int[7]; // atk, def, spa, spd, spe, acc, eva
     public StatusCondition statusCondition = StatusCondition.HEALTHY;
     public int expGained = 0;
+    public boolean leveledUp = false;
     public final Array<BattlePokemon> seen;
 
     public boolean hasType(Type type) {
@@ -49,6 +50,9 @@ public class BattlePokemon implements Pokemon {
     private Species species;
     @Override public Species getSpecies() {
         return species;
+    }
+    @Override public void setSpecies(Species species) {
+        this.species = species;
     }
     private int experience;
     @Override public int getExperience() {
@@ -120,6 +124,10 @@ public class BattlePokemon implements Pokemon {
     private boolean isShiny;
     @Override public boolean isShiny() {
         return isShiny;
+    }
+
+    @Override public Species evolvesInto() {
+        return leveledUp ? Pokemon.super.evolvesInto() : null;
     }
 
     public interface Action {}

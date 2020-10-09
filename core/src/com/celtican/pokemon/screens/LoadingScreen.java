@@ -21,8 +21,7 @@ import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.MEDIUM_SLOW;
 import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.FEMALE_IS_RARE;
 import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.GENDERLESS;
 import static com.celtican.pokemon.utils.data.Pokemon.MoveCategory.*;
-import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.ADJACENT;
-import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.ALL_ADJACENT_FOES;
+import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.*;
 import static com.celtican.pokemon.utils.data.Pokemon.Type.*;
 
 public class LoadingScreen extends Screen {
@@ -258,12 +257,12 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Absorb");
         Game.game.data.addMove("Mega Drain");
         Game.game.data.addMove("Leech Seed");
-        Game.game.data.addMove("Growth");
-        Game.game.data.addMove("Razor Leaf");
+        Game.game.data.addMove("Growth", NORMAL, STATUS, BEAUTIFUL, SELF, 4, -1, -1, "snatch", null);
+        Game.game.data.addMove("Razor Leaf", GRASS, PHYSICAL, COOL, ALL_ADJACENT_FOES, 5, 55, 95, "protect, mirror, crit", null);
         Game.game.data.addMove("Solar Beam");
-        Game.game.data.addMove("Poison Powder");
-        Game.game.data.addMove("Stun Spore");
-        Game.game.data.addMove("Sleep Powder");
+        Game.game.data.addMove("Poison Powder", POISON, STATUS, CLEVER, ADJACENT, 7, -1, 75, "protect, reflectable, mirror, powder", null);
+        Game.game.data.addMove("Stun Spore", GRASS, STATUS, CLEVER, ADJACENT, 6, -1, 75, "protect, reflectable, mirror, powder", null);
+        Game.game.data.addMove("Sleep Powder", GRASS, STATUS, CLEVER, ADJACENT, 3, -1, 75, "protect, reflectable, mirror, powder", null);
         Game.game.data.addMove("Petal Dance");
         Game.game.data.addMove("String Shot");
         Game.game.data.addMove("Dragon Rage");
@@ -586,7 +585,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Dark Pulse");
         Game.game.data.addMove("Night Slash");
         Game.game.data.addMove("Aqua Tail");
-        Game.game.data.addMove("Seed Bomb");
+        Game.game.data.addMove("Seed Bomb", GRASS, PHYSICAL, TOUGH, ADJACENT, 3, 80, 100, "protect, mirror, bullet", null);
         Game.game.data.addMove("Air Slash");
         Game.game.data.addMove("X-Scissor");
         Game.game.data.addMove("Bug Buzz");
@@ -1249,7 +1248,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(5);
+        Game.game.data.player.party[0] = new PartyPokemon(15);
         Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());

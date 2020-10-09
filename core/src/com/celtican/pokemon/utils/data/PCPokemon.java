@@ -68,6 +68,9 @@ public class PCPokemon implements Pokemon {
     @Override public Species getSpecies() {
         return Game.game.data.getSpecies(species);
     }
+    @Override public void setSpecies(Species species) {
+        this.species = species.getIndex();
+    }
     private int experience;
     @Override public int getExperience() {
         return experience;

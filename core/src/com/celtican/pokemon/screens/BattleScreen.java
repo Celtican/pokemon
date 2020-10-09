@@ -4,10 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.*;
-import com.celtican.pokemon.battle.results.Result;
-import com.celtican.pokemon.utils.data.Move;
-import com.celtican.pokemon.utils.data.PCPokemon;
-import com.celtican.pokemon.utils.data.PartyPokemon;
+import com.celtican.pokemon.utils.data.*;
 import com.celtican.pokemon.utils.graphics.Button;
 import com.celtican.pokemon.utils.graphics.Texture;
 
@@ -62,8 +59,7 @@ public class BattleScreen extends Screen {
                 buttons.forEach(Button::show);
             }
         } else if (!waitingForCalculator && endBattle) {
-            if (Game.game.map != null) Game.game.switchScreens(new OverworldScreen());
-            else Game.game.switchScreens(new TitleScreen());
+            switchScreen();
         }
     }
     @Override public void render() {
@@ -81,14 +77,6 @@ public class BattleScreen extends Screen {
 
     @Override public void hide() {
         buttons.forEach(Button::hide);
-        if (parties[0].members.length != Game.game.data.player.party.length) {
-            Game.logError("Battle party and player party do not have the same length.");
-            return;
-        }
-        for (int i = 0; i < parties[0].members.length; i++) {
-            if (parties[0].members[i] != null)
-                Game.game.data.player.party[parties[0].members[i].originalPartyMemberSlot] = new PartyPokemon(parties[0].members[i]);
-        }
     }
     @Override public void show() {
         Game.game.audio.playMusic("bgm/wildBattle.ogg");
@@ -107,6 +95,32 @@ public class BattleScreen extends Screen {
         waitingForCalculator = false;
     }
 
+    private void switchScreen() {
+        Array<Pokemon> pokemonToEvolve = null;
+        Array<Species> speciesToEvolveInto = null;
+        if (parties[0].members.length != Game.game.data.player.party.length) {
+            Game.logError("Battle party and player party do not have the same length.");
+            return;
+        }
+        for (int i = 0; i < parties[0].members.length; i++) {
+            if (parties[0].members[i] != null) {
+                PartyPokemon p = new PartyPokemon(parties[0].members[i]);
+                Game.game.data.player.party[parties[0].members[i].originalPartyMemberSlot] = p;
+                Species s = parties[0].members[i].evolvesInto();
+                if (s != null) {
+                    if (pokemonToEvolve == null) {
+                        pokemonToEvolve = new Array<>();
+                        speciesToEvolveInto = new Array<>();
+                    }
+                    pokemonToEvolve.add(p);
+                    speciesToEvolveInto.add(s);
+                }
+            }
+        }
+        if (pokemonToEvolve != null) Game.game.switchScreens(new EvolutionScreen(pokemonToEvolve, speciesToEvolveInto));
+        else if (Game.game.map != null) Game.game.switchScreens(new OverworldScreen());
+        else Game.game.switchScreens(new TitleScreen());
+    }
     private void addButton(String name, Runnable runnable) {
         Button b = new Button(Game.game.canvas.getWidth()- BUTTON_WIDTH+10,
                 buttons.isEmpty() ? 0 : buttons.peek().y + buttons.peek().height,
@@ -163,9 +177,9 @@ public class BattleScreen extends Screen {
         buttons.clear();
         switch (menuType) {
             case MAIN:
-                addButton("Redo", () -> {
+                addButton("End and Heal", () -> {
                     parties[0].members[0].setHP(9999999);
-                    Game.game.switchScreens(new TitleScreen());
+                    switchScreen();
                 });
                 if (actionI == 0) addButton("Run", () -> addAction(new BattlePokemon.RunAction(), true));
                 else addButton("Back", () -> {actionI--; makeMenu(MenuType.MAIN);});

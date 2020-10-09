@@ -129,6 +129,7 @@ public class ExpResult extends Result {
     }
 
     private void levelUp() {
+        pokemon.leveledUp = true;
         Array<Move> moves = LearnMovesResult.canLearnNewMoves(pokemon, oldLevel);
         if (moves != null) {
             new LearnMovesResult(pokemon, moves);

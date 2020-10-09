@@ -42,21 +42,26 @@ public class AudioHandler {
     }
 
     public void playMusic(String fileLocation) {
-        playMusic(Game.game.assets.get(fileLocation, Music.class));
+        playMusic(fileLocation, true);
+    }
+    public void playMusic(String fileLocation, boolean loop) {
+        playMusic(Game.game.assets.get(fileLocation, Music.class), loop);
     }
     public void playMusic(Music music) {
+        playMusic(music, true);
+    }
+    public void playMusic(Music music, boolean loop) {
         if (curPlaying != null) {
             if (curPlaying == music) return;
             fadingOut.add(curPlaying);
-            curPlaying = null;
         }
         if (music != null) {
             fadingOut.removeValue(music, true);
-            music.setLooping(true);
+            music.setLooping(loop);
             music.play();
-            music.setVolume(musicMuted ? 0 : FADE_IN_AMOUNT * musicVolume);
-            curPlaying = music;
+            music.setVolume(isMusicMuted() ? 0 : musicVolume);
         }
+        curPlaying = music;
     }
     public void stopMusic() {
         playMusic((Music)null);
@@ -70,7 +75,7 @@ public class AudioHandler {
             });
             curPlaying.setVolume(0);
         } else {
-            curPlaying.setVolume(musicVolume);
+            if (curPlaying != null) curPlaying.setVolume(musicVolume);
         }
     }
     public boolean isMusicMuted() {

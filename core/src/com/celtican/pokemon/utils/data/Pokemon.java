@@ -10,6 +10,7 @@ public interface Pokemon {
     float animationSpeed = 1000f/12;
 
     Species getSpecies();
+    void setSpecies(Species species);
 //    int getHeldItem();
 //    int getOTID();
 //    int getSOTID();
@@ -63,9 +64,22 @@ public interface Pokemon {
     // HGSS pokeball
     // performance
 
+    default AnimatedTexture getAnimatedTexture() {
+        return getAnimatedTexture(true);
+    }
     default AnimatedTexture getAnimatedTexture(boolean forward) {
         return new AnimatedTexture("spritesheets/pokemon/" + getSpecies().getIndex() + ".atlas",
                 (forward ? "F" : "B") + (isShiny() ? "S" : ""), animationSpeed);
+    }
+    default void cry() {
+        Game.game.audio.playSound("sfx/cries/" + getSpecies().getIndex() + ".ogg");
+    }
+    default Species evolvesInto() {
+        Species species = getSpecies();
+        Species evolveInto = species.getEvolveSpecies();
+        if (evolveInto == null) return null;
+        if (species.getEvolveLevel() <= getLevel()) return evolveInto;
+        return null;
     }
 
     static int getStat(int stat, int base, int iv, int ev, int level, Nature nature) {

@@ -186,28 +186,38 @@ public class BattleCalculator {
     private void useMove(BattlePokemon user, Move move, BattleParty targetParty, int targetSlot) {
         if (user.getHP() <= 0)
             return;
-        if (user.statusCondition == Pokemon.StatusCondition.FREEZE) {
-            if (MathUtils.random(4) == 0) {
-                setStatusCondition(user, Pokemon.StatusCondition.HEALTHY);
-                new TextResult(user.getName() + " thawed out!");
-            } else {
-                new TextResult(user.getName() + " is frozen solid!");
-                return;
-            }
-        } else if (user.statusCondition == Pokemon.StatusCondition.PARALYSIS) {
-            if (MathUtils.random(3) == 0) {
-                new TextResult(user.getName() + " is paralyzed! It can't move!");
-                return;
+        if (user.statusCondition != Pokemon.StatusCondition.HEALTHY) {
+            if (user.statusCondition == Pokemon.StatusCondition.FREEZE) {
+                if (MathUtils.random(4) == 0) {
+                    setStatusCondition(user, Pokemon.StatusCondition.HEALTHY);
+                    new TextResult(user.getName() + " thawed out!");
+                } else {
+                    new TextResult(user.getName() + " is frozen solid!");
+                    return;
+                }
+            } else if (user.statusCondition == Pokemon.StatusCondition.PARALYSIS) {
+                if (MathUtils.random(3) == 0) {
+                    new TextResult(user.getName() + " is paralyzed! It can't move!");
+                    return;
+                }
+            } else if (user.statusCondition.isSleep()) {
+                if (Pokemon.StatusCondition.decrementSleep(user)) {
+                    new TextResult(user.getName() + " woke up!");
+                } else {
+                    new TextResult(user.getName() + " is fast asleep...");
+                    return;
+                }
             }
         }
         new TextResult(user.getName() + " used " + move.name + "!");
         BattlePokemon defender = targetParty != null ? targetParty.members[targetSlot] : null;
 
         // wonder guard, harsh sun with water, heavy rain with fire, ground immunity, sky drop too heavy, synchronoise fail
-        if (defender == null || defender.getHP() <= 0) {
+        if (move.targets != Pokemon.MoveTargets.SELF && (defender == null || defender.getHP() <= 0)) {
             new TextResult("But it failed!");
             return;
         }
+        assert defender != null;
 
         if (move.type == Pokemon.Type.DOES_NOT_EXIST) {
             new TextResult("Not yet implemented");
@@ -235,8 +245,22 @@ public class BattleCalculator {
                 default:
                     Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
                     break;
-                case 45:
-                    new TextResult("Lower attack, etc. etc.");
+                case 45: // growl
+                    boostStats(defender, -1, 0, 0, 0, 0, 0, 0);
+                    break;
+                case 74: // growth
+                    // todo have this boost 2 stages in sun
+                    boostStats(user, 1, 0, 1, 0, 0, 0, 0);
+                    break;
+                case 77: // poison powder
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.POISON)) new TextResult("But it failed!");
+                    break;
+                case 78: // stun spore
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.PARALYSIS)) new TextResult("But it failed!");
+                    break;
+                case 79: // sleep powder
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) new TextResult("But it failed!");
+                    break;
             }
             return;
         }
@@ -628,6 +652,63 @@ public class BattleCalculator {
             }
         }
     }
+    private boolean boostStats(BattlePokemon pokemon, int atk, int def, int spa, int spd, int spe, int acc, int eva) {
+        Array<StatBoost> statBoosts = new Array<>();
+        if (atk != 0) statBoosts.add(new StatBoost(pokemon, 0, atk));
+        if (def != 0) statBoosts.add(new StatBoost(pokemon, 1, def));
+        if (spa != 0) statBoosts.add(new StatBoost(pokemon, 2, spa));
+        if (spd != 0) statBoosts.add(new StatBoost(pokemon, 3, spd));
+        if (spe != 0) statBoosts.add(new StatBoost(pokemon, 4, spe));
+        if (acc != 0) statBoosts.add(new StatBoost(pokemon, 5, acc));
+        if (eva != 0) statBoosts.add(new StatBoost(pokemon, 6, eva));
+
+        for (StatBoost statBoost : statBoosts) if (statBoost.stage == 0) statBoosts.removeValue(statBoost, true);
+
+        statBoosts.sort(Comparator.comparingInt(o -> o.stage));
+
+        boolean successful = false;
+        do {
+            int stage = statBoosts.first().stage;
+            Array<StatBoost> boostsThisStage = new Array<>();
+            while (statBoosts.notEmpty()) {
+                if (statBoosts.first().stage == stage) {
+                    boostsThisStage.add(statBoosts.removeIndex(0));
+                } else break;
+            }
+            StringBuilder s = new StringBuilder(pokemon.getName()).append("'s ");
+            for (int i = 0; i < boostsThisStage.size; i++) {
+                successful = true;
+                StatBoost boost = boostsThisStage.get(i);
+                pokemon.statBoosts[boost.stat] += boost.stage;
+                switch(boost.stat) {
+                    case 0: s.append("Attack"); break;
+                    case 1: s.append("Defense"); break;
+                    case 2: s.append("Special Attack"); break;
+                    case 3: s.append("Special Defense"); break;
+                    case 4: s.append("Speed"); break;
+                    case 5: s.append("Accuracy"); break;
+                    case 6: s.append("Evasion"); break;
+                }
+                if (i+1 < boostsThisStage.size) {
+                    if (boostsThisStage.size == 2) s.append(" and ");
+                    else if (i+2 == boostsThisStage.size) s.append(", and ");
+                    else s.append(", ");
+                }
+            }
+            switch (stage) {
+                case 1: s.append(" rose!"); break;
+                case 2: s.append(" rose sharply!"); break;
+                case -1: s.append(" fell!"); break;
+                case -2: s.append(" fell harshly!"); break;
+                default:
+                    if (stage < 0) s.append(" severely fell!");
+                    else s.append(" rose drastically!");
+            }
+            new TextResult(s.toString());
+        } while (statBoosts.notEmpty());
+
+        return successful;
+    }
 
     // getters
     public BattleParty getUserParty() {
@@ -676,6 +757,15 @@ public class BattleCalculator {
             this.damage = damage;
             this.isCrit = isCrit;
             this.effectiveness = effectiveness;
+        }
+    }
+    private static class StatBoost {
+        private final int stat;
+        private final int stage;
+
+        public StatBoost(BattlePokemon pokemon, int stat, int stage) {
+            this.stat = stat;
+            this.stage = MathUtils.clamp(pokemon.statBoosts[stat] + stage, -6, 6) - pokemon.statBoosts[stat];
         }
     }
 }

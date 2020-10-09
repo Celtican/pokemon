@@ -27,7 +27,7 @@ public class Text {
         } else frame--;
     }
     public void render() {
-        if (frame != 0) Game.game.canvas.drawText(5, 25, frame > 0 ? text.substring(0, frame) : text);
+        if (text != null && frame != 0) Game.game.canvas.drawText(5, 25, frame > 0 ? text.substring(0, frame) : text);
     }
 
     public boolean isFinished() {

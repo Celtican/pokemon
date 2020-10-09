@@ -3,6 +3,9 @@ package com.celtican.pokemon.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.utils.data.PartyPokemon;
+import com.celtican.pokemon.utils.data.Pokemon;
+import com.celtican.pokemon.utils.data.Species;
 import com.celtican.pokemon.utils.data.Vector2Int;
 import com.celtican.pokemon.utils.graphics.Button;
 
@@ -15,6 +18,21 @@ public class TitleScreen extends Screen {
         if (Game.game.isDebug) {
             addButton("Edit Tileset", () -> Game.game.switchScreens(new EditTilesetScreen()));
             addButton("Edit Map", () -> Game.game.switchScreens(new EditMapScreen()));
+            addButton("Evolve!", () -> {
+                Array<Pokemon> pokemon = new Array<>();
+                Array<Species> species = new Array<>();
+                for (int i = 0; i < 6; i++) {
+                    PartyPokemon p = Game.game.data.player.party[i];
+                    if (p != null) {
+                        Species s = p.evolvesInto();
+                        if (s != null) {
+                            pokemon.add(p);
+                            species.add(s);
+                        }
+                    }
+                }
+                if (pokemon.notEmpty()) Game.game.switchScreens(new EvolutionScreen(pokemon, species));
+            });
             addButton("Battle!", () -> Game.game.switchScreens(new BattleScreen()));
         }
         addButton("Play", () -> Game.game.switchScreens(new OverworldScreen()));

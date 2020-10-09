@@ -27,7 +27,7 @@ public class DataHandler {
     public Species getSpecies(int index) {
         if (index > 0 && index < species.size)
             return species.get(index);
-        return getNullSpecies();
+        return null;
     }
     public Species getNullSpecies() {
         return species.get(0);
@@ -71,7 +71,7 @@ public class DataHandler {
                            int evolveIntoSpecies, int evolveAtLevel, int[] moves, int[] moveLevels) {
         species.add(new Species(species.size, name, genderRatio, captureRate, expGrowth, expEarned,
                 new byte[] {(byte)evHP, (byte)evAtk, (byte)evDef, (byte)evSpA, (byte)evSpD, (byte)evSpe}, baseHappiness, eggGroup1, eggGroup2,
-                type1, type2, new int[] {a1, a2, aH, aE}, new int[] {hp, atk, def, spA, spD, spe}, evolveIntoSpecies, evolveAtLevel, moves, moveLevels));
+                type1, type2, new int[] {a1, a2, aH, aE}, new int[] {hp, atk, def, spA, spD, spe}, evolveAtLevel, evolveIntoSpecies, moves, moveLevels));
     }
     public void addMove(String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest, Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Move.Effect effect) {
         moves.add(new Move(moves.size, name, type, category, contest, targets, basePP, basePower, accuracy, flags, effect));
