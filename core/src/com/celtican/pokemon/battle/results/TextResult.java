@@ -19,6 +19,10 @@ public class TextResult extends Result {
         this.text = new Text(text);
     }
 
+    @Override public boolean start() {
+        text.frame = 0;
+        return false;
+    }
     @Override public void update() {
         text.update();
         if (inArray && text.isFinished()) parent.nextResult();
@@ -28,6 +32,6 @@ public class TextResult extends Result {
     }
 
     @Override public String toString() {
-        return super.toString() + " : \"" + text + "\"";
+        return super.toString() + " : \"" + text.text + "\"";
     }
 }

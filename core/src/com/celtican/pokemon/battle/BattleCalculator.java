@@ -21,6 +21,8 @@ public class BattleCalculator {
     private final BattleParty[] parties;
     private final Array<BattlePokemon> speedArray = new Array<>();
 
+    private TextResult failedText;
+
     public BattleCalculator(BattleScreen screen, BattleParty[] parties) {
         this.screen = screen;
         this.parties = parties;
@@ -40,25 +42,27 @@ public class BattleCalculator {
             }
         });
 
-        AtomicBoolean endBattle = new AtomicBoolean(false);
-        forEachPokemon(true, pokemon -> {
-            if (endBattle.get()) return;
-            if (pokemon.action instanceof BattlePokemon.MoveAction) {
-                useMove(pokemon);
-            } else if (pokemon.action instanceof BattlePokemon.RunAction) {
-                if (attemptFlee(pokemon)) endBattle.set(true);
-            } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
-                attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
-            }
-            if (endBattle.get() || attemptEndBattle()) {
+        {
+            AtomicBoolean endBattle = new AtomicBoolean(false);
+            forEachPokemon(true, pokemon -> {
+                if (endBattle.get()) return;
+                if (pokemon.action instanceof BattlePokemon.MoveAction) {
+                    useMove(pokemon);
+                } else if (pokemon.action instanceof BattlePokemon.RunAction) {
+                    if (attemptFlee(pokemon)) endBattle.set(true);
+                } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
+                    attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
+                }
+                if (endBattle.get() || attemptEndBattle()) {
+                    screen.receiveResults();
+                    endBattle.set(true);
+                }
+            });
+            if (endBattle.get()) {
                 screen.receiveResults();
-                endBattle.set(true);
+                return;
             }
-        });
-        if (endBattle.get()) {
-            screen.receiveResults();
-            return;
-        }
+        } // main action (moves, running, switching, items, etc.) loop
 
         populateSpeedArray();
         // End of Turn Resolution Order as of Gen VI
@@ -77,6 +81,19 @@ public class BattleCalculator {
         // Aqua Ring
         // Ingrain
         // Leech Seed
+        forEachPokemon(false, pokemon -> {
+            if (pokemon.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) {
+                BattlePokemon sapper = pokemon.getEffectParty(BattlePokemon.Effect.LEECH_SEED_SAPPER_PARTY)
+                        .members[pokemon.getEffectInt(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)];
+                if (sapper != null && sapper.getHP() > 0) {
+                    int hpDrained = Math.min(pokemon.getHP(), pokemon.getStat(0)/8);
+                    inflictDamage(pokemon, hpDrained);
+                    new TextResult(pokemon.getName() + "'s health is sapped by Leech Seed!");
+                    heal(sapper, hpDrained);
+                    handleFaint(pokemon);
+                }
+            }
+        });
         // Poison/Poison Heal
         forEachPokemon(false, pokemon -> {
             if (pokemon.statusCondition == Pokemon.StatusCondition.POISON) {
@@ -172,15 +189,12 @@ public class BattleCalculator {
         else Game.logError("A pokemon attempted to use a move without direction. It's action was not a MoveAction and no move was passed into useMove().");
     }
     private void useMove(BattlePokemon user, Move move) {
-        BattleParty party = null;
-        int targetSlot = -1;
-        if (user.action instanceof BattlePokemon.MoveAction) {
-            BattlePokemon.MoveAction action = (BattlePokemon.MoveAction) user.action;
-            if (action.targetParty != null) party = action.targetParty;
-            if (action.targetSlot != -1) targetSlot = action.targetSlot;
-        }
-        if (party == null) party = getRandomOtherParty(user);
-        if (targetSlot == -1) targetSlot = getRandomOtherTarget(user, party).partyMemberSlot;
+        BattleParty party;
+        int targetSlot;
+        if (user.targetingParty != -1) party = parties[user.targetingParty];
+        else party = getRandomOtherParty(user);
+        if (user.targetingSlot != -1) targetSlot = user.targetingSlot;
+        else targetSlot = getRandomOtherTarget(user, party).partyMemberSlot;
         useMove(user, move, party, targetSlot);
     }
     private void useMove(BattlePokemon user, Move move, BattleParty targetParty, int targetSlot) {
@@ -210,11 +224,59 @@ public class BattleCalculator {
             }
         }
         new TextResult(user.getName() + " used " + move.name + "!");
-        BattlePokemon defender = targetParty != null ? targetParty.members[targetSlot] : null;
+
+        if (move.charge) {
+            if (!user.hasEffect(BattlePokemon.Effect.CHARGE)) {
+                boolean chargeInstead = true;
+                switch (move.index) {
+                    default:
+                        new TextResult(user.getName() + " is charging!");
+                        break;
+                    case 76: // solar beam
+                        // todo no charge in sunlight
+                        new TextResult(user.getName() + " is absorbing light!");
+                        break;
+                }
+                if (chargeInstead) {
+                    user.addEffect(BattlePokemon.Effect.CHARGE, move.index);
+                    return;
+                }
+            } else {
+                user.removeEffect(BattlePokemon.Effect.CHARGE);
+            }
+        }
+
+        Array<BattlePokemon> defenders = new Array<>();
+        if (move.targets == Pokemon.MoveTargets.SELF) {
+            defenders.add(user);
+        } else {
+            for (BattleParty party : parties) {
+                if (!move.targets.allyParty && party.i == user.party) continue;
+                if (!move.targets.foeParty && party.i != user.party) continue;
+                for (int i = 0; i < party.numBattling; i++) {
+                    if (party.members[i] == null || party.members[i].getHP() <= 0) continue;
+                    if (!move.targets.user && party.members[i] == user) continue;
+                    defenders.add(party.members[i]);
+                }
+            }
+            if (defenders.isEmpty()) {
+                butItFailed();
+                return;
+            }
+            if (!move.targets.all) {
+                BattlePokemon p = targetParty == null ? null : targetParty.members[targetSlot];
+                if (!defenders.contains(p, true)) p = defenders.random();
+                defenders.clear();
+                defenders.add(p);
+            }
+        }
+//        BattlePokemon defender = targetParty != null ? targetParty.members[targetSlot] : null;
+        BattlePokemon defender = defenders.isEmpty() ? null : defenders.first();
+        boolean multipleDefenders = defenders.size > 1;
 
         // wonder guard, harsh sun with water, heavy rain with fire, ground immunity, sky drop too heavy, synchronoise fail
         if (move.targets != Pokemon.MoveTargets.SELF && (defender == null || defender.getHP() <= 0)) {
-            new TextResult("But it failed!");
+            butItFailed();
             return;
         }
         assert defender != null;
@@ -226,7 +288,7 @@ public class BattleCalculator {
 
         if (move.accuracy > 0) {
             boolean missed = false;
-            if (move.index == 12) { // guillotine
+            if (move.isOHKO()) {
                 if (user.getLevel() < defender.getLevel() || MathUtils.random(99) >= (user.getLevel() - defender.getLevel() + 30))
                     missed = true;
             } else {
@@ -248,18 +310,41 @@ public class BattleCalculator {
                 case 45: // growl
                     boostStats(defender, -1, 0, 0, 0, 0, 0, 0);
                     break;
+                case 73: // leech seed
+                    if (defender.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) butItFailed();
+                    else {
+                        new TextResult(defender.getName() + " was seeded!");
+                        defender.addEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT, user.partyMemberSlot);
+                        defender.addEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_PARTY, parties[user.party]);
+                    }
+                    break;
                 case 74: // growth
                     // todo have this boost 2 stages in sun
                     boostStats(user, 1, 0, 1, 0, 0, 0, 0);
                     break;
                 case 77: // poison powder
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.POISON)) new TextResult("But it failed!");
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.POISON)) butItFailed();
                     break;
                 case 78: // stun spore
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.PARALYSIS)) new TextResult("But it failed!");
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.PARALYSIS)) butItFailed();
                     break;
                 case 79: // sleep powder
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) new TextResult("But it failed!");
+                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) butItFailed();
+                    break;
+                case 230: // sweet scent
+                    for (BattlePokemon p : defenders) boostStats(p, 0, 0, 0, 0, 0, 0, -2);
+                    break;
+                case 235:
+                    if (user.getHP() == user.getStat(0)) butItFailed();
+                    else heal(user, user.getStat(0)/2);
+                    // todo heal different amounts based on the weather
+                    break;
+                case 388: // worry seed
+                    if (defender.getAbility().getIndex() == 15) butItFailed(); // insomnia
+                    else {
+                        defender.addEffect(BattlePokemon.Effect.CHANGE_ABILITY, 15); // insomnia
+                        new TextResult(defender.getName() + "'s ability changed to Insomnia!");
+                    }
                     break;
             }
             return;
@@ -295,9 +380,10 @@ public class BattleCalculator {
             if (damage.effectiveness > 0) new TextResult("It's super effective!");
             else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
             if (damage.isCrit) new TextResult("Critical hit!");
-            if (!handleFaint(defender)) {
-                attemptActivateMoveEffect(user, defender, move);
-            }
+            if (move.isOHKO()) new TextResult("It's a One-Hit KO!");
+            dealRecoilDamage(user, move, damage.damage);
+            if (!handleFaint(defender)) attemptActivateMoveEffect(user, defender, move);
+            handleFaint(user);
         }
     }
     private boolean attemptFlee(BattlePokemon pokemon) {
@@ -336,6 +422,8 @@ public class BattleCalculator {
 
         // pursuit here
 
+        pokemon.removeAllEffects(true);
+
         target.partyMemberSlot = pokemon.partyMemberSlot;
         pokemon.partyMemberSlot = targetSlot;
         parties[pokemon.party].members[target.partyMemberSlot] = target;
@@ -362,9 +450,8 @@ public class BattleCalculator {
             switch (move.index) {
                 case 69: case 101: // seismic toss, night shade
                     return new DamageResult(attacker.getLevel());
-                case 12: // guillotine
-                    return new DamageResult(defender.getStat(0));
             }
+            if (move.isOHKO()) return new DamageResult(defender.getHP());
         }
 
         int defenderAbility = getDefendersAbility(attacker, defender, move).getIndex();
@@ -542,6 +629,23 @@ public class BattleCalculator {
     }
 
     // results
+    private void dealRecoilDamage(BattlePokemon user, Move move, int damageDealt) {
+        int recoil;
+        switch (move.index) {
+            default: return;
+            case 36: recoil = 4; break; // take down
+            case 38: recoil = 2; break; // double-edge
+        }
+        inflictDamage(user, damageDealt/recoil);
+        new TextResult(user.getName() + " is damaged by recoil!");
+    }
+    private void butItFailed() {
+        if (failedText == null) {
+            failedText = new TextResult("But it failed!", false);
+            failedText.inArray = true;
+        }
+        failedText.parent.addResult(failedText);
+    }
     private void inflictDamage(BattlePokemon pokemon, int damage) {
         pokemon.setHP(pokemon.getHP() - Math.max(damage, 1));
         new SoundResult("sfx/battleDamage.ogg");
@@ -562,6 +666,7 @@ public class BattleCalculator {
         if (pokemon.getHP() > 0)
             return false;
         new TextResult(pokemon.getName() + " fainted!");
+        pokemon.removeAllEffects(false);
         if (pokemon.party != 0) {
             // this is a comp pokemon. each pokemon it saw since it was on the field gains exp
             pokemon.seen.forEach(victor -> victor.expGained += calcExpGain(pokemon, victor));

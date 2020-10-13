@@ -219,9 +219,9 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Tackle", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Body Slam");
         Game.game.data.addMove("Wrap");
-        Game.game.data.addMove("Take Down");
+        Game.game.data.addMove("Take Down", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 90, 85, "contact, protect, mirror", null);
         Game.game.data.addMove("Thrash");
-        Game.game.data.addMove("Double-Edge");
+        Game.game.data.addMove("Double-Edge", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 120, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Tail Whip");
         Game.game.data.addMove("Poison Sting");
         Game.game.data.addMove("Twineedle");
@@ -256,10 +256,10 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Strength");
         Game.game.data.addMove("Absorb");
         Game.game.data.addMove("Mega Drain");
-        Game.game.data.addMove("Leech Seed");
+        Game.game.data.addMove("Leech Seed", GRASS, STATUS, CLEVER, ADJACENT, 2, -1, 90, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Growth", NORMAL, STATUS, BEAUTIFUL, SELF, 4, -1, -1, "snatch", null);
         Game.game.data.addMove("Razor Leaf", GRASS, PHYSICAL, COOL, ALL_ADJACENT_FOES, 5, 55, 95, "protect, mirror, crit", null);
-        Game.game.data.addMove("Solar Beam");
+        Game.game.data.addMove("Solar Beam", GRASS, SPECIAL, COOL, ADJACENT, 2, 120, 100, "charge, protect, mirror", null);
         Game.game.data.addMove("Poison Powder", POISON, STATUS, CLEVER, ADJACENT, 7, -1, 75, "protect, reflectable, mirror, powder", null);
         Game.game.data.addMove("Stun Spore", GRASS, STATUS, CLEVER, ADJACENT, 6, -1, 75, "protect, reflectable, mirror, powder", null);
         Game.game.data.addMove("Sleep Powder", GRASS, STATUS, CLEVER, ADJACENT, 3, -1, 75, "protect, reflectable, mirror, powder", null);
@@ -413,12 +413,12 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Encore");
         Game.game.data.addMove("Pursuit");
         Game.game.data.addMove("Rapid Spin");
-        Game.game.data.addMove("Sweet Scent");
+        Game.game.data.addMove("Sweet Scent", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Iron Tail");
         Game.game.data.addMove("Metal Claw");
         Game.game.data.addMove("Vital Throw");
         Game.game.data.addMove("Morning Sun");
-        Game.game.data.addMove("Synthesis");
+        Game.game.data.addMove("Synthesis", GRASS, STATUS, CLEVER, SELF, 1, -1, -1, "snatch, heal", null);
         Game.game.data.addMove("Moonlight*");
         Game.game.data.addMove("Hidden Power");
         Game.game.data.addMove("Cross Chop");
@@ -1248,7 +1248,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(15);
+        Game.game.data.player.party[0] = new PartyPokemon(36);
         Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());

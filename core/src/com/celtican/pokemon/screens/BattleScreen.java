@@ -57,6 +57,7 @@ public class BattleScreen extends Screen {
                 playingResults = false;
                 buttonSlide = 0;
                 buttons.forEach(Button::show);
+                addAction(null);
             }
         } else if (!waitingForCalculator && endBattle) {
             switchScreen();
@@ -91,6 +92,14 @@ public class BattleScreen extends Screen {
     }
 
     public void receiveResults() {
+        Game.logInfo("-- New Turn --");
+        for (BattleParty party : parties) {
+            for (BattlePokemon pokemon : party.members) {
+                if (pokemon == null || pokemon.getHP() <= 0) continue;
+                pokemon.targetingParty = -1;
+                pokemon.targetingSlot = -1;
+            }
+        }
         playingResults = true;
         waitingForCalculator = false;
     }
@@ -158,17 +167,22 @@ public class BattleScreen extends Screen {
         addAction(action, false);
     }
     private void addAction(BattlePokemon.Action action, boolean forceSend) {
-        parties[0].members[actionI].action = action;
         makeMenu(MenuType.MAIN);
-        if (++actionI >= parties[0].numBattling || forceSend) {
+        if (action != null) parties[0].members[actionI].action = action;
+        if (action != null && (++actionI >= parties[0].numBattling || forceSend)) {
             for (int i = actionI; i < parties[0].members.length; i++)
                 if (parties[0].members[i] != null)
                     parties[0].members[i].action = null;
             actionI = 0;
             waitingForCalculator = true;
             buttons.forEach(Button::hide);
-            Game.logInfo("-- New Turn --");
             calculator.beginCalculateTurn();
+        } else {
+            BattlePokemon nextPokemon = parties[0].members[actionI];
+            if (nextPokemon == null || nextPokemon.getHP() <= 0) return;
+            if (nextPokemon.hasEffect(BattlePokemon.Effect.CHARGE)) {
+                addAction(new BattlePokemon.MoveAction(Game.game.data.getMove(nextPokemon.getEffectInt(BattlePokemon.Effect.CHARGE))));
+            }
         }
     }
     private void makeMenu(MenuType menuType) {

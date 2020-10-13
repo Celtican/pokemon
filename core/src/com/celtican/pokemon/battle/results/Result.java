@@ -5,7 +5,7 @@ import com.celtican.pokemon.battle.ResultHandler;
 import com.celtican.pokemon.screens.BattleScreen;
 
 public abstract class Result {
-    protected final ResultHandler parent;
+    public final ResultHandler parent;
     public boolean inArray;
 
     public Result() {

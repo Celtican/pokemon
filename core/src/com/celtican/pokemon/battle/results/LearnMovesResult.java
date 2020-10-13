@@ -43,7 +43,7 @@ public class LearnMovesResult extends Result {
                         boolean learnedMove = false;
                         for (int i = 0; i < 4; i++) {
                             if (curMoves[i] == null) {
-                                curMoves[i] = move;
+                                pokemon.setMove(move, i);
                                 learnedMove = true;
                                 break;
                             }
@@ -54,7 +54,7 @@ public class LearnMovesResult extends Result {
                             switchTo(Stage.DISPLAY_WANTS_TO_LEARN_MOVE_TEXT);
                         }
                     } else {
-                        curMoves[moveToReplace] = move;
+                        pokemon.setMove(move, moveToReplace);
                         switchTo(Stage.DISPLAY_LEARNED_MOVE_TEXT);
                     }
                     break;

@@ -41,39 +41,12 @@ public class Move {
     public final int accuracy;
     public final Effect effect;
 
-    /*
-
-    (chance)(effect)(chance)(effect)
-
-    chance: value from 1-100 that the following effect will activate
-    effect:
-    - -3, flinch
-    - -2, confuse
-    - -1,
-    - 0, burn
-    - 1, frozen
-    - 2, paralyze
-    - 3, asleep
-    - 4, poison
-    - 5, toxic
-        The following are negative if the changes are negative
-        Add/subtract 20 for each magnitude greater than 1
-    - 6, self Atk change
-    - 7, self Def change
-    - 8, self SpA change
-    - 9, self SpD change
-    - 10, self Spe change
-    - 11, self Acc change
-    - 12, self Eva change
-    - 13, target Atk change
-    - 14, target Def change
-    - 15, target SpA change
-    - 16, target SpD change
-    - 17, target Spe change
-    - 18, target Acc change
-    - 19, target Eva change
-
-    */
+    public boolean isOHKO() {
+        switch (index) {
+            case 12: return true; // guillotine
+            default: return false;
+        }
+    }
 
     public Move(int index, String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest,
                 Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Effect effect

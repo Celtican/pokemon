@@ -3,6 +3,7 @@ package com.celtican.pokemon.utils.data;
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
 import com.celtican.pokemon.battle.BattlePokemon;
+import com.celtican.pokemon.battle.results.SetValueResult;
 import com.celtican.pokemon.utils.graphics.AnimatedTexture;
 
 public interface Pokemon {
@@ -33,6 +34,7 @@ public interface Pokemon {
     void setHP(int hp);
     Move[] getMoves();
     Move getMove(int move);
+    void setMove(Move move, int slot);
 //    int[] getMovesPPUsed();
 //    int[] getMovesRemainingPP();
 //    int[] getMovesPPUps();
@@ -80,6 +82,10 @@ public interface Pokemon {
         if (evolveInto == null) return null;
         if (species.getEvolveLevel() <= getLevel()) return evolveInto;
         return null;
+    }
+    default boolean hasType(Type type) {
+        for (Type t : getSpecies().getTypes()) if (t == type) return true;
+        return false;
     }
 
     static int getStat(int stat, int base, int iv, int ev, int level, Nature nature) {
@@ -200,21 +206,34 @@ public interface Pokemon {
         PHYSICAL, SPECIAL, STATUS
     }
     enum MoveTargets {
-        ALL_ADJACENT_FOES,      // All foes adjacent to user
-        ALL_ADJACENT_ALLIES,    // All allies adjacent to user
-        ALL_FOES,               // All foes
-        ALL_ALLIES,             // All allies, including self
-        ALL_OTHER_ALLIES,       // All allies, EXCEPT self
-        ALL_ADJACENT,           // All pokemon adjacent to user
-        ALL_OTHERS,             // All pokemon, EXCEPT self
-        FIELD,                  // All pokemon, including self
-        ANY,                    // Target any pokemon, including self
-        ANY_OTHER,              // Target any pokemon, EXCEPT self
-        ADJACENT_ALLY,          // Target any ally adjacent to the user
-        ADJACENT_FOE,           // Target any foe adjacent to user
-        ADJACENT,               // Target any pokemon adjacent to user
-        SELF,                   // Only self
-        SELF_OR_ADJACENT_ALLY,  // Target either self or an ally adjacent to user
+        ALL_ADJACENT_FOES(true, true, false, true, false),      // All foes adjacent to user
+        ALL_ADJACENT_ALLIES(true, true, true, false, false),    // All allies adjacent to user
+        ALL_FOES(false, true, false, true, false),               // All foes
+        ALL_ALLIES(false, true, true, false, true),             // All allies, including self
+        ALL_OTHER_ALLIES(false, true, true, false, true),       // All allies, EXCEPT self
+        ALL_ADJACENT(true, true, true, true, false),           // All pokemon adjacent to user
+        ALL_OTHERS(false, true, true, true, false),             // All pokemon, EXCEPT self
+        FIELD(false, true, true, true, true),                  // All pokemon, including self
+        ANY(false, false, true, true, true),                    // Target any pokemon, including self
+        ANY_OTHER(false, false, true, true, false),              // Target any pokemon, EXCEPT self
+        ADJACENT_ALLY(true, false, true, false, false),          // Target any ally adjacent to the user
+        ADJACENT_FOE(true, false, false, true, false),           // Target any foe adjacent to user
+        ADJACENT(true, false, true, true, false),               // Target any pokemon adjacent to user
+        SELF(false, false, false, false, true),                   // Only self
+        SELF_OR_ADJACENT_ALLY(true, false, true, false, true);  // Target either self or an ally adjacent to user
+
+        public final boolean adjacent;
+        public final boolean all;
+        public final boolean allyParty;
+        public final boolean foeParty;
+        public final boolean user;
+        MoveTargets(boolean adjacent, boolean all, boolean allyParty, boolean foeParty, boolean user) {
+            this.adjacent = adjacent;
+            this.all = all;
+            this.allyParty = allyParty;
+            this.foeParty = foeParty;
+            this.user = user;
+        }
     }
     enum Nature {
         HARDY, LONELY, ADAMANT, NAUGHT, BRAVE, BOLD, DOCILE, IMPISH, LAX, RELAXED, MODEST, MILD, BASHFUL,
@@ -356,6 +375,7 @@ public interface Pokemon {
             if (pokemon.statusCondition.isSleep()) {
                 if (pokemon.statusCondition == SLEEP_0) {
                     pokemon.statusCondition = HEALTHY;
+                    new SetValueResult(pokemon, SetValueResult.Type.STATUS, HEALTHY);
                     return true;
                 }
                 pokemon.statusCondition = StatusCondition.values()[pokemon.statusCondition.ordinal() - 1];

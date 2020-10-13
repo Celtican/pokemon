@@ -117,6 +117,9 @@ public class PCPokemon implements Pokemon {
     @Override public Move getMove(int move) {
         return Game.game.data.getMove(moves[move]);
     }
+    @Override public void setMove(Move move, int slot) {
+        moves[slot] = move.index;
+    }
 //    private int[] ppUsed;
 //    @Override public int[] getMovesPPUsed() {}
 //    @Override public int[] getMovesRemainingPP() {
