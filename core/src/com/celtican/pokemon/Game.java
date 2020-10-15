@@ -42,9 +42,6 @@ public class Game extends ApplicationAdapter {
 	private Screen screenToSwitchTo;
 	public boolean isFastForward = false;
 
-	private String previousError = null;
-	private int previousErrorCount = 0;
-
 	@Override public void create () {
 		logInfo("Launching Pokemon Game " + version);
 
@@ -135,16 +132,6 @@ public class Game extends ApplicationAdapter {
 		Gdx.app.log("info", message);
 	}
 	public static void logError(String message) {
-		if (Game.game.previousError != null && Game.game.previousError.equals(message)) {
-			if (++Game.game.previousErrorCount == 2)
-				Game.logInfo("The error \"" + message + "\" is recurring.");
-			else if (Game.game.previousErrorCount % Game.TARGET_FRAME_RATE == 0)
-				Game.logInfo("The error \"" + message + "\" has occurred " + Game.game.previousErrorCount + " times.");
-			// todo: how to exit the thread without logging an error?
-		} else {
-			Game.game.previousError = message;
-			Game.game.previousErrorCount = 1;
-			new Exception(message).printStackTrace();
-		}
+		new Exception(message).printStackTrace();
 	}
 }
