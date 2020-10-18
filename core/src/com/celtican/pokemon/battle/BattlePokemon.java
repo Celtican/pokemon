@@ -9,6 +9,7 @@ import com.celtican.pokemon.utils.data.Species;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BattlePokemon implements Pokemon {
 
@@ -77,6 +78,38 @@ public class BattlePokemon implements Pokemon {
             case POKEMON: effectPokemon.remove(effect);
             case PARTY: effectParty.remove(effect);
         }
+    }
+    public Array<Effect> removeEffectsWithFlags(EffectFlag flag) {
+        AtomicReference<Array<Effect>> effects = new AtomicReference<>();
+        for (Effect effect : effectIntegers.keySet()) {
+            if (effect.hasEffectFlag(flag)) {
+                if (effects.get() == null) effects.set(new Array<>());
+                effectIntegers.remove(effect);
+                effects.get().add(effect);
+            }
+        }
+        for (Effect effect : effectPokemon.keySet()) {
+            if (effect.hasEffectFlag(flag)) {
+                if (effects.get() == null) effects.set(new Array<>());
+                effectPokemon.remove(effect);
+                effects.get().add(effect);
+            }
+        }
+        for (Effect effect : effectBooleans.keySet()) {
+            if (effect.hasEffectFlag(flag)) {
+                if (effects.get() == null) effects.set(new Array<>());
+                effectBooleans.remove(effect);
+                effects.get().add(effect);
+            }
+        }
+        for (Effect effect : effectParty.keySet()) {
+            if (effect.hasEffectFlag(flag)) {
+                if (effects.get() == null) effects.set(new Array<>());
+                effectParty.remove(effect);
+                effects.get().add(effect);
+            }
+        }
+        return effects.get();
     }
     public boolean hasEffect(Effect effect) {
         switch (effect.type) {
@@ -165,6 +198,9 @@ public class BattlePokemon implements Pokemon {
     @Override public int getStat(int stat) {
         return stats[stat];
     }
+    public int getMaxHP() {
+        return getStat(0);
+    }
     private int curHP;
     @Override public int getHP() {
         return curHP;
@@ -209,6 +245,16 @@ public class BattlePokemon implements Pokemon {
         return leveledUp ? Pokemon.super.evolvesInto() : null;
     }
 
+    public enum EffectFlag {
+        RAPID_SPIN("rapidspin"),
+        END_TURN("endturn");
+
+        public final String name;
+        EffectFlag(String name) {
+            this.name = name;
+        }
+    }
+
     public interface Action {}
     public static class MoveAction implements Action {
         public final Move move;
@@ -226,16 +272,48 @@ public class BattlePokemon implements Pokemon {
     }
 
     public enum Effect {
-        CHANGE_ABILITY(EffectType.INTEGER, true),
-        CHARGE(EffectType.INTEGER, true),
-        LEECH_SEED_SAPPER_SLOT(EffectType.INTEGER, true),
-        LEECH_SEED_SAPPER_PARTY(EffectType.PARTY, true);
+        FLINCH(EffectType.BOOLEAN, true, "EndTurn"),
+        CONFUSED(EffectType.INTEGER, true, null),
+        CHANGE_ABILITY(EffectType.INTEGER, true, null),
+        CHARGE(EffectType.INTEGER, true, null),
+        PROTECT_USES(EffectType.INTEGER, true, null),
+        PROTECTED(EffectType.BOOLEAN, true, "EndTurn"),
+        LEECH_SEED_SAPPER_SLOT(EffectType.INTEGER, true, "RapidSpin"),
+        LEECH_SEED_SAPPER_PARTY(EffectType.PARTY, true, "RapidSpin");
 
         public final EffectType type;
         public final boolean endsOnSwitch;
-        Effect(EffectType type, boolean endsOnSwitch) {
+        public EffectFlag[] flags;
+        Effect(EffectType type, boolean endsOnSwitch, String flags) {
             this.type = type;
             this.endsOnSwitch = endsOnSwitch;
+            if (flags == null) {
+                this.flags = new EffectFlag[0];
+                return;
+            }
+            String[] flagsArray = flags.split(", ");
+            this.flags = new EffectFlag[flagsArray.length];
+            for (String flag : flagsArray) {
+                String f = flag.toLowerCase();
+                for (EffectFlag e : EffectFlag.values()) {
+                    if (f.equals(e.name)) {
+                        for (int i = 0; i < this.flags.length; i++) {
+                            if (this.flags[i] == null) {
+                                this.flags[i] = e;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            if (this.flags[this.flags.length-1] == null) Game.logError("Issue parsing flags of: \"" + flags + "\"");
+        }
+        public boolean hasEffectFlag(EffectFlag flag) {
+            for (EffectFlag f : flags)
+                if (f == flag)
+                    return true;
+            return false;
         }
     }
     private enum EffectType {

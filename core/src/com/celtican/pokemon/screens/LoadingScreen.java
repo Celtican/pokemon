@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.battle.BattlePokemon;
 import com.celtican.pokemon.utils.data.Ability;
 import com.celtican.pokemon.utils.data.Move;
 import com.celtican.pokemon.utils.data.PartyPokemon;
@@ -222,12 +223,12 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Take Down", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 90, 85, "contact, protect, mirror", null);
         Game.game.data.addMove("Thrash");
         Game.game.data.addMove("Double-Edge", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 120, 100, "contact, protect, mirror", null);
-        Game.game.data.addMove("Tail Whip");
+        Game.game.data.addMove("Tail Whip", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 6, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Poison Sting");
         Game.game.data.addMove("Twineedle");
         Game.game.data.addMove("Pin Missile");
         Game.game.data.addMove("Leer");
-        Game.game.data.addMove("Bite");
+        Game.game.data.addMove("Bite", DARK, PHYSICAL, TOUGH, ADJACENT, 5, 60, 100, "contact, protect, mirror", new Move.EffectAddEffectToDefender(30, BattlePokemon.Effect.FLINCH));
         Game.game.data.addMove("Growl", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 8, -1, 100, "protect, reflectable, mirror, sound, authentic", null);
         Game.game.data.addMove("Roar");
         Game.game.data.addMove("Sing");
@@ -238,8 +239,8 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Ember");
         Game.game.data.addMove("Flamethrower");
         Game.game.data.addMove("Mist");
-        Game.game.data.addMove("Water Gun");
-        Game.game.data.addMove("Hydro Pump");
+        Game.game.data.addMove("Water Gun", WATER, SPECIAL, CUTE, ADJACENT, 5, 40, 100, "protect, mirror", null);
+        Game.game.data.addMove("Hydro Pump", WATER, SPECIAL, BEAUTIFUL, ADJACENT, 1, 110, 80, "protect, mirror", null);
         Game.game.data.addMove("Surf");
         Game.game.data.addMove("Ice Beam");
         Game.game.data.addMove("Blizzard");
@@ -293,7 +294,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Minimize");
         Game.game.data.addMove("Smokescreen");
         Game.game.data.addMove("Confuse Ray");
-        Game.game.data.addMove("Withdraw");
+        Game.game.data.addMove("Withdraw", WATER, STATUS, CUTE, SELF, 8, -1, -1, "snatch", null);
         Game.game.data.addMove("Defense Curl");
         Game.game.data.addMove("Barrier");
         Game.game.data.addMove("Light Screen");
@@ -313,7 +314,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Waterfall");
         Game.game.data.addMove("Clamp");
         Game.game.data.addMove("Swift");
-        Game.game.data.addMove("Skull Bash");
+        Game.game.data.addMove("Skull Bash", NORMAL, PHYSICAL, TOUGH, ADJACENT, 2, 130, 100, "contact, charge, protect, mirror", null);
         Game.game.data.addMove("Spike Cannon");
         Game.game.data.addMove("Constrict");
         Game.game.data.addMove("Amnesia");
@@ -365,7 +366,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Reversal");
         Game.game.data.addMove("Spite");
         Game.game.data.addMove("Powder Snow");
-        Game.game.data.addMove("Protect");
+        Game.game.data.addMove("Protect", NORMAL, STATUS, CUTE, SELF, 2, -1, -1, null, null);
         Game.game.data.addMove("Mach Punch");
         Game.game.data.addMove("Scary Face");
         Game.game.data.addMove("Feint Attack");
@@ -412,7 +413,8 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Baton Pass");
         Game.game.data.addMove("Encore");
         Game.game.data.addMove("Pursuit");
-        Game.game.data.addMove("Rapid Spin");
+        Game.game.data.addMove("Rapid Spin", NORMAL, PHYSICAL, COOL, ADJACENT, 8, 50, 100, "contact, protect, mirror",
+                new Move.EffectMultiple(100, new Move.EffectBoostSelfStats(100, 0, 0, 0, 0, 1, 0, 0), new Move.EffectRemoveUserEffectsWithFlag(100, BattlePokemon.EffectFlag.RAPID_SPIN)));
         Game.game.data.addMove("Sweet Scent", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Iron Tail");
         Game.game.data.addMove("Metal Claw");
@@ -423,7 +425,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Hidden Power");
         Game.game.data.addMove("Cross Chop");
         Game.game.data.addMove("Twister");
-        Game.game.data.addMove("Rain Dance");
+        Game.game.data.addMove("Rain Dance", WATER, STATUS, BEAUTIFUL, FIELD, 1, -1, -1, null, null);
         Game.game.data.addMove("Sunny Day");
         Game.game.data.addMove("Crunch");
         Game.game.data.addMove("Mirror Coat");
@@ -517,7 +519,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Bullet Seed");
         Game.game.data.addMove("Aerial Ace");
         Game.game.data.addMove("Icicle Spear");
-        Game.game.data.addMove("Iron Defense");
+        Game.game.data.addMove("Iron Defense", STEEL, STATUS, TOUGH, SELF, 3, -1, -1, "snatch", null);
         Game.game.data.addMove("Block");
         Game.game.data.addMove("Howl");
         Game.game.data.addMove("Dragon Claw");
@@ -535,7 +537,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Dragon Dance");
         Game.game.data.addMove("Rock Blast");
         Game.game.data.addMove("Shock Wave");
-        Game.game.data.addMove("Water Pulse");
+        Game.game.data.addMove("Water Pulse", WATER, SPECIAL, BEAUTIFUL, ANY_OTHER, 4, 60, 100, "protect, mirror, distance, pulse", new Move.EffectConfuse(100));
         Game.game.data.addMove("Doom Desire");
         Game.game.data.addMove("Psycho Boost");
         Game.game.data.addMove("Roost");
@@ -584,7 +586,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Poison Jab");
         Game.game.data.addMove("Dark Pulse");
         Game.game.data.addMove("Night Slash");
-        Game.game.data.addMove("Aqua Tail");
+        Game.game.data.addMove("Aqua Tail", WATER, PHYSICAL, BEAUTIFUL, ADJACENT, 2, 90, 90, "contact, protect, mirror", null);
         Game.game.data.addMove("Seed Bomb", GRASS, PHYSICAL, TOUGH, ADJACENT, 3, 80, 100, "protect, mirror, bullet", null);
         Game.game.data.addMove("Air Slash");
         Game.game.data.addMove("X-Scissor");
@@ -687,7 +689,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Quick Guard");
         Game.game.data.addMove("Ally Switch");
         Game.game.data.addMove("Scald");
-        Game.game.data.addMove("Shell Smash");
+        Game.game.data.addMove("Shell Smash", NORMAL, STATUS, TOUGH, SELF, 3, -1, -1, "snatch", null);
         Game.game.data.addMove("Heal Pulse");
         Game.game.data.addMove("Hex");
         Game.game.data.addMove("Sky Drop");
@@ -1248,8 +1250,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(36);
-        Game.game.data.player.party[1] = new PartyPokemon(5);
+        Game.game.data.player.party[0] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());
     }

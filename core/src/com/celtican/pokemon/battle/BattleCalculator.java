@@ -17,11 +17,13 @@ import java.util.function.Consumer;
 public class BattleCalculator {
 
     private final BattleScreen screen;
+    private TextResult failedText;
 
     private final BattleParty[] parties;
     private final Array<BattlePokemon> speedArray = new Array<>();
+    private Weather weather = Weather.CLEAR;
+    private int weatherTurnsLeft = 0;
 
-    private TextResult failedText;
 
     public BattleCalculator(BattleScreen screen, BattleParty[] parties) {
         this.screen = screen;
@@ -37,134 +39,175 @@ public class BattleCalculator {
         speedArray.forEach(pokemon -> {
             if (pokemon.party != 0) {
                 Array<Move> possibleMoves = new Array<>();
-                for (Move move : pokemon.getMoves()) if (move != null) possibleMoves.add(move);
+                if (pokemon.hasEffect(BattlePokemon.Effect.CHARGE)) possibleMoves.add(Game.game.data.getMove(pokemon.getEffectInt(BattlePokemon.Effect.CHARGE)));
+                else for (Move move : pokemon.getMoves()) if (move != null) possibleMoves.add(move);
                 pokemon.action = new BattlePokemon.MoveAction(possibleMoves.isEmpty() ? Game.game.data.getStruggle() : possibleMoves.random());
             }
         });
 
         {
             AtomicBoolean endBattle = new AtomicBoolean(false);
-            forEachPokemon(true, pokemon -> {
-                if (endBattle.get()) return;
-                if (pokemon.action instanceof BattlePokemon.MoveAction) {
-                    useMove(pokemon);
-                } else if (pokemon.action instanceof BattlePokemon.RunAction) {
-                    if (attemptFlee(pokemon)) endBattle.set(true);
-                } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
-                    attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
-                }
-                if (endBattle.get() || attemptEndBattle()) {
-                    screen.receiveResults();
-                    endBattle.set(true);
+            forEachPokemonInSpeedArray(true, true, pokemon -> {
+                try {
+                    if (endBattle.get()) return;
+                    if (pokemon.action instanceof BattlePokemon.MoveAction) {
+                        useMove(pokemon);
+                    } else if (pokemon.action instanceof BattlePokemon.RunAction) {
+                        if (attemptFlee(pokemon)) endBattle.set(true);
+                    } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
+                        attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
+                    }
+                    if (endBattle.get() || attemptEndBattle()) {
+                        screen.receiveResults();
+                        endBattle.set(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    new TextResult("An error has occurred.");
                 }
             });
             if (endBattle.get()) {
-                screen.receiveResults();
+                endTurn();
                 return;
             }
         } // main action (moves, running, switching, items, etc.) loop
 
         populateSpeedArray();
-        // End of Turn Resolution Order as of Gen VI
-        // https://bulbapedia.bulbagarden.net/wiki/User:SnorlaxMonster/End-turn_resolution_order
-        // Weather subsiding
-        // Hail damage/sandstorm damage/Rain Dish/Dry Skin/Solar Power/Ice Body
-        // Self-curing a status condition due to high Affection
-        // Future Sight/Doom Desire
-        // Wish
-        // Block A [
-        //      Sea of Fire
-        //      Grassy Terrain
-        //      Hydration/Shed Skin
-        //      Leftovers/Black Sludge
-        //      Healer ]
-        // Aqua Ring
-        // Ingrain
-        // Leech Seed
-        forEachPokemon(false, pokemon -> {
-            if (pokemon.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) {
-                BattlePokemon sapper = pokemon.getEffectParty(BattlePokemon.Effect.LEECH_SEED_SAPPER_PARTY)
-                        .members[pokemon.getEffectInt(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)];
-                if (sapper != null && sapper.getHP() > 0) {
-                    int hpDrained = Math.min(pokemon.getHP(), pokemon.getStat(0)/8);
-                    inflictDamage(pokemon, hpDrained);
-                    new TextResult(pokemon.getName() + "'s health is sapped by Leech Seed!");
-                    heal(sapper, hpDrained);
-                    handleFaint(pokemon);
+        sortSpeedArray(false);
+        try {
+            // End of Turn Resolution Order as of Gen VI
+            // https://bulbapedia.bulbagarden.net/wiki/User:SnorlaxMonster/End-turn_resolution_order
+            // Weather subsiding
+            if (weatherTurnsLeft > 0 && --weatherTurnsLeft == 0) attemptSetWeather(Weather.CLEAR);
+            // Hail damage/sandstorm damage/Rain Dish/Dry Skin/Solar Power/Ice Body
+            else {
+                switch (weather) {
+                    default: Game.logError("Unhandled weather: " + weather); break;
+                    case CLEAR: break;
+                    case RAIN: new TextResult("It is raining."); break;
+                    case SUN: new TextResult("The sun is sweltering."); break;
+                    case SAND:
+                        new TextResult("The sandstorm rages!");
+                        forEachPokemonInSpeedArray(false, false, pokemon -> {
+                            if (!(pokemon.hasType(Pokemon.Type.GROUND) || pokemon.hasType(Pokemon.Type.ROCK) || pokemon.hasType(Pokemon.Type.STEEL))) {
+                                inflictDamage(pokemon, pokemon.getMaxHP()/16);
+                                new TextResult(pokemon.getName() + " is buffeted by the sandstorm!");
+                            }
+                        });
+                        break;
+                    case HAIL:
+                        new TextResult("Hail falls from the sky!");
+                        forEachPokemonInSpeedArray(false, false, pokemon -> {
+                            if (!pokemon.hasType(Pokemon.Type.ICE)) {
+                                inflictDamage(pokemon, pokemon.getMaxHP()/16);
+                                new TextResult(pokemon.getName() + " is buffeted by the hail!");
+                            }
+                        });
+                        break;
                 }
             }
-        });
-        // Poison/Poison Heal
-        forEachPokemon(false, pokemon -> {
-            if (pokemon.statusCondition == Pokemon.StatusCondition.POISON) {
-                inflictDamage(pokemon, pokemon.getStat(0)/8);
-                new TextResult(pokemon.getName() + " was hurt by its poison!");
-                handleFaint(pokemon);
-            } else if (pokemon.statusCondition.isToxic()) {
-                inflictDamage(pokemon, pokemon.getStat(0)*(pokemon.statusCondition.ordinal()-8)/16);
-                Pokemon.StatusCondition.incrementToxic(pokemon);
-                setStatusCondition(pokemon, pokemon.statusCondition);
-                new TextResult(pokemon.getName() + " was hurt by its poison!");
-                handleFaint(pokemon);
-            }
-        });
-        // Burn
-        forEachPokemon(false, pokemon -> {
-            if (pokemon.statusCondition == Pokemon.StatusCondition.BURN) {
-                inflictDamage(pokemon, pokemon.getStat(0)/16);
-                new TextResult(pokemon.getName() + " is hurt by its burn!");
-                handleFaint(pokemon);
-            }
-        });
-        // Nightmare
-        // Curse
-        // Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap
-        // Taunt fading
-        // Encore fading
-        // Disable fading
-        // Magnet Rise fading
-        // Telekinesis fading
-        // Heal Block fading
-        // Embargo fading
-        // Yawn
-        // Perish count
-        // Roost fading
-        // Reflect dissipating
-        // Light Screen dissipating
-        // Safeguard dissipating
-        // Mist dissipating
-        // Tailwind dissipating
-        // Lucky Chant dissipating
-        // Rainbow (Water Pledge + Fire Pledge) dissipating
-        // Sea of fire (Fire Pledge + Grass Pledge) dissipating
-        // Swamp (Grass Pledge + Water Pledge) dissipating
-        // Trick Room dissipating
-        // Water Sport dissipating
-        // Mud Sport dissipating
-        // Wonder Room dissipating
-        // Magic Room dissipating
-        // Gravity dissipating
-        // Terrain dissipating
-        // Block B [
-        //      Uproar
-        //      Speed Boost/Moody/Bad Dreams* (*for the pokemon that has the ability)
-        //      Flame Orb/Toxic Orb/Sticky Barb
-        //      Harvest/Pickup ]
-        // Zen Mode
+            // Self-curing a status condition due to high Affection
+            // Future Sight/Doom Desire
+            // Wish
+            // Block A [
+            //      Sea of Fire
+            //      Grassy Terrain
+            //      Hydration/Shed Skin
+            //      Leftovers/Black Sludge
+            //      Healer ]
+            // Aqua Ring
+            // Ingrain
+            // Leech Seed
+            forEachPokemonInSpeedArray(true, false, pokemon -> {
+                if (pokemon.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) {
+                    BattlePokemon sapper = pokemon.getEffectParty(BattlePokemon.Effect.LEECH_SEED_SAPPER_PARTY)
+                            .members[pokemon.getEffectInt(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)];
+                    if (sapper != null && sapper.getHP() > 0) {
+                        int hpDrained = Math.min(pokemon.getHP(), pokemon.getStat(0) / 8);
+                        inflictDamage(pokemon, hpDrained);
+                        new TextResult(pokemon.getName() + "'s health is sapped by Leech Seed!");
+                        heal(sapper, hpDrained);
+                        handleFaint(pokemon);
+                    }
+                }
+            });
+            // Poison/Poison Heal
+            forEachPokemonInSpeedArray(true, false, pokemon -> {
+                if (pokemon.statusCondition == Pokemon.StatusCondition.POISON) {
+                    inflictDamage(pokemon, pokemon.getStat(0) / 8);
+                    new TextResult(pokemon.getName() + " was hurt by its poison!");
+                    handleFaint(pokemon);
+                } else if (pokemon.statusCondition.isToxic()) {
+                    inflictDamage(pokemon, pokemon.getStat(0) * (pokemon.statusCondition.ordinal() - 8) / 16);
+                    Pokemon.StatusCondition.incrementToxic(pokemon);
+                    setStatusCondition(pokemon, pokemon.statusCondition);
+                    new TextResult(pokemon.getName() + " was hurt by its poison!");
+                    handleFaint(pokemon);
+                }
+            });
+            // Burn
+            forEachPokemonInSpeedArray(true, false, pokemon -> {
+                if (pokemon.statusCondition == Pokemon.StatusCondition.BURN) {
+                    inflictDamage(pokemon, pokemon.getStat(0) / 16);
+                    new TextResult(pokemon.getName() + " is hurt by its burn!");
+                    handleFaint(pokemon);
+                }
+            });
+            // Nightmare
+            // Curse
+            // Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap
+            // Taunt fading
+            // Encore fading
+            // Disable fading
+            // Magnet Rise fading
+            // Telekinesis fading
+            // Heal Block fading
+            // Embargo fading
+            // Yawn
+            // Perish count
+            // Roost fading
+            // Reflect dissipating
+            // Light Screen dissipating
+            // Safeguard dissipating
+            // Mist dissipating
+            // Tailwind dissipating
+            // Lucky Chant dissipating
+            // Rainbow (Water Pledge + Fire Pledge) dissipating
+            // Sea of fire (Fire Pledge + Grass Pledge) dissipating
+            // Swamp (Grass Pledge + Water Pledge) dissipating
+            // Trick Room dissipating
+            // Water Sport dissipating
+            // Mud Sport dissipating
+            // Wonder Room dissipating
+            // Magic Room dissipating
+            // Gravity dissipating
+            // Terrain dissipating
+            // Block B [
+            //      Uproar
+            //      Speed Boost/Moody/Bad Dreams* (*for the pokemon that has the ability)
+            //      Flame Orb/Toxic Orb/Sticky Barb
+            //      Harvest/Pickup ]
+            // Zen Mode
+        } catch (Exception e) {
+            e.printStackTrace();
+            new TextResult("An error has occurred.");
+        }
         attemptEndBattle();
-        screen.receiveResults();
+        endTurn();
     }
 
-    private void forEachPokemon(boolean considerAction, Consumer<? super BattlePokemon> action) {
-        speedArray.shuffle();
-        speedArray.forEach(pokemon -> pokemon.speed = calcSpeed(pokemon, considerAction));
-        speedArray.sort(Comparator.comparingInt(o -> o.speed));
+    private void forEachPokemonInSpeedArray(boolean sort, boolean considerAction, Consumer<? super BattlePokemon> action) {
+        if (sort) sortSpeedArray(considerAction);
         if (considerAction) while (speedArray.notEmpty()) {
-            action.accept(speedArray.pop());
+            BattlePokemon pokemon = speedArray.pop();
+            if (pokemon == null || pokemon.getHP() <= 0) continue;
+            action.accept(pokemon);
             speedArray.forEach(p -> p.speed = calcSpeed(p, true));
             speedArray.sort(Comparator.comparingInt(o -> o.speed)); // in gen 8, speed updates mid turn
             // (e.g. a drizzle user switches in while a swift swim user is on the field)
-        } else speedArray.forEach(action);
+        } else speedArray.forEach(pokemon -> {
+            if (pokemon != null && pokemon.getHP() > 0) action.accept(pokemon);
+        });
     }
     private void forEachPokemonOnField(boolean considerUserParty, Consumer<? super BattlePokemon> action) {
         if (considerUserParty) {
@@ -200,6 +243,7 @@ public class BattleCalculator {
     private void useMove(BattlePokemon user, Move move, BattleParty targetParty, int targetSlot) {
         if (user.getHP() <= 0)
             return;
+        if (move.index != 182) user.removeEffect(BattlePokemon.Effect.PROTECT_USES); // protect
         if (user.statusCondition != Pokemon.StatusCondition.HEALTHY) {
             if (user.statusCondition == Pokemon.StatusCondition.FREEZE) {
                 if (MathUtils.random(4) == 0) {
@@ -223,6 +267,23 @@ public class BattleCalculator {
                 }
             }
         }
+        if (user.hasEffect(BattlePokemon.Effect.FLINCH)) {
+            new TextResult(user.getName() + " flinched and could not move!");
+            return;
+        }
+        if (user.hasEffect(BattlePokemon.Effect.CONFUSED)) {
+            int turnsLeft = user.getEffectInt(BattlePokemon.Effect.CONFUSED);
+            if (--turnsLeft == 0) {
+                new TextResult(user.getName() + " snapped out of its confusion!");
+                user.removeEffect(BattlePokemon.Effect.CONFUSED);
+            } else {
+                new TextResult(user.getName() + " is confused!");
+                if (MathUtils.random(2) == 0) {
+                    useAttackMove(user, user, null, Game.game.data.getStruggle());
+                    return;
+                }
+            }
+        }
         new TextResult(user.getName() + " used " + move.name + "!");
 
         if (move.charge) {
@@ -233,8 +294,12 @@ public class BattleCalculator {
                         new TextResult(user.getName() + " is charging!");
                         break;
                     case 76: // solar beam
-                        // todo no charge in sunlight
                         new TextResult(user.getName() + " is absorbing light!");
+                        if (weather == Weather.SUN) chargeInstead = false;
+                        break;
+                    case 130: // skull bash
+                        new TextResult(user.getName() + " tucked in its head!");
+                        boostStats(user, 0, 1, 0, 0, 0, 0, 0);
                         break;
                 }
                 if (chargeInstead) {
@@ -274,6 +339,17 @@ public class BattleCalculator {
         BattlePokemon defender = defenders.isEmpty() ? null : defenders.first();
         boolean multipleDefenders = defenders.size > 1;
 
+        if (move.protect) {
+            for (BattlePokemon pokemon : defenders) {
+                if (pokemon.hasEffect(BattlePokemon.Effect.PROTECTED)) {
+                    new TextResult(pokemon.getName() + " protected itself!");
+                    defenders.removeValue(pokemon, true);
+                }
+            }
+            if (defenders.notEmpty()) defender = defenders.first();
+            else return;
+        }
+
         // wonder guard, harsh sun with water, heavy rain with fire, ground immunity, sky drop too heavy, synchronoise fail
         if (move.targets != Pokemon.MoveTargets.SELF && (defender == null || defender.getHP() <= 0)) {
             butItFailed();
@@ -307,11 +383,14 @@ public class BattleCalculator {
                 default:
                     Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
                     break;
+                case 39: // tail whip
+                    for (BattlePokemon d : defenders) boostStats(d, 0, -1, 0, 0, 0, 0, 0);
+                    break;
                 case 45: // growl
                     boostStats(defender, -1, 0, 0, 0, 0, 0, 0);
                     break;
                 case 73: // leech seed
-                    if (defender.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) butItFailed();
+                    if (defender.hasType(Pokemon.Type.GRASS) || defender.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) butItFailed();
                     else {
                         new TextResult(defender.getName() + " was seeded!");
                         defender.addEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT, user.partyMemberSlot);
@@ -319,8 +398,8 @@ public class BattleCalculator {
                     }
                     break;
                 case 74: // growth
-                    // todo have this boost 2 stages in sun
-                    boostStats(user, 1, 0, 1, 0, 0, 0, 0);
+                    int boost = weather == Weather.SUN ? 2 : 1;
+                    boostStats(user, boost, 0, boost, 0, 0, 0, 0);
                     break;
                 case 77: // poison powder
                     if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.POISON)) butItFailed();
@@ -331,13 +410,46 @@ public class BattleCalculator {
                 case 79: // sleep powder
                     if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) butItFailed();
                     break;
+                case 110: // withdraw
+                    boostStats(user, 0, 1, 0, 0, 0, 0, 0);
+                    break;
+                case 182: // protect
+                    if (speedArray.isEmpty()) {
+                        butItFailed();
+                        return;
+                    }
+                    if (user.hasEffect(BattlePokemon.Effect.PROTECT_USES)) {
+                        int uses = user.getEffectInt(BattlePokemon.Effect.PROTECT_USES);
+                        if (MathUtils.random(MathUtils.round((float)Math.pow(3, uses))) != 0) {
+                            user.removeEffect(BattlePokemon.Effect.PROTECT_USES);
+                            butItFailed();
+                            return;
+                        }
+                        user.addEffect(BattlePokemon.Effect.PROTECT_USES, uses+1);
+                    } else user.addEffect(BattlePokemon.Effect.PROTECT_USES, 1);
+                    user.addEffect(BattlePokemon.Effect.PROTECTED, true);
+                    new TextResult(user.getName() + " protected itself!");
+                    break;
                 case 230: // sweet scent
                     for (BattlePokemon p : defenders) boostStats(p, 0, 0, 0, 0, 0, 0, -2);
                     break;
-                case 235:
-                    if (user.getHP() == user.getStat(0)) butItFailed();
-                    else heal(user, user.getStat(0)/2);
-                    // todo heal different amounts based on the weather
+                case 240: // rain dance
+                    if (!attemptSetWeather(Weather.RAIN)) butItFailed();
+                    break;
+                case 235: // synthesis
+                    if (user.getHP() == user.getMaxHP()) butItFailed();
+                    else {
+                        int amount;
+                        switch (weather) {
+                            case SUN: amount = user.getMaxHP()*2/3; break;
+                            case CLEAR: amount = user.getMaxHP()/2; break;
+                            default: amount = user.getMaxHP()/3; break;
+                        }
+                        heal(user, amount);
+                    }
+                    break;
+                case 334: // iron defense
+                    boostStats(user, 0, 2, 0, 0, 0, 0, 0);
                     break;
                 case 388: // worry seed
                     if (defender.getAbility().getIndex() == 15) butItFailed(); // insomnia
@@ -346,45 +458,14 @@ public class BattleCalculator {
                         new TextResult(defender.getName() + "'s ability changed to Insomnia!");
                     }
                     break;
+                case 504: // shell smash
+                    boostStats(user, 2, -1, 2, -1, 2, 0, 0);
+                    break;
             }
             return;
         }
 
-        if (move.multi || move.doubleHit) {
-            int maxHits;
-            if (move.doubleHit) maxHits = 2;
-            else switch (MathUtils.random(5)) {
-                default: case 0: case 1: maxHits = 2; break;
-                case 2: case 3: maxHits = 3; break;
-                case 4: maxHits = 4; break;
-                case 5: maxHits = 5; break;
-            }
-            int numHits = 0;
-            DamageResult damage = null;
-            while (numHits < maxHits) {
-                numHits++;
-                damage = calcDamage(user, defender, move);
-                inflictDamage(defender, damage);
-                if (damage.isCrit) new TextResult("Critical hit!");
-                if (defender.getHP() <= 0)
-                    break;
-                attemptActivateMoveEffect(user, defender, move);
-            }
-            if (damage.effectiveness > 0) new TextResult("It's super effective!");
-            else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
-            new TextResult("Hit " + numHits + (numHits == 1 ? " time!" : " times!"));
-            handleFaint(defender);
-        } else {
-            DamageResult damage = calcDamage(user, defender, move);
-            inflictDamage(defender, damage);
-            if (damage.effectiveness > 0) new TextResult("It's super effective!");
-            else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
-            if (damage.isCrit) new TextResult("Critical hit!");
-            if (move.isOHKO()) new TextResult("It's a One-Hit KO!");
-            dealRecoilDamage(user, move, damage.damage);
-            if (!handleFaint(defender)) attemptActivateMoveEffect(user, defender, move);
-            handleFaint(user);
-        }
+        useAttackMove(user, defender, defenders, move);
     }
     private boolean attemptFlee(BattlePokemon pokemon) {
         if (canSwitch(pokemon)) {
@@ -445,6 +526,9 @@ public class BattleCalculator {
     // calculations
     private DamageResult calcDamage(BattlePokemon attacker, BattlePokemon defender, Move move) {
 
+        int defenderAbility = getDefendersAbility(attacker, defender, move).getIndex();
+        int attackerAbility = attacker.getAbility().getIndex();
+
         // special damage cases
         {
             switch (move.index) {
@@ -454,8 +538,10 @@ public class BattleCalculator {
             if (move.isOHKO()) return new DamageResult(defender.getHP());
         }
 
-        int defenderAbility = getDefendersAbility(attacker, defender, move).getIndex();
-        int attackerAbility = attacker.getAbility().getIndex();
+        boolean isPhysical = move.category == Pokemon.MoveCategory.PHYSICAL;
+        Pokemon.Type[] moveTypes = new Pokemon.Type[] {move.type};
+        int efficiency = 0;
+        for (Pokemon.Type type : moveTypes) efficiency += type.getEfficiencyAgainst(defender.types);
 
         boolean isCrit;
         {
@@ -477,30 +563,43 @@ public class BattleCalculator {
         // type changes. weather ball, judgment, natural gift, nature power, aura wheel
         // aerilate, pixilate, refrigerate, galvanize, normalize. doesn't apply to z-moves (but does apply to max moves?)
 
-        int efficiency = move.type.getEfficiencyAgainst(defender.types);
-
-        int bp = move.basePower;
+        int bp = attacker == defender ? 40 : move.basePower; // confusion is identical to struggle except it has 40 base power
         // bp mods
+        {
+            Array<Integer> mods = new Array<>();
+
+            if (move.index == 76 && !(weather == Weather.CLEAR || weather == Weather.SUN)) mods.add(0x800); // solar beam in rain/sand/hail
+
+            bp = Math.max(1, roundDown((float)bp * chainMods(mods) / 0x1000));
+        }
 
         int atk;
         {
-            if (move.category == Pokemon.MoveCategory.PHYSICAL)
-                atk = calcStatWithStage(attacker.getStat(1), isCrit ? Math.max(attacker.statBoosts[0], 0) : attacker.statBoosts[0]);
-            else
-                atk = calcStatWithStage(attacker.getStat(3), isCrit ? Math.max(attacker.statBoosts[2], 0) : attacker.statBoosts[2]);
+            if (isPhysical) atk = calcStatWithStage(attacker.getStat(1), isCrit ? Math.max(attacker.statBoosts[0], 0) : attacker.statBoosts[0]);
+            else atk = calcStatWithStage(attacker.getStat(3), isCrit ? Math.max(attacker.statBoosts[2], 0) : attacker.statBoosts[2]);
         }
 
         int def;
         {
-            if (move.category == Pokemon.MoveCategory.PHYSICAL)
-                def = calcStatWithStage(defender.getStat(2), isCrit ? Math.min(defender.statBoosts[1], 0) : defender.statBoosts[1]);
-            else
-                def = calcStatWithStage(defender.getStat(4), isCrit ? Math.min(defender.statBoosts[3], 0) : defender.statBoosts[3]);
+            if (isPhysical) def = calcStatWithStage(defender.getStat(2), isCrit ? Math.min(defender.statBoosts[1], 0) : defender.statBoosts[1]);
+            else def = calcStatWithStage(defender.getStat(4), isCrit ? Math.min(defender.statBoosts[3], 0) : defender.statBoosts[3]);
+
+            // unlike other modifiers, sandstorm spd boost is applied directly
+            if (weather == Weather.SAND && !isPhysical && defender.hasType(Pokemon.Type.ROCK)) def = def * 2 / 3;
         }
 
         // damage
         {
             int baseDamage = (2*attacker.getLevel()/5 + 2)*bp*atk/def/50 + 2;
+
+            if (weather == Weather.RAIN || weather == Weather.SUN) for (Pokemon.Type type : moveTypes) {
+                // boost/detriment in rain/sun
+                if ((weather == Weather.SUN && type == Pokemon.Type.FIRE) || (weather == Weather.RAIN && type == Pokemon.Type.WATER)) {
+                    baseDamage = roundDown((float) baseDamage * 0x1800 / 0x1000);
+                } else if ((weather == Weather.RAIN && type == Pokemon.Type.FIRE) || (weather == Weather.SUN && type == Pokemon.Type.WATER)) {
+                    baseDamage = roundDown((float)baseDamage * 0x800 / 0x1000);
+                }
+            }
             if (isCrit) baseDamage = baseDamage * 3 / 2;
 
             int[] damages = new int[Game.game.doLogDamage ? 16 : 1];
@@ -584,6 +683,10 @@ public class BattleCalculator {
             move action adds nothing
              */
             if (pokemon.action instanceof BattlePokemon.RunAction) speed += 9000000;
+            else if (pokemon.action instanceof BattlePokemon.MoveAction) {
+                BattlePokemon.MoveAction action = (BattlePokemon.MoveAction) pokemon.action;
+                speed += action.move.getPriority() * 100000;
+            }
         }
 
         return speed;
@@ -603,6 +706,11 @@ public class BattleCalculator {
     }
     private int roundDown(float f) {
         return (f % 1 > 0.5f) ? MathUtils.ceil(f) : MathUtils.floor(f);
+    }
+    private int chainMods(Array<Integer> mods) {
+        int m = 0x1000;
+        for (int mod : mods) if (mod != 0x1000) m = Math.round((float)m*mod/0x1000);
+        return m;
     }
     private int calcExpGain(BattlePokemon fainted, BattlePokemon victor) {
         float trainerMultiplier = 1; // or 1.5 if it's a trainer battle
@@ -629,6 +737,44 @@ public class BattleCalculator {
     }
 
     // results
+    private void useAttackMove(BattlePokemon user, BattlePokemon defender, Array<BattlePokemon> defenders, Move move) {
+        if (move.multi || move.doubleHit) {
+            int maxHits;
+            if (move.doubleHit) maxHits = 2;
+            else switch (MathUtils.random(5)) {
+                default: case 0: case 1: maxHits = 2; break;
+                case 2: case 3: maxHits = 3; break;
+                case 4: maxHits = 4; break;
+                case 5: maxHits = 5; break;
+            }
+            int numHits = 0;
+            DamageResult damage = null;
+            while (numHits < maxHits) {
+                numHits++;
+                damage = calcDamage(user, defender, move);
+                inflictDamage(defender, damage);
+                if (damage.isCrit) new TextResult("Critical hit!");
+                if (defender.getHP() <= 0)
+                    break;
+                attemptActivateMoveEffect(user, defender, move);
+            }
+            if (damage.effectiveness > 0) new TextResult("It's super effective!");
+            else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
+            new TextResult("Hit " + numHits + (numHits == 1 ? " time!" : " times!"));
+            handleFaint(defender);
+        } else {
+            DamageResult damage = calcDamage(user, defender, move);
+            inflictDamage(defender, damage);
+            if (user == defender) new TextResult("It hit itself in its confusion!");
+            if (damage.effectiveness > 0) new TextResult("It's super effective!");
+            else if (damage.effectiveness < 0) new TextResult("It's not very effective...");
+            if (damage.isCrit) new TextResult("Critical hit!");
+            if (move.isOHKO()) new TextResult("It's a One-Hit KO!");
+            dealRecoilDamage(user, move, damage.damage);
+            if (!handleFaint(defender)) attemptActivateMoveEffect(user, defender, move);
+            handleFaint(user);
+        }
+    }
     private void dealRecoilDamage(BattlePokemon user, Move move, int damageDealt) {
         int recoil;
         switch (move.index) {
@@ -683,6 +829,11 @@ public class BattleCalculator {
             for (int j = 0; j < battleParty.numBattling; j++)
                 if (battleParty.members[j] != null && battleParty.members[j].getHP() > 0)
                     speedArray.add(battleParty.members[j]);
+    }
+    private void sortSpeedArray(boolean considerAction) {
+        speedArray.shuffle();
+        speedArray.forEach(pokemon -> pokemon.speed = calcSpeed(pokemon, considerAction));
+        speedArray.sort(Comparator.comparingInt(o -> o.speed));
     }
     private boolean attemptEndBattle() {
         boolean canEndBattle = true;
@@ -749,11 +900,44 @@ public class BattleCalculator {
         new SetValueResult(pokemon, SetValueResult.Type.STATUS, status);
         pokemon.statusCondition = status;
     }
+    private boolean attemptConfuse(BattlePokemon pokemon) {
+        if (pokemon.hasEffect(BattlePokemon.Effect.CONFUSED)) return false;
+        pokemon.addEffect(BattlePokemon.Effect.CONFUSED, MathUtils.random(2, 5));
+        new TextResult(pokemon.getName() + " became confused!");
+        return true;
+    }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move) {
-        if (move.effect == null) return;
-        if (move.effect.chance == 100 || MathUtils.random(99) < move.effect.chance) {
-            if (move.effect instanceof Move.EffectStatusCondition) {
-                attemptInflictStatusCondition(defender, ((Move.EffectStatusCondition) move.effect).statusCondition);
+        attemptActivateMoveEffect(user, defender, move.effect);
+    }
+    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move.Effect effect) {
+        if (effect == null) return;
+        if (effect.chance == 100 || MathUtils.random(99) < effect.chance) {
+            if (effect instanceof Move.EffectStatusCondition) {
+                attemptInflictStatusCondition(defender, ((Move.EffectStatusCondition) effect).statusCondition);
+            } else if (effect instanceof Move.EffectBoostSelfStats) {
+                Move.EffectBoostSelfStats e = (Move.EffectBoostSelfStats) effect;
+                boostStats(user, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
+            } else if (effect instanceof Move.EffectMultiple) {
+                Move.EffectMultiple effectMultiple = (Move.EffectMultiple) effect;
+                for (Move.Effect e : effectMultiple.effects)
+                    attemptActivateMoveEffect(user, defender, e);
+            } else if (effect instanceof Move.EffectRemoveDefenderEffectsWithFlag) {
+                Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(((Move.EffectRemoveDefenderEffectsWithFlag) effect).flag);
+                if (effects != null)
+                    for (BattlePokemon.Effect e : effects)
+                        new TextResult("Removed " + e + ". (placeholder)");
+            } else if (effect instanceof Move.EffectRemoveUserEffectsWithFlag) {
+                Array<BattlePokemon.Effect> effects = user.removeEffectsWithFlags(((Move.EffectRemoveUserEffectsWithFlag) effect).flag);
+                if (effects != null)
+                    for (BattlePokemon.Effect e : effects)
+                        new TextResult("Removed " + e + ". (placeholder)");
+            } else if (effect instanceof Move.EffectAddEffectToDefender) {
+                Move.EffectAddEffectToDefender e = (Move.EffectAddEffectToDefender) effect;
+                defender.addEffect(e.effect, true);
+            } else if (effect instanceof Move.EffectConfuse) {
+                attemptConfuse(defender);
+            } else {
+                Game.logError("Unhandled Move.Effect class: " + effect.getClass());
             }
         }
     }
@@ -814,6 +998,23 @@ public class BattleCalculator {
 
         return successful;
     }
+    private void endTurn() {
+        forEachPokemonInSpeedArray(false, false, pokemon -> pokemon.removeEffectsWithFlags(BattlePokemon.EffectFlag.END_TURN));
+        screen.receiveResults();
+    }
+    private boolean attemptSetWeather(Weather weather) {
+        if (this.weather == weather) return false;
+        switch (weather) {
+            default: Game.logError("Unhandled weather: " + weather); weatherTurnsLeft = 0; return false;
+            case CLEAR: new TextResult("The sky cleared!"); weatherTurnsLeft = 5; break;
+            case RAIN: new TextResult("It started to rain!"); weatherTurnsLeft = 5; break;
+            case SUN: new TextResult("The sunlight turned harsh!"); weatherTurnsLeft = 5; break;
+            case SAND: new TextResult("A sandstorm kicked up!"); weatherTurnsLeft = 5; break;
+            case HAIL: new TextResult("It started to hail!"); weatherTurnsLeft = 5; break;
+        }
+        this.weather = weather;
+        return true;
+    }
 
     // getters
     public BattleParty getUserParty() {
@@ -872,5 +1073,9 @@ public class BattleCalculator {
             this.stat = stat;
             this.stage = MathUtils.clamp(pokemon.statBoosts[stat] + stage, -6, 6) - pokemon.statBoosts[stat];
         }
+    }
+
+    private enum Weather {
+        CLEAR, RAIN, SUN, SAND, HAIL
     }
 }

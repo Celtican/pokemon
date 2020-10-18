@@ -1,6 +1,7 @@
 package com.celtican.pokemon.utils.data;
 
 import com.celtican.pokemon.Game;
+import com.celtican.pokemon.battle.BattlePokemon;
 
 public class Move {
 
@@ -47,13 +48,14 @@ public class Move {
             default: return false;
         }
     }
+    public int getPriority() {
+        if (index == 182) // protect
+            return 4;
+        return 0;
+    }
 
     public Move(int index, String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest,
-                Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Effect effect
-                /*boolean crit, boolean multi, boolean doubleHit, boolean authentic, boolean charge, boolean contact,
-                boolean defrost, boolean distance, boolean gravity, boolean heal, boolean mirror, boolean nonsky,
-                boolean protect, boolean punch, boolean recharge, boolean reflectable, boolean snatch, boolean sound,
-                boolean dance, boolean sideanim, boolean powder, boolean bullet, boolean pulse*/) {
+                Pokemon.MoveTargets targets, int basePP, int basePower, int accuracy, String flags, Effect effect) {
         this.index = index;
         this.name = name;
         this.type = type;
@@ -64,6 +66,7 @@ public class Move {
         this.basePower = basePower;
         this.accuracy = accuracy;
         this.effect = effect;
+        if (flags == null) return;
         for (String s : flags.split(",")) switch (s.trim().toLowerCase()) {
             case "crit": crit = true; break;
             case "multi": multi = true; break;
@@ -123,11 +126,66 @@ public class Move {
             this.chance = chance;
         }
     }
+    public static class EffectMultiple extends Effect {
+        public final Effect[] effects;
+        public EffectMultiple(int chance, Effect effect1, Effect effect2) {
+            this(chance, new Effect[] {effect1, effect2});
+        }
+        public EffectMultiple(int chance, Effect[] effects) {
+            super(chance);
+            this.effects = effects;
+        }
+    }
     public static class EffectStatusCondition extends Effect {
         public final Pokemon.StatusCondition statusCondition;
         public EffectStatusCondition(int chance, Pokemon.StatusCondition statusCondition) {
             super(chance);
             this.statusCondition = statusCondition;
+        }
+    }
+    public static class EffectBoostSelfStats extends Effect {
+        public final int atk;
+        public final int def;
+        public final int spa;
+        public final int spd;
+        public final int spe;
+        public final int acc;
+        public final int eva;
+        public EffectBoostSelfStats(int chance, int atk, int def, int spa, int spd, int spe, int acc, int eva) {
+            super(chance);
+            this.atk = atk;
+            this.def = def;
+            this.spa = spa;
+            this.spd = spd;
+            this.spe = spe;
+            this.acc = acc;
+            this.eva = eva;
+        }
+    }
+    public static class EffectRemoveDefenderEffectsWithFlag extends Effect {
+        public final BattlePokemon.EffectFlag flag;
+        public EffectRemoveDefenderEffectsWithFlag(int chance, BattlePokemon.EffectFlag flag) {
+            super(chance);
+            this.flag = flag;
+        }
+    }
+    public static class EffectRemoveUserEffectsWithFlag extends Effect {
+        public final BattlePokemon.EffectFlag flag;
+        public EffectRemoveUserEffectsWithFlag(int chance, BattlePokemon.EffectFlag flag) {
+            super(chance);
+            this.flag = flag;
+        }
+    }
+    public static class EffectAddEffectToDefender extends Effect {
+        public final BattlePokemon.Effect effect;
+        public EffectAddEffectToDefender(int chance, BattlePokemon.Effect effect) {
+            super(chance);
+            this.effect = effect;
+        }
+    }
+    public static class EffectConfuse extends Effect {
+        public EffectConfuse(int chance) {
+            super(chance);
         }
     }
 }
