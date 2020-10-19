@@ -162,6 +162,25 @@ public class Move {
             this.eva = eva;
         }
     }
+    public static class EffectBoostTargetStats extends Effect {
+        public final int atk;
+        public final int def;
+        public final int spa;
+        public final int spd;
+        public final int spe;
+        public final int acc;
+        public final int eva;
+        public EffectBoostTargetStats(int chance, int atk, int def, int spa, int spd, int spe, int acc, int eva) {
+            super(chance);
+            this.atk = atk;
+            this.def = def;
+            this.spa = spa;
+            this.spd = spd;
+            this.spe = spe;
+            this.acc = acc;
+            this.eva = eva;
+        }
+    }
     public static class EffectRemoveDefenderEffectsWithFlag extends Effect {
         public final BattlePokemon.EffectFlag flag;
         public EffectRemoveDefenderEffectsWithFlag(int chance, BattlePokemon.EffectFlag flag) {

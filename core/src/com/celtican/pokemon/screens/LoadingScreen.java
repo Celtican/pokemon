@@ -172,7 +172,7 @@ public class LoadingScreen extends Screen {
                 5, 36, new int[] {10, 45, 52, 108, 225, 424, 163, 53, 184, 83, 517, 394}, new int[] {0, 0, 0, 0, 12, 19, 24, 30, 37, 42, 48, 54});
         Game.game.data.addSpecies("Charizard", FEMALE_IS_RARE, FIRE, FLYING, EggGroup.MONSTER, EggGroup.DRAGON, MEDIUM_SLOW,
                 66, 66, 94, 94, 78, 84, 78, 109, 85, 100, 45, 50, 240, 0, 0, 0, 3, 0, 0,
-                -1, -1, new int[] {403, 403, 337, 257, 10, 45, 52, 108, 12, 424, 163, 53, 184, 46, 517, 394}, new int[] {-1, 0, 0, 0, 0, 0, 0, 0, 12, 19, 24, 30, 39, 46, 54, 62});
+                -1, -1, new int[] {403, 403, 337, 257, 10, 45, 52, 108, 225, 424, 163, 53, 184, 83, 517, 394}, new int[] {-1, 0, 0, 0, 0, 0, 0, 0, 12, 19, 24, 30, 39, 46, 54, 62});
         Game.game.data.addSpecies("Squirtle", FEMALE_IS_RARE, WATER, NONE, EggGroup.MONSTER, EggGroup.WATER1, MEDIUM_SLOW,
                 67, 67, 44, 44, 44, 48, 65, 50, 64, 43, 45, 50, 63, 0, 0, 1, 0, 0, 0,
                 8, 16, new int[] {33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {0, 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36});
@@ -236,8 +236,8 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Sonic Boom");
         Game.game.data.addMove("Disable");
         Game.game.data.addMove("Acid");
-        Game.game.data.addMove("Ember");
-        Game.game.data.addMove("Flamethrower");
+        Game.game.data.addMove("Ember", FIRE, SPECIAL, CUTE, ADJACENT, 5, 40, 100, "protect, mirror", new Move.EffectStatusCondition(10, StatusCondition.BURN));
+        Game.game.data.addMove("Flamethrower", FIRE, SPECIAL, BEAUTIFUL, ADJACENT, 3, 90, 100, "protect, mirror", new Move.EffectStatusCondition(10, StatusCondition.BURN));
         Game.game.data.addMove("Mist");
         Game.game.data.addMove("Water Gun", WATER, SPECIAL, CUTE, ADJACENT, 5, 40, 100, "protect, mirror", null);
         Game.game.data.addMove("Hydro Pump", WATER, SPECIAL, BEAUTIFUL, ADJACENT, 1, 110, 80, "protect, mirror", null);
@@ -267,7 +267,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Petal Dance");
         Game.game.data.addMove("String Shot");
         Game.game.data.addMove("Dragon Rage");
-        Game.game.data.addMove("Fire Spin");
+        Game.game.data.addMove("Fire Spin", FIRE, SPECIAL, BEAUTIFUL, ADJACENT, 3, 35, 85, "protect, mirror", null);
         Game.game.data.addMove("Thunder Shock");
         Game.game.data.addMove("Thunderbolt");
         Game.game.data.addMove("Thunder Wave");
@@ -292,7 +292,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Recover");
         Game.game.data.addMove("Harden");
         Game.game.data.addMove("Minimize");
-        Game.game.data.addMove("Smokescreen");
+        Game.game.data.addMove("Smokescreen", NORMAL, STATUS, CLEVER, ADJACENT, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Confuse Ray");
         Game.game.data.addMove("Withdraw", WATER, STATUS, CUTE, SELF, 8, -1, -1, "snatch", null);
         Game.game.data.addMove("Defense Curl");
@@ -347,7 +347,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Conversion");
         Game.game.data.addMove("Tri Attack");
         Game.game.data.addMove("Super Fang");
-        Game.game.data.addMove("Slash");
+        Game.game.data.addMove("Slash", NORMAL, PHYSICAL, COOL, ADJACENT, 4, 70, 100, "contact, protect, mirror, crit", null);
         Game.game.data.addMove("Substitute");
         Game.game.data.addMove("Struggle");
         Game.game.data.addMove("Sketch");
@@ -368,7 +368,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Powder Snow");
         Game.game.data.addMove("Protect", NORMAL, STATUS, CUTE, SELF, 2, -1, -1, null, null);
         Game.game.data.addMove("Mach Punch");
-        Game.game.data.addMove("Scary Face");
+        Game.game.data.addMove("Scary Face", NORMAL, STATUS, TOUGH, ADJACENT, 2, -1, 100, "protect, reflectable, mirror, sideanim", null);
         Game.game.data.addMove("Feint Attack");
         Game.game.data.addMove("Sweet Kiss*");
         Game.game.data.addMove("Belly Drum");
@@ -409,7 +409,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Magnitude");
         Game.game.data.addMove("Dynamic Punch");
         Game.game.data.addMove("Megahorn");
-        Game.game.data.addMove("Dragon Breath");
+        Game.game.data.addMove("Dragon Breath", DRAGON, SPECIAL, COOL, ADJACENT, 4, 60, 100, "protect, mirror", new Move.EffectStatusCondition(30, StatusCondition.PARALYSIS));
         Game.game.data.addMove("Baton Pass");
         Game.game.data.addMove("Encore");
         Game.game.data.addMove("Pursuit");
@@ -579,7 +579,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Heart Swap");
         Game.game.data.addMove("Aqua Ring");
         Game.game.data.addMove("Magnet Rise");
-        Game.game.data.addMove("Flare Blitz");
+        Game.game.data.addMove("Flare Blitz", FIRE, PHYSICAL, COOL, ADJACENT, 3, 120, 100, "contact, protect, mirror, defrost", new Move.EffectStatusCondition(10, StatusCondition.BURN));
         Game.game.data.addMove("Force Palm");
         Game.game.data.addMove("Aura Sphere");
         Game.game.data.addMove("Rock Polish");
@@ -609,7 +609,8 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Shadow Claw");
         Game.game.data.addMove("Thunder Fang");
         Game.game.data.addMove("Ice Fang");
-        Game.game.data.addMove("Fire Fang");
+        Game.game.data.addMove("Fire Fang", FIRE, PHYSICAL, COOL, ADJACENT, 3, 65, 95, "contact, protect, mirror",
+                new Move.EffectMultiple(100, new Move.EffectStatusCondition(10, StatusCondition.BURN), new Move.EffectAddEffectToDefender(10, BattlePokemon.Effect.FLINCH)));
         Game.game.data.addMove("Shadow Sneak");
         Game.game.data.addMove("Mud Bomb");
         Game.game.data.addMove("Psycho Cut");
@@ -702,7 +703,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Retaliate");
         Game.game.data.addMove("Final Gambit");
         Game.game.data.addMove("Bestow");
-        Game.game.data.addMove("Inferno");
+        Game.game.data.addMove("Inferno", FIRE, SPECIAL, BEAUTIFUL, ADJACENT, 1, 100, 50, "protect, mirror", new Move.EffectStatusCondition(100, StatusCondition.BURN));
         Game.game.data.addMove("Water Pledge");
         Game.game.data.addMove("Fire Pledge");
         Game.game.data.addMove("Grass Pledge");
@@ -1250,7 +1251,8 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(5);
+        Game.game.data.player.party[0] = new PartyPokemon(64);
+        Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());
     }

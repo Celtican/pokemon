@@ -58,7 +58,6 @@ public class BattleCalculator {
                         attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
                     }
                     if (endBattle.get() || attemptEndBattle()) {
-                        screen.receiveResults();
                         endBattle.set(true);
                     }
                 } catch (Exception e) {
@@ -92,6 +91,7 @@ public class BattleCalculator {
                             if (!(pokemon.hasType(Pokemon.Type.GROUND) || pokemon.hasType(Pokemon.Type.ROCK) || pokemon.hasType(Pokemon.Type.STEEL))) {
                                 inflictDamage(pokemon, pokemon.getMaxHP()/16);
                                 new TextResult(pokemon.getName() + " is buffeted by the sandstorm!");
+                                handleFaint(pokemon);
                             }
                         });
                         break;
@@ -101,6 +101,7 @@ public class BattleCalculator {
                             if (!pokemon.hasType(Pokemon.Type.ICE)) {
                                 inflictDamage(pokemon, pokemon.getMaxHP()/16);
                                 new TextResult(pokemon.getName() + " is buffeted by the hail!");
+                                handleFaint(pokemon);
                             }
                         });
                         break;
@@ -156,6 +157,22 @@ public class BattleCalculator {
             // Nightmare
             // Curse
             // Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap
+            forEachPokemonInSpeedArray(true, false, pokemon -> {
+                if (pokemon.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY)) {
+                    int turnsLeft = pokemon.getEffectInt(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT);
+                    if (turnsLeft == 0) {
+                        pokemon.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT);
+                        pokemon.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY);
+                        pokemon.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_SLOT);
+                        new TextResult(pokemon.getName() + " was freed from fire spin!");
+                    } else {
+                        pokemon.addEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT, turnsLeft-1);
+                        inflictDamage(pokemon, pokemon.getMaxHP() / 8);
+                        new TextResult(pokemon.getName() + " is hurt by fire spin!");
+                        handleFaint(pokemon);
+                    }
+                }
+            });
             // Taunt fading
             // Encore fading
             // Disable fading
@@ -208,6 +225,9 @@ public class BattleCalculator {
         } else speedArray.forEach(pokemon -> {
             if (pokemon != null && pokemon.getHP() > 0) action.accept(pokemon);
         });
+    }
+    private void forEachPokemonOnField(Consumer<? super BattlePokemon> action) {
+        forEachPokemonOnField(true, action);
     }
     private void forEachPokemonOnField(boolean considerUserParty, Consumer<? super BattlePokemon> action) {
         if (considerUserParty) {
@@ -410,6 +430,9 @@ public class BattleCalculator {
                 case 79: // sleep powder
                     if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) butItFailed();
                     break;
+                case 108: // smokescreen
+                    boostStats(defender, 0, 0, 0, 0, 0, -1, 0);
+                    break;
                 case 110: // withdraw
                     boostStats(user, 0, 1, 0, 0, 0, 0, 0);
                     break;
@@ -429,6 +452,9 @@ public class BattleCalculator {
                     } else user.addEffect(BattlePokemon.Effect.PROTECT_USES, 1);
                     user.addEffect(BattlePokemon.Effect.PROTECTED, true);
                     new TextResult(user.getName() + " protected itself!");
+                    break;
+                case 184: // scary face
+                    boostStats(defender, 0, 0, 0, 0, -2, 0, 0);
                     break;
                 case 230: // sweet scent
                     for (BattlePokemon p : defenders) boostStats(p, 0, 0, 0, 0, 0, 0, -2);
@@ -495,8 +521,10 @@ public class BattleCalculator {
     }
     private boolean attemptSwitch(BattlePokemon pokemon, int targetSlot) {
         BattlePokemon target = parties[pokemon.party].members[targetSlot];
-        if (pokemon.getHP() <= 0 || targetSlot < parties[pokemon.party].numBattling || target.getHP() <= 0 ||
-                !canSwitch(pokemon) || !canSwitch(target)) return false;
+        if (pokemon.getHP() <= 0 || targetSlot < parties[pokemon.party].numBattling || target.getHP() <= 0 || !canSwitch(pokemon) || !canSwitch(target)) {
+            new TextResult(pokemon.getName() + " can't switch!");
+            return false;
+        }
 
         if (pokemon.party == 0) new TextResult(pokemon.getName() + ", switch out! Come back!");
         else new TextResult("Go, " + target.getName() + "!");
@@ -504,6 +532,16 @@ public class BattleCalculator {
         // pursuit here
 
         pokemon.removeAllEffects(true);
+        forEachPokemonOnField(p -> {
+            if (p.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY)) {
+                if (pokemon.party == p.getEffectParty(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY).i &&
+                        pokemon.partyMemberSlot == p.getEffectInt(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_SLOT)) {
+                    p.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_SLOT);
+                    p.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY);
+                    p.removeEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT);
+                }
+            }
+        });
 
         target.partyMemberSlot = pokemon.partyMemberSlot;
         pokemon.partyMemberSlot = targetSlot;
@@ -781,9 +819,11 @@ public class BattleCalculator {
             default: return;
             case 36: recoil = 4; break; // take down
             case 38: recoil = 2; break; // double-edge
+            case 394: recoil = 3; break; // flare blitz
         }
         inflictDamage(user, damageDealt/recoil);
         new TextResult(user.getName() + " is damaged by recoil!");
+        // the user fainting is handled in useAttackMove()
     }
     private void butItFailed() {
         if (failedText == null) {
@@ -839,7 +879,8 @@ public class BattleCalculator {
         boolean canEndBattle = true;
         for (BattleParty party : parties) {
             canEndBattle = true;
-            for (BattlePokemon pokemon : party.members) {
+            for (int i = 0; i < party.numBattling; i++) {
+                BattlePokemon pokemon = party.members[i];
                 if (pokemon != null && pokemon.getHP() > 0) {
                     canEndBattle = false;
                     break;
@@ -907,6 +948,22 @@ public class BattleCalculator {
         return true;
     }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move) {
+        switch (move.index) {
+            case 83: // fire spin
+                if (!defender.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY)) {
+                    new TextResult(defender.getName() + " became trapped in a fiery vortex!");
+                    defender.addEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY, parties[user.party]);
+                    defender.addEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_SLOT, user.partyMemberSlot);
+                    defender.addEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT, MathUtils.random(4, 5));
+                }
+                break;
+            case 229: // rapid spin
+                Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(BattlePokemon.EffectFlag.RAPID_SPIN);
+                if (effects != null)
+                    for (BattlePokemon.Effect e : effects)
+                        new TextResult("Removed " + e + ". (placeholder)");
+                break;
+        }
         attemptActivateMoveEffect(user, defender, move.effect);
     }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move.Effect effect) {
@@ -917,6 +974,9 @@ public class BattleCalculator {
             } else if (effect instanceof Move.EffectBoostSelfStats) {
                 Move.EffectBoostSelfStats e = (Move.EffectBoostSelfStats) effect;
                 boostStats(user, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
+            } else if (effect instanceof Move.EffectBoostTargetStats) {
+                Move.EffectBoostTargetStats e = (Move.EffectBoostTargetStats) effect;
+                boostStats(defender, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
             } else if (effect instanceof Move.EffectMultiple) {
                 Move.EffectMultiple effectMultiple = (Move.EffectMultiple) effect;
                 for (Move.Effect e : effectMultiple.effects)
@@ -956,7 +1016,7 @@ public class BattleCalculator {
         statBoosts.sort(Comparator.comparingInt(o -> o.stage));
 
         boolean successful = false;
-        do {
+        while(statBoosts.notEmpty()) {
             int stage = statBoosts.first().stage;
             Array<StatBoost> boostsThisStage = new Array<>();
             while (statBoosts.notEmpty()) {
@@ -994,7 +1054,7 @@ public class BattleCalculator {
                     else s.append(" rose drastically!");
             }
             new TextResult(s.toString());
-        } while (statBoosts.notEmpty());
+        }
 
         return successful;
     }
@@ -1047,7 +1107,8 @@ public class BattleCalculator {
         if (isNegated) switch (d) { case 230: case 231: case 232: isNegated = false;} // full metal body, shadow shield, prism armor
         return isNegated ? Game.game.data.getNullAbility() : defender.getAbility();
     }
-    private boolean canSwitch(BattlePokemon pokemon) {
+    public boolean canSwitch(BattlePokemon pokemon) {
+        if (pokemon.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY) && !pokemon.hasType(Pokemon.Type.GHOST)) return false; // pokemon can't switch if they're trapped by fire spin, unless they are a ghost type
         return true;
     }
 

@@ -10,6 +10,7 @@ import com.celtican.pokemon.utils.data.Species;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 
 public class BattlePokemon implements Pokemon {
 
@@ -56,19 +57,21 @@ public class BattlePokemon implements Pokemon {
     }
 
     public void removeAllEffects(boolean onlyEndOnSwitchEffects) {
-        effectIntegers.forEach((effect, value) -> {
-            if (!onlyEndOnSwitchEffects || effect.endsOnSwitch) effectIntegers.remove(effect);
-        });
-        effectBooleans.forEach((effect, value) -> {
-            if (!onlyEndOnSwitchEffects || effect.endsOnSwitch) effectBooleans.remove(effect);
-        });
-        effectPokemon.forEach((effect, value) -> {
-            if (!onlyEndOnSwitchEffects || effect.endsOnSwitch) effectPokemon.remove(effect);
-        });
-        effectParty.forEach((effect, value) -> {
-            if (!onlyEndOnSwitchEffects || effect.endsOnSwitch) effectPokemon.remove(effect);
-        });
+        removeEffectsFromMap(onlyEndOnSwitchEffects, effectBooleans);
+        removeEffectsFromMap(onlyEndOnSwitchEffects, effectIntegers);
+        removeEffectsFromMap(onlyEndOnSwitchEffects, effectParty);
+        removeEffectsFromMap(onlyEndOnSwitchEffects, effectPokemon);
         Arrays.fill(statBoosts, 0);
+    }
+    private void removeEffectsFromMap(boolean onlyEndOnSwitchEffects, HashMap<Effect, ?> map) {
+        AtomicReference<Array<Effect>> effectsToRemove = new AtomicReference<>();
+        map.forEach((BiConsumer<Effect, Object>) (effect, o) -> {
+            if (!onlyEndOnSwitchEffects || effect.endsOnSwitch) {
+                if (effectsToRemove.get() == null) effectsToRemove.set(new Array<>());
+                effectsToRemove.get().add(effect);
+            }
+        });
+        if (effectsToRemove.get() != null) effectsToRemove.get().forEach(map::remove);
     }
     public void removeEffect(Effect effect) {
         switch (effect.type) {
@@ -279,7 +282,10 @@ public class BattlePokemon implements Pokemon {
         PROTECT_USES(EffectType.INTEGER, true, null),
         PROTECTED(EffectType.BOOLEAN, true, "EndTurn"),
         LEECH_SEED_SAPPER_SLOT(EffectType.INTEGER, true, "RapidSpin"),
-        LEECH_SEED_SAPPER_PARTY(EffectType.PARTY, true, "RapidSpin");
+        LEECH_SEED_SAPPER_PARTY(EffectType.PARTY, true, "RapidSpin"),
+        FIRE_SPIN_TRAPPER_SLOT(EffectType.INTEGER, true, "RapidSpin"),
+        FIRE_SPIN_TURNS_LEFT(EffectType.INTEGER, true, "RapidSpin"),
+        FIRE_SPIN_TRAPPER_PARTY(EffectType.PARTY, true, "RapidSpin");
 
         public final EffectType type;
         public final boolean endsOnSwitch;

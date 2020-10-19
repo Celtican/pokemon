@@ -220,7 +220,8 @@ public class BattleScreen extends Screen {
                     else if (i < parties[0].numBattling) addButton(parties[0].members[i].getName(), null);
                     else {
                         boolean available = true;
-                        for (int j = 0; j < actionI; j++) {
+                        if (!calculator.canSwitch(parties[0].members[actionI])) available = false;
+                        else for (int j = 0; j < actionI; j++) {
                             if (parties[0].members[j].action instanceof BattlePokemon.SwitchAction &&
                                     ((BattlePokemon.SwitchAction)parties[0].members[j].action).slot == i) {
                                 available = false;
