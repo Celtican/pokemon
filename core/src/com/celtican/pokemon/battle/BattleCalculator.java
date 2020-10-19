@@ -710,9 +710,10 @@ public class BattleCalculator {
                 speed = speed * (pokemon.statBoosts[4] + 2) / 2;
             else speed = speed * 2 / (2 - pokemon.statBoosts[4]);
         }
-
         if (pokemon.statusCondition == Pokemon.StatusCondition.PARALYSIS) speed /= 2;
-
+        switch (pokemon.getAbility().getIndex()) {
+            case 34: if (weather == Weather.SUN) speed *= 2; break;
+        }
         if (speed > 9999) speed = 9999;
 
         if (considerAction) {
