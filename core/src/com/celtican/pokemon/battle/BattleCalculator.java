@@ -83,11 +83,19 @@ public class BattleCalculator {
                 switch (weather) {
                     default: Game.logError("Unhandled weather: " + weather); break;
                     case CLEAR: break;
-                    case RAIN: new TextResult("It is raining."); break;
+                    case RAIN:
+                        new TextResult("It is raining.");
+                        forEachPokemonInSpeedArray(pokemon -> {
+                            if (pokemon.getAbility().getIndex() == 44 && pokemon.getHP() < pokemon.getMaxHP()) { // rain dish
+                                heal(pokemon, pokemon.getMaxHP()/16);
+                                new TextResult(pokemon.getName() + "'s Rain Dish!");
+                            }
+                        });
+                        break;
                     case SUN: new TextResult("The sun is sweltering."); break;
                     case SAND:
                         new TextResult("The sandstorm rages!");
-                        forEachPokemonInSpeedArray(false, false, pokemon -> {
+                        forEachPokemonInSpeedArray(pokemon -> {
                             if (!(pokemon.hasType(Pokemon.Type.GROUND) || pokemon.hasType(Pokemon.Type.ROCK) || pokemon.hasType(Pokemon.Type.STEEL))) {
                                 inflictDamage(pokemon, pokemon.getMaxHP()/16);
                                 new TextResult(pokemon.getName() + " is buffeted by the sandstorm!");
@@ -97,7 +105,7 @@ public class BattleCalculator {
                         break;
                     case HAIL:
                         new TextResult("Hail falls from the sky!");
-                        forEachPokemonInSpeedArray(false, false, pokemon -> {
+                        forEachPokemonInSpeedArray(pokemon -> {
                             if (!pokemon.hasType(Pokemon.Type.ICE)) {
                                 inflictDamage(pokemon, pokemon.getMaxHP()/16);
                                 new TextResult(pokemon.getName() + " is buffeted by the hail!");
@@ -213,6 +221,9 @@ public class BattleCalculator {
         endTurn();
     }
 
+    private void forEachPokemonInSpeedArray(Consumer<? super BattlePokemon> action) {
+        forEachPokemonInSpeedArray(false, false, action);
+    }
     private void forEachPokemonInSpeedArray(boolean sort, boolean considerAction, Consumer<? super BattlePokemon> action) {
         if (sort) sortSpeedArray(considerAction);
         if (considerAction) while (speedArray.notEmpty()) {
@@ -712,7 +723,7 @@ public class BattleCalculator {
         }
         if (pokemon.statusCondition == Pokemon.StatusCondition.PARALYSIS) speed /= 2;
         switch (pokemon.getAbility().getIndex()) {
-            case 34: if (weather == Weather.SUN) speed *= 2; break;
+            case 34: if (weather == Weather.SUN) speed *= 2; break; // chlorophyll
         }
         if (speed > 9999) speed = 9999;
 
