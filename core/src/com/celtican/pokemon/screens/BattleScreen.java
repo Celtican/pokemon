@@ -38,7 +38,7 @@ public class BattleScreen extends Screen {
         for (int i = 0, n = compParty.numBattling; i < n; i++)
             compParty.members[i] = new BattlePokemon(new PCPokemon(((userParty.members.length > i && userParty.members[i] != null) ? (userParty.members[i].getLevel()-2) : (Objects.requireNonNull(userParty.members[0]).getLevel()-2))), 1, i);
         parties = new BattleParty[] {userParty, compParty};
-        calculator = new BattleCalculator(this, parties);
+        calculator = new BattleCalculator(this, parties, true);
         for (int i = 0; i < parties.length; i++)
             for (int j = 0; j < parties[i].numBattling; j++)
                 if (parties[i].members[j] != null)

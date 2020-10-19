@@ -49,9 +49,14 @@ public class Move {
         }
     }
     public int getPriority() {
-        if (index == 182) // protect
-            return 4;
-        return 0;
+        switch (index) {
+            case 182: // protect
+                return 4;
+            default: // everything else
+                return 0;
+            case 18: // whirlwind
+                return -6;
+        }
     }
 
     public Move(int index, String name, Pokemon.Type type, Pokemon.MoveCategory category, Pokemon.ContestType contest,

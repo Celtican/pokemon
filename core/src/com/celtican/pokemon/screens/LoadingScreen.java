@@ -17,10 +17,8 @@ import com.celtican.pokemon.utils.data.Pokemon.StatusCondition;
 import com.celtican.pokemon.utils.graphics.TextureArray;
 
 import static com.celtican.pokemon.utils.data.Pokemon.ContestType.*;
-import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.ERRATIC;
-import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.MEDIUM_SLOW;
-import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.FEMALE_IS_RARE;
-import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.GENDERLESS;
+import static com.celtican.pokemon.utils.data.Pokemon.ExpGrowth.*;
+import static com.celtican.pokemon.utils.data.Pokemon.GenderRatio.*;
 import static com.celtican.pokemon.utils.data.Pokemon.MoveCategory.*;
 import static com.celtican.pokemon.utils.data.Pokemon.MoveTargets.*;
 import static com.celtican.pokemon.utils.data.Pokemon.Type.*;
@@ -182,6 +180,15 @@ public class LoadingScreen extends Screen {
         Game.game.data.addSpecies("Blastoise", FEMALE_IS_RARE, WATER, NONE, EggGroup.MONSTER, EggGroup.WATER1, MEDIUM_SLOW,
                 67, 67, 44, 44, 79, 83, 100,85, 105, 78, 45, 50, 239, 0, 0, 0, 0, 3, 0,
                 -1, -1, new int[] {430, 33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {-1, 0, 0, 0, 0, 0, 9, 12, 15, 20, 25, 30, 35, 42, 49, 56});
+        Game.game.data.addSpecies("Caterpie", EVEN, BUG, NONE, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                19, 19, 50, 50, 45, 30, 35, 20, 20, 45, 255, 50, 39, 1, 0, 0, 0, 0, 0,
+                11, 7, new int[] {33, 81, 450}, new int[] {-1, -1, 9});
+        Game.game.data.addSpecies("Metapod", EVEN, BUG, NONE, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                61, 61, 61, 61, 50, 20, 55, 25, 25, 30, 120, 50, 72, 0, 0, 2, 0, 0, 0,
+                12, 10, new int[] {106, 106}, new int[] {-1, 0});
+        Game.game.data.addSpecies("Butterfree", EVEN, BUG, FLYING, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                14, 14, 110, 110, 60, 45, 50, 90, 80, 70, 45, 50, 178, 0, 0, 0, 2, 1, 0,
+                -1, -1, new int[] {16, 16, 106, 33, 81, 450, 48, 93, 77, 78, 79, 60, 18, 403, 219, 405, 366, 476, 483}, new int[] {-1, 0, 0, 0, 0, 0, 4, 8, 12, 12, 12, 16, 20, 24, 28, 32, 36, 40, 44});
     }
     private void addMoves() {
         Game.game.data.addMove("Struggle", NONE, PHYSICAL, TOUGH, ADJACENT, -1, 50, -1, "protect, mirror", null);
@@ -200,9 +207,9 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Razor Wind");
         Game.game.data.addMove("Swords Dance");
         Game.game.data.addMove("Cut");
-        Game.game.data.addMove("Gust");
+        Game.game.data.addMove("Gust", FLYING, SPECIAL, CLEVER, ANY, 7, 40, 100, "protect, mirror, distance", null); // todo: allow it to hit targets and have its power doubled if the target is using bounce/fly/sky drop
         Game.game.data.addMove("Wing Attack");
-        Game.game.data.addMove("Whirlwind");
+        Game.game.data.addMove("Whirlwind", NORMAL, STATUS, CLEVER, ADJACENT, 4, -1, -1, "reflectable, mirror, authentic, sideanim", null);
         Game.game.data.addMove("Fly");
         Game.game.data.addMove("Bind");
         Game.game.data.addMove("Slam");
@@ -232,7 +239,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Growl", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 8, -1, 100, "protect, reflectable, mirror, sound, authentic", null);
         Game.game.data.addMove("Roar");
         Game.game.data.addMove("Sing");
-        Game.game.data.addMove("Supersonic");
+        Game.game.data.addMove("Supersonic", NORMAL, STATUS, CLEVER, ADJACENT, 4, -1, 55, "protect, reflectable, mirror, sound, authentic", null);
         Game.game.data.addMove("Sonic Boom");
         Game.game.data.addMove("Disable");
         Game.game.data.addMove("Acid");
@@ -244,7 +251,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Surf");
         Game.game.data.addMove("Ice Beam");
         Game.game.data.addMove("Blizzard");
-        Game.game.data.addMove("Psybeam");
+        Game.game.data.addMove("Psybeam", PSYCHIC, SPECIAL, BEAUTIFUL, ADJACENT, 4, 65, 100, "protect, mirror", new Move.EffectConfuse(10));
         Game.game.data.addMove("Bubble Beam");
         Game.game.data.addMove("Aurora Beam");
         Game.game.data.addMove("Hyper Beam");
@@ -265,7 +272,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Stun Spore", GRASS, STATUS, CLEVER, ADJACENT, 6, -1, 75, "protect, reflectable, mirror, powder", null);
         Game.game.data.addMove("Sleep Powder", GRASS, STATUS, CLEVER, ADJACENT, 3, -1, 75, "protect, reflectable, mirror, powder", null);
         Game.game.data.addMove("Petal Dance");
-        Game.game.data.addMove("String Shot");
+        Game.game.data.addMove("String Shot", BUG, STATUS, CLEVER, ALL_ADJACENT_FOES, 8, -1, 95, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Dragon Rage");
         Game.game.data.addMove("Fire Spin", FIRE, SPECIAL, BEAUTIFUL, ADJACENT, 3, 35, 85, "protect, mirror", null);
         Game.game.data.addMove("Thunder Shock");
@@ -290,7 +297,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Screech");
         Game.game.data.addMove("Double Team");
         Game.game.data.addMove("Recover");
-        Game.game.data.addMove("Harden");
+        Game.game.data.addMove("Harden", NORMAL, STATUS, TOUGH, SELF, 6, -1, -1, "snatch", null);
         Game.game.data.addMove("Minimize");
         Game.game.data.addMove("Smokescreen", NORMAL, STATUS, CLEVER, ADJACENT, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Confuse Ray");
@@ -403,7 +410,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Return");
         Game.game.data.addMove("Present");
         Game.game.data.addMove("Frustration");
-        Game.game.data.addMove("Safeguard");
+        Game.game.data.addMove("Safeguard", NORMAL, STATUS, BEAUTIFUL, ALL_ALLIES, 25, -1, -1, "snatch", null);
         Game.game.data.addMove("Pain Split");
         Game.game.data.addMove("Sacred Fire");
         Game.game.data.addMove("Magnitude");
@@ -588,9 +595,9 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Night Slash");
         Game.game.data.addMove("Aqua Tail", WATER, PHYSICAL, BEAUTIFUL, ADJACENT, 2, 90, 90, "contact, protect, mirror", null);
         Game.game.data.addMove("Seed Bomb", GRASS, PHYSICAL, TOUGH, ADJACENT, 3, 80, 100, "protect, mirror, bullet", null);
-        Game.game.data.addMove("Air Slash");
+        Game.game.data.addMove("Air Slash", FLYING, SPECIAL, COOL, ANY, 3, 75, 95, "protect, mirror, distance", new Move.EffectAddEffectToDefender(30, BattlePokemon.Effect.FLINCH));
         Game.game.data.addMove("X-Scissor");
-        Game.game.data.addMove("Bug Buzz");
+        Game.game.data.addMove("Bug Buzz", BUG, SPECIAL, BEAUTIFUL, ADJACENT, 2, 90, 100, "protect, mirror, sound, authentic", new Move.EffectBoostTargetStats(10, 0, 0, 0, -1, 0, 0, 0));
         Game.game.data.addMove("Dragon Pulse");
         Game.game.data.addMove("Dragon Rush");
         Game.game.data.addMove("Power Gem");
@@ -636,7 +643,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Grass Knot");
         Game.game.data.addMove("Chatter");
         Game.game.data.addMove("Judgment");
-        Game.game.data.addMove("Bug Bite");
+        Game.game.data.addMove("Bug Bite", BUG, PHYSICAL, CUTE, ADJACENT, 4, 60, 100, "contact, protect, mirror", null); // todo: eat target's berry
         Game.game.data.addMove("Charge Beam");
         Game.game.data.addMove("Wood Hammer");
         Game.game.data.addMove("Aqua Jet");
@@ -669,7 +676,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Storm Throw");
         Game.game.data.addMove("Flame Burst");
         Game.game.data.addMove("Sludge Wave");
-        Game.game.data.addMove("Quiver Dance");
+        Game.game.data.addMove("Quiver Dance", BUG, STATUS, BEAUTIFUL, SELF, 4, -1, -1, "snatch, dance", null);
         Game.game.data.addMove("Heavy Slam");
         Game.game.data.addMove("Synchronoise");
         Game.game.data.addMove("Electro Ball");
@@ -1251,7 +1258,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(64);
+        Game.game.data.player.party[0] = new PartyPokemon(28);
         Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());

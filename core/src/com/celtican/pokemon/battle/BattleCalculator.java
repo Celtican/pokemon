@@ -21,11 +21,14 @@ public class BattleCalculator {
 
     private final BattleParty[] parties;
     private final Array<BattlePokemon> speedArray = new Array<>();
-    private Weather weather = Weather.CLEAR;
+
+    public boolean isWildBattle;
+    public Weather weather = Weather.CLEAR;
     private int weatherTurnsLeft = 0;
 
 
-    public BattleCalculator(BattleScreen screen, BattleParty[] parties) {
+    public BattleCalculator(BattleScreen screen, BattleParty[] parties, boolean isWildBattle) {
+        this.isWildBattle = isWildBattle;
         this.screen = screen;
         this.parties = parties;
         forEachPokemonOnField(false, compPokemon -> forEachPokemonInPartyOnField(parties[0], compPokemon.seen::add));
@@ -203,8 +206,28 @@ public class BattleCalculator {
             // Reflect dissipating
             // Light Screen dissipating
             // Safeguard dissipating
+            for (BattleParty party : parties) {
+                if (party.hasEffect(BattleParty.Effect.SAFEGUARD)) {
+                    int turnsLeft = party.getEffect(BattleParty.Effect.SAFEGUARD);
+                    if (--turnsLeft == 0) {
+                        party.removeEffect(BattleParty.Effect.SAFEGUARD);
+                        new TextResult("The mystical veil disappeared!");
+                    } else {
+                        party.setEffect(BattleParty.Effect.SAFEGUARD, turnsLeft);
+                    }
+                }
+            }
             // Mist dissipating
             // Tailwind dissipating
+            for (BattleParty party : parties) {
+                if (party.hasEffect(BattleParty.Effect.TAILWIND)) {
+                    int turnsLeft = party.getEffect(BattleParty.Effect.TAILWIND);
+                    if (--turnsLeft == 0) {
+                        party.removeEffect(BattleParty.Effect.TAILWIND);
+                        new TextResult("The tailwind dissipated!");
+                    } else party.setEffect(BattleParty.Effect.TAILWIND, turnsLeft);
+                }
+            }
             // Lucky Chant dissipating
             // Rainbow (Water Pledge + Fire Pledge) dissipating
             // Sea of fire (Fire Pledge + Grass Pledge) dissipating
@@ -423,11 +446,21 @@ public class BattleCalculator {
                 default:
                     Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
                     break;
+                case 18: // whirlwind
+                    if (forceSwitch(defender)) {
+                        if (defender.party > 0 && isWildBattle) {
+                            new TextResult(defender.getName() + " was blown away!");
+                        }
+                    } else butItFailed();
+                    break;
                 case 39: // tail whip
                     for (BattlePokemon d : defenders) boostStats(d, 0, -1, 0, 0, 0, 0, 0);
                     break;
                 case 45: // growl
                     boostStats(defender, -1, 0, 0, 0, 0, 0, 0);
+                    break;
+                case 48: // supersonic
+                    if (!attemptConfuseWithMove(defender, user, move)) butItFailed();
                     break;
                 case 73: // leech seed
                     if (defender.hasType(Pokemon.Type.GRASS) || defender.hasEffect(BattlePokemon.Effect.LEECH_SEED_SAPPER_SLOT)) butItFailed();
@@ -442,13 +475,19 @@ public class BattleCalculator {
                     boostStats(user, boost, 0, boost, 0, 0, 0, 0);
                     break;
                 case 77: // poison powder
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.POISON)) butItFailed();
+                    if (!inflictStatusWithMove(defender, Pokemon.StatusCondition.POISON, user, move)) butItFailed();
                     break;
                 case 78: // stun spore
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.PARALYSIS)) butItFailed();
+                    if (!inflictStatusWithMove(defender, Pokemon.StatusCondition.PARALYSIS, user, move)) butItFailed();
                     break;
                 case 79: // sleep powder
-                    if (!attemptInflictStatusCondition(defender, Pokemon.StatusCondition.SLEEP_0)) butItFailed();
+                    if (!inflictStatusWithMove(defender, Pokemon.StatusCondition.SLEEP_0, user, move)) butItFailed();
+                    break;
+                case 81: // string shot
+                    for (BattlePokemon pokemon : defenders) boostStats(pokemon, 0, 0, 0, 0, -2, 0, 0);
+                    break;
+                case 106: // harden
+                    boostStats(user, 0, 1, 0, 0, 0, 0, 0);
                     break;
                 case 108: // smokescreen
                     boostStats(defender, 0, 0, 0, 0, 0, -1, 0);
@@ -476,6 +515,13 @@ public class BattleCalculator {
                 case 184: // scary face
                     boostStats(defender, 0, 0, 0, 0, -2, 0, 0);
                     break;
+                case 219: // safeguard
+                    if (parties[user.party].hasEffect(BattleParty.Effect.SAFEGUARD)) butItFailed();
+                    else {
+                        parties[user.party].setEffect(BattleParty.Effect.SAFEGUARD, 5);
+                        new TextResult(user.getName() + "'s team became cloaked in a mystical veil!");
+                    }
+                    break;
                 case 230: // sweet scent
                     for (BattlePokemon p : defenders) boostStats(p, 0, 0, 0, 0, 0, 0, -2);
                     break;
@@ -497,12 +543,22 @@ public class BattleCalculator {
                 case 334: // iron defense
                     boostStats(user, 0, 2, 0, 0, 0, 0, 0);
                     break;
+                case 366: // tailwind
+                    if (parties[user.party].hasEffect(BattleParty.Effect.TAILWIND)) butItFailed();
+                    else {
+                        parties[user.party].setEffect(BattleParty.Effect.TAILWIND, 4);
+                        new TextResult("A tailwind blew from behind " + user.getName() + "'s team!");
+                    }
+                    break;
                 case 388: // worry seed
                     if (defender.getAbility().getIndex() == 15) butItFailed(); // insomnia
                     else {
                         defender.addEffect(BattlePokemon.Effect.CHANGE_ABILITY, 15); // insomnia
                         new TextResult(defender.getName() + "'s ability changed to Insomnia!");
                     }
+                    break;
+                case 483: // quiver dance
+                    boostStats(user, 0, 0, 1, 1, 1, 0, 0);
                     break;
                 case 504: // shell smash
                     boostStats(user, 2, -1, 2, -1, 2, 0, 0);
@@ -539,9 +595,28 @@ public class BattleCalculator {
         else new TextResult(pokemon.getName() + " couldn't get away!");
         return false;
     }
+    private boolean forceSwitch(BattlePokemon pokemon) {
+        Array<Integer> possibleSlots = new Array<>();
+        BattleParty party = parties[pokemon.party];
+        for (int i = party.numBattling; i < party.members.length; i++)
+            if (party.members[i] != null && party.members[i].getHP() > 0) possibleSlots.add(i);
+        if (possibleSlots.isEmpty()) {
+            if (pokemon.party > 0 && isWildBattle) {
+                new SwitchResult(pokemon, true);
+                pokemon.setHP(0);
+                return true;
+            }
+            return false;
+        }
+        return attemptSwitch(pokemon, possibleSlots.random(), false);
+    }
     private boolean attemptSwitch(BattlePokemon pokemon, int targetSlot) {
+        return attemptSwitch(pokemon, targetSlot, true);
+    }
+    private boolean attemptSwitch(BattlePokemon pokemon, int targetSlot, boolean checkCanSwitch) {
         BattlePokemon target = parties[pokemon.party].members[targetSlot];
-        if (pokemon.getHP() <= 0 || targetSlot < parties[pokemon.party].numBattling || target.getHP() <= 0 || !canSwitch(pokemon) || !canSwitch(target)) {
+        if (target == null || pokemon.getHP() <= 0 || targetSlot < parties[pokemon.party].numBattling || target.getHP() <= 0 ||
+                (checkCanSwitch && (!canSwitch(pokemon) || !canSwitch(target)))) {
             new TextResult(pokemon.getName() + " can't switch!");
             return false;
         }
@@ -735,6 +810,7 @@ public class BattleCalculator {
         switch (pokemon.getAbility().getIndex()) {
             case 34: if (weather == Weather.SUN) speed *= 2; break; // chlorophyll
         }
+        if (parties[pokemon.party].hasEffect(BattleParty.Effect.TAILWIND)) speed *= 2;
         if (speed > 9999) speed = 9999;
 
         if (considerAction) {
@@ -905,7 +981,7 @@ public class BattleCalculator {
     private void sortSpeedArray(boolean considerAction) {
         speedArray.shuffle();
         speedArray.forEach(pokemon -> pokemon.speed = calcSpeed(pokemon, considerAction));
-        speedArray.sort(Comparator.comparingInt(o -> o.speed));
+        speedArray.sort(Comparator.comparingInt(o -> o.speed)); // todo replace this with a custom sort function for the sake of better priority handling
     }
     private boolean attemptEndBattle() {
         boolean canEndBattle = true;
@@ -925,8 +1001,13 @@ public class BattleCalculator {
         }
         return canEndBattle;
     }
-    private boolean attemptInflictStatusCondition(BattlePokemon pokemon, Pokemon.StatusCondition status) {
-        if (pokemon.statusCondition != Pokemon.StatusCondition.HEALTHY && status != Pokemon.StatusCondition.HEALTHY) return false;
+    private boolean inflictStatus(BattlePokemon pokemon, Pokemon.StatusCondition status) {
+        if (status != Pokemon.StatusCondition.HEALTHY) {
+            if (pokemon.statusCondition != Pokemon.StatusCondition.HEALTHY) {
+                return false;
+            }
+        }
+
         switch (status) {
             case HEALTHY:
                 if (pokemon.statusCondition == Pokemon.StatusCondition.HEALTHY) return false;
@@ -969,6 +1050,11 @@ public class BattleCalculator {
                 }
         }
     }
+    private boolean inflictStatusWithMove(BattlePokemon pokemon, Pokemon.StatusCondition status, BattlePokemon moveUser, Move move) {
+        if (pokemon.statusCondition != Pokemon.StatusCondition.HEALTHY) return false;
+        if (parties[pokemon.party].hasEffect(BattleParty.Effect.SAFEGUARD)) return false;
+        return inflictStatus(pokemon, status);
+    }
     private void setStatusCondition(BattlePokemon pokemon, Pokemon.StatusCondition status) {
         new SetValueResult(pokemon, SetValueResult.Type.STATUS, status);
         pokemon.statusCondition = status;
@@ -978,6 +1064,11 @@ public class BattleCalculator {
         pokemon.addEffect(BattlePokemon.Effect.CONFUSED, MathUtils.random(2, 5));
         new TextResult(pokemon.getName() + " became confused!");
         return true;
+    }
+    private boolean attemptConfuseWithMove(BattlePokemon pokemon, BattlePokemon moveUser, Move move) {
+        if (pokemon.hasEffect(BattlePokemon.Effect.CONFUSED)) return false;
+        if (parties[pokemon.party].hasEffect(BattleParty.Effect.SAFEGUARD)) return false;
+        return attemptConfuse(pokemon);
     }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move) {
         switch (move.index) {
@@ -996,13 +1087,13 @@ public class BattleCalculator {
                         new TextResult("Removed " + e + ". (placeholder)");
                 break;
         }
-        attemptActivateMoveEffect(user, defender, move.effect);
+        attemptActivateMoveEffect(user, defender, move, move.effect);
     }
-    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move.Effect effect) {
+    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move, Move.Effect effect) {
         if (effect == null) return;
         if (effect.chance == 100 || MathUtils.random(99) < effect.chance) {
             if (effect instanceof Move.EffectStatusCondition) {
-                attemptInflictStatusCondition(defender, ((Move.EffectStatusCondition) effect).statusCondition);
+                inflictStatusWithMove(defender, ((Move.EffectStatusCondition) effect).statusCondition, user, move);
             } else if (effect instanceof Move.EffectBoostSelfStats) {
                 Move.EffectBoostSelfStats e = (Move.EffectBoostSelfStats) effect;
                 boostStats(user, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
@@ -1012,7 +1103,7 @@ public class BattleCalculator {
             } else if (effect instanceof Move.EffectMultiple) {
                 Move.EffectMultiple effectMultiple = (Move.EffectMultiple) effect;
                 for (Move.Effect e : effectMultiple.effects)
-                    attemptActivateMoveEffect(user, defender, e);
+                    attemptActivateMoveEffect(user, defender, move, e);
             } else if (effect instanceof Move.EffectRemoveDefenderEffectsWithFlag) {
                 Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(((Move.EffectRemoveDefenderEffectsWithFlag) effect).flag);
                 if (effects != null)
@@ -1027,7 +1118,7 @@ public class BattleCalculator {
                 Move.EffectAddEffectToDefender e = (Move.EffectAddEffectToDefender) effect;
                 defender.addEffect(e.effect, true);
             } else if (effect instanceof Move.EffectConfuse) {
-                attemptConfuse(defender);
+                attemptConfuseWithMove(defender, user, move);
             } else {
                 Game.logError("Unhandled Move.Effect class: " + effect.getClass());
             }

@@ -22,7 +22,7 @@ public class PCPokemon implements Pokemon {
         isShiny = base.isShiny();
     }
     public PCPokemon(int level) {
-        this(Game.game.data.getSpecies(5), level);
+        this(Game.game.data.getSpecies(12), level);
     }
     public PCPokemon(Species species, int level) {
         this.species = species.getIndex();
@@ -34,15 +34,22 @@ public class PCPokemon implements Pokemon {
         int[] speciesMoveLevels = species.getMoveLevels();
         for (int i = speciesMoveLevels.length-1; i >=0; i--) {
             if (level >= speciesMoveLevels[i]) {
-                boolean assigned = false;
+                boolean attemptedAssign = false;
                 for (int j = 0; j < 4; j++) {
                     if (moves[j] == 0) {
-                        moves[j] = speciesMoves[i];
-                        assigned = true;
+                        boolean hasMoveAlready = false;
+                        for (int k = 0; k < j; k++) {
+                            if (moves[k] == speciesMoves[i]) {
+                                hasMoveAlready = true;
+                                break;
+                            }
+                        }
+                        if (!hasMoveAlready) moves[j] = speciesMoves[i];
+                        attemptedAssign = true;
                         break;
                     }
                 }
-                if (!assigned) break;
+                if (!attemptedAssign) break;
             }
         }
 //        ppUsed = new int[4];
