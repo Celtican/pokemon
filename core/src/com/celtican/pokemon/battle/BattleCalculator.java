@@ -92,7 +92,16 @@ public class BattleCalculator {
                             }
                         });
                         break;
-                    case SUN: new TextResult("The sun is sweltering."); break;
+                    case SUN:
+                        new TextResult("The sun is sweltering.");
+                        forEachPokemonInSpeedArray(pokemon -> {
+                            if (pokemon.getAbility().getIndex() == 94) { // solar power
+                                inflictDamage(pokemon, pokemon.getMaxHP()/8);
+                                new TextResult(pokemon.getName() + "'s Solar Power!");
+                                handleFaint(pokemon);
+                            }
+                        });
+                        break;
                     case SAND:
                         new TextResult("The sandstorm rages!");
                         forEachPokemonInSpeedArray(pokemon -> {
@@ -633,6 +642,7 @@ public class BattleCalculator {
                 case 65: if (typesContain(moveTypes, Pokemon.Type.GRASS) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // overgrow
                 case 66: if (typesContain(moveTypes, Pokemon.Type.FIRE) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // blaze
                 case 67: if (typesContain(moveTypes, Pokemon.Type.WATER) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // torrent
+                case 94: if (typesContain(moveTypes, Pokemon.Type.FIRE) && !isPhysical && weather == Weather.SUN) mods.add(0x1800); break; // solar power
             }
 
             atk = Math.max(1, roundDown((float)atk * chainMods(mods) / 0x1000));
