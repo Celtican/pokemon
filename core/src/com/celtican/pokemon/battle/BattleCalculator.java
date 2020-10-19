@@ -615,6 +615,16 @@ public class BattleCalculator {
         {
             if (isPhysical) atk = calcStatWithStage(attacker.getStat(1), isCrit ? Math.max(attacker.statBoosts[0], 0) : attacker.statBoosts[0]);
             else atk = calcStatWithStage(attacker.getStat(3), isCrit ? Math.max(attacker.statBoosts[2], 0) : attacker.statBoosts[2]);
+
+            Array<Integer> mods = new Array<>();
+
+            switch (attackerAbility) {
+                case 65: if (typesContain(moveTypes, Pokemon.Type.GRASS) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // overgrow
+                case 66: if (typesContain(moveTypes, Pokemon.Type.FIRE) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // blaze
+                case 67: if (typesContain(moveTypes, Pokemon.Type.WATER) && attacker.getHP() <= attacker.getMaxHP()/3) mods.add(0x1800); break; // torrent
+            }
+
+            atk = Math.max(1, roundDown((float)atk * chainMods(mods) / 0x1000));
         }
 
         int def;
@@ -1110,6 +1120,10 @@ public class BattleCalculator {
     public boolean canSwitch(BattlePokemon pokemon) {
         if (pokemon.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY) && !pokemon.hasType(Pokemon.Type.GHOST)) return false; // pokemon can't switch if they're trapped by fire spin, unless they are a ghost type
         return true;
+    }
+    public boolean typesContain(Pokemon.Type[] types, Pokemon.Type type) {
+        for (Pokemon.Type t : types) if (type == t) return true;
+        return false;
     }
 
     private static class DamageResult {
