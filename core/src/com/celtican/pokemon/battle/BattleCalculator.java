@@ -772,11 +772,16 @@ public class BattleCalculator {
             int efficiencyMultiplier = efficiency != 0 ? (int)Math.pow(2, Math.abs(efficiency)) : 1;
             boolean applyBurn = attacker.statusCondition == Pokemon.StatusCondition.BURN && move.category == Pokemon.MoveCategory.PHYSICAL;
 
+            Array<Integer> mods = new Array<>();
+            if (efficiency < 0 && attackerAbility == 110) mods.add(0x2000); // tinted lens
+            int finalMod = chainMods(mods);
+
             for (int i = 0; i < damages.length; i++) {
                 if (stabMod != 2) damages[i] = roundDown(damages[i] * stabMod/2f); // 0x1800 / 0x1000
                 if (efficiency > 0) damages[i] *= efficiencyMultiplier;
                 else if (efficiency < 0) damages[i] /= efficiencyMultiplier;
                 if (applyBurn) damages[i] /= 2;
+                damages[i] = roundDown((float)damages[i] * finalMod / 0x1000);
                 if (damages[i] <= 0) damages[i] = 1;
             }
 
