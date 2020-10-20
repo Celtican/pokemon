@@ -136,6 +136,12 @@ public class BattleCalculator {
             //      Hydration/Shed Skin
             //      Leftovers/Black Sludge
             //      Healer ]
+            forEachPokemonInSpeedArray(true, false, pokemon -> {
+                if (pokemon.getAbility().getIndex() == 61 && pokemon.statusCondition != Pokemon.StatusCondition.HEALTHY && MathUtils.random(2) == 0) { // shed skin
+                    new TextResult(pokemon.getName() + "'s Shed Skin!");
+                    inflictStatus(pokemon, Pokemon.StatusCondition.HEALTHY);
+                }
+            });
             // Aqua Ring
             // Ingrain
             // Leech Seed
@@ -1017,7 +1023,6 @@ public class BattleCalculator {
             case HEALTHY:
                 if (pokemon.statusCondition == Pokemon.StatusCondition.HEALTHY) return false;
                 setStatusCondition(pokemon, status);
-                new TextResult(pokemon.getName() + " was cured of its status condition! ... somehow.");
                 return true;
             case BURN:
                 if (pokemon.hasType(Pokemon.Type.FIRE)) return false;
