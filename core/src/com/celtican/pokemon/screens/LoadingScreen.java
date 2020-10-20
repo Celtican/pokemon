@@ -1003,7 +1003,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addAbility(new Ability(11, "Water Absorb", "Restores HP if hit by a Water-type move instead of taking damage."));
         Game.game.data.addAbility(new Ability(12, "Oblivious", "The Pokémon is oblivious, and that keeps it from being infatuated or falling for taunts."));
         Game.game.data.addAbility(new Ability(13, "Cloud Nine", "Eliminates the effects of weather."));
-        Game.game.data.addAbility(new Ability(14, "Compound Eyes", "The Pokémon's compound eyes boost its accuracy."));
+        Game.game.data.addAbility(new Ability(14, "Compound Eyes", "The Pokémon's compound eyes boost its accuracy.")); // todo: increase chance of finding a pokemon holding an item
         Game.game.data.addAbility(new Ability(15, "Insomnia", "The Pokémon is suffering from insomnia and cannot fall asleep."));
         Game.game.data.addAbility(new Ability(16, "Color Change", "The Pokémon's type becomes the type of the move used on it."));
         Game.game.data.addAbility(new Ability(17, "Immunity", "The immune system of the Pokémon prevents it from getting poisoned."));

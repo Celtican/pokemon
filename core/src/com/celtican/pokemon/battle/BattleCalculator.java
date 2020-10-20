@@ -438,6 +438,7 @@ public class BattleCalculator {
                     missed = true;
             } else {
                 float accuracy = (calcStatWithStageAccuracy(move.accuracy/100f, user.statBoosts[5], defender.statBoosts[6]));
+                if (user.getAbility().getIndex() == 14) accuracy *= 1.3f; // compound eyes
                 if (MathUtils.random() >= accuracy)
                     missed = true;
             }
