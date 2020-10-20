@@ -1071,7 +1071,18 @@ public class BattleCalculator {
         return attemptConfuse(pokemon);
     }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move) {
+        attemptActivateMoveEffect(user, defender, move, move.effect);
+    }
+    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move, Move.Effect effect) {
+        // effects that are not blocked by shield dust:
         switch (move.index) {
+            // NOTE: TRAPPING MOVES (anchor shot, jaw lock, and spirit shackle, NOT fire spin and the like) ARE BLOCKED BY SHIELD DUST AND SHOULD HAVE AN EFFECT CLASS
+            case 229: // rapid spin
+                Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(BattlePokemon.EffectFlag.RAPID_SPIN);
+                if (effects != null)
+                    for (BattlePokemon.Effect e : effects)
+                        new TextResult("Removed " + e + ". (placeholder)");
+                break;
             case 83: // fire spin
                 if (!defender.hasEffect(BattlePokemon.Effect.FIRE_SPIN_TRAPPER_PARTY)) {
                     new TextResult(defender.getName() + " became trapped in a fiery vortex!");
@@ -1080,45 +1091,27 @@ public class BattleCalculator {
                     defender.addEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT, MathUtils.random(4, 5));
                 }
                 break;
-            case 229: // rapid spin
-                Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(BattlePokemon.EffectFlag.RAPID_SPIN);
-                if (effects != null)
-                    for (BattlePokemon.Effect e : effects)
-                        new TextResult("Removed " + e + ". (placeholder)");
-                break;
         }
-        attemptActivateMoveEffect(user, defender, move, move.effect);
-    }
-    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move, Move.Effect effect) {
         if (effect == null) return;
+        boolean isShieldDust = getDefendersAbility(user, defender, move).getIndex() == 19;
         if (effect.chance == 100 || MathUtils.random(99) < effect.chance) {
             if (effect instanceof Move.EffectStatusCondition) {
-                inflictStatusWithMove(defender, ((Move.EffectStatusCondition) effect).statusCondition, user, move);
+                if (!isShieldDust) inflictStatusWithMove(defender, ((Move.EffectStatusCondition) effect).statusCondition, user, move);
             } else if (effect instanceof Move.EffectBoostSelfStats) {
                 Move.EffectBoostSelfStats e = (Move.EffectBoostSelfStats) effect;
                 boostStats(user, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
             } else if (effect instanceof Move.EffectBoostTargetStats) {
+                if (isShieldDust) return;
                 Move.EffectBoostTargetStats e = (Move.EffectBoostTargetStats) effect;
                 boostStats(defender, e.atk, e.def, e.spa, e.spd, e.spe, e.acc, e.eva);
             } else if (effect instanceof Move.EffectMultiple) {
                 Move.EffectMultiple effectMultiple = (Move.EffectMultiple) effect;
                 for (Move.Effect e : effectMultiple.effects)
                     attemptActivateMoveEffect(user, defender, move, e);
-            } else if (effect instanceof Move.EffectRemoveDefenderEffectsWithFlag) {
-                Array<BattlePokemon.Effect> effects = defender.removeEffectsWithFlags(((Move.EffectRemoveDefenderEffectsWithFlag) effect).flag);
-                if (effects != null)
-                    for (BattlePokemon.Effect e : effects)
-                        new TextResult("Removed " + e + ". (placeholder)");
-            } else if (effect instanceof Move.EffectRemoveUserEffectsWithFlag) {
-                Array<BattlePokemon.Effect> effects = user.removeEffectsWithFlags(((Move.EffectRemoveUserEffectsWithFlag) effect).flag);
-                if (effects != null)
-                    for (BattlePokemon.Effect e : effects)
-                        new TextResult("Removed " + e + ". (placeholder)");
-            } else if (effect instanceof Move.EffectAddEffectToDefender) {
-                Move.EffectAddEffectToDefender e = (Move.EffectAddEffectToDefender) effect;
-                defender.addEffect(e.effect, true);
+            } else if (effect instanceof Move.EffectFlinch) {
+                if (!isShieldDust) defender.addEffect(BattlePokemon.Effect.FLINCH, true);
             } else if (effect instanceof Move.EffectConfuse) {
-                attemptConfuseWithMove(defender, user, move);
+                if (!isShieldDust) attemptConfuseWithMove(defender, user, move);
             } else {
                 Game.logError("Unhandled Move.Effect class: " + effect.getClass());
             }

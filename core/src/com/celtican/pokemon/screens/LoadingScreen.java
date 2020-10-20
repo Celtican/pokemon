@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.battle.BattlePokemon;
 import com.celtican.pokemon.utils.data.Ability;
 import com.celtican.pokemon.utils.data.Move;
 import com.celtican.pokemon.utils.data.PartyPokemon;
@@ -235,7 +234,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Twineedle");
         Game.game.data.addMove("Pin Missile");
         Game.game.data.addMove("Leer");
-        Game.game.data.addMove("Bite", DARK, PHYSICAL, TOUGH, ADJACENT, 5, 60, 100, "contact, protect, mirror", new Move.EffectAddEffectToDefender(30, BattlePokemon.Effect.FLINCH));
+        Game.game.data.addMove("Bite", DARK, PHYSICAL, TOUGH, ADJACENT, 5, 60, 100, "contact, protect, mirror", new Move.EffectFlinch(30));
         Game.game.data.addMove("Growl", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 8, -1, 100, "protect, reflectable, mirror, sound, authentic", null);
         Game.game.data.addMove("Roar");
         Game.game.data.addMove("Sing");
@@ -420,8 +419,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Baton Pass");
         Game.game.data.addMove("Encore");
         Game.game.data.addMove("Pursuit");
-        Game.game.data.addMove("Rapid Spin", NORMAL, PHYSICAL, COOL, ADJACENT, 8, 50, 100, "contact, protect, mirror",
-                new Move.EffectMultiple(100, new Move.EffectBoostSelfStats(100, 0, 0, 0, 0, 1, 0, 0), new Move.EffectRemoveUserEffectsWithFlag(100, BattlePokemon.EffectFlag.RAPID_SPIN)));
+        Game.game.data.addMove("Rapid Spin", NORMAL, PHYSICAL, COOL, ADJACENT, 8, 50, 100, "contact, protect, mirror", new Move.EffectBoostSelfStats(100, 0, 0, 0, 0, 1, 0, 0));
         Game.game.data.addMove("Sweet Scent", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Iron Tail");
         Game.game.data.addMove("Metal Claw");
@@ -595,7 +593,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Night Slash");
         Game.game.data.addMove("Aqua Tail", WATER, PHYSICAL, BEAUTIFUL, ADJACENT, 2, 90, 90, "contact, protect, mirror", null);
         Game.game.data.addMove("Seed Bomb", GRASS, PHYSICAL, TOUGH, ADJACENT, 3, 80, 100, "protect, mirror, bullet", null);
-        Game.game.data.addMove("Air Slash", FLYING, SPECIAL, COOL, ANY, 3, 75, 95, "protect, mirror, distance", new Move.EffectAddEffectToDefender(30, BattlePokemon.Effect.FLINCH));
+        Game.game.data.addMove("Air Slash", FLYING, SPECIAL, COOL, ANY, 3, 75, 95, "protect, mirror, distance", new Move.EffectFlinch(30));
         Game.game.data.addMove("X-Scissor");
         Game.game.data.addMove("Bug Buzz", BUG, SPECIAL, BEAUTIFUL, ADJACENT, 2, 90, 100, "protect, mirror, sound, authentic", new Move.EffectBoostTargetStats(10, 0, 0, 0, -1, 0, 0, 0));
         Game.game.data.addMove("Dragon Pulse");
@@ -616,8 +614,8 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Shadow Claw");
         Game.game.data.addMove("Thunder Fang");
         Game.game.data.addMove("Ice Fang");
-        Game.game.data.addMove("Fire Fang", FIRE, PHYSICAL, COOL, ADJACENT, 3, 65, 95, "contact, protect, mirror",
-                new Move.EffectMultiple(100, new Move.EffectStatusCondition(10, StatusCondition.BURN), new Move.EffectAddEffectToDefender(10, BattlePokemon.Effect.FLINCH)));
+        Game.game.data.addMove("Fire Fang",  FIRE, PHYSICAL, COOL, ADJACENT, 3, 65, 95, "contact, protect, mirror",
+                new Move.EffectMultiple(100, new Move.EffectStatusCondition(10, StatusCondition.BURN), new Move.EffectFlinch(10)));
         Game.game.data.addMove("Shadow Sneak");
         Game.game.data.addMove("Mud Bomb");
         Game.game.data.addMove("Psycho Cut");

@@ -1,7 +1,6 @@
 package com.celtican.pokemon.utils.data;
 
 import com.celtican.pokemon.Game;
-import com.celtican.pokemon.battle.BattlePokemon;
 
 public class Move {
 
@@ -186,25 +185,9 @@ public class Move {
             this.eva = eva;
         }
     }
-    public static class EffectRemoveDefenderEffectsWithFlag extends Effect {
-        public final BattlePokemon.EffectFlag flag;
-        public EffectRemoveDefenderEffectsWithFlag(int chance, BattlePokemon.EffectFlag flag) {
+    public static class EffectFlinch extends Effect {
+        public EffectFlinch(int chance) {
             super(chance);
-            this.flag = flag;
-        }
-    }
-    public static class EffectRemoveUserEffectsWithFlag extends Effect {
-        public final BattlePokemon.EffectFlag flag;
-        public EffectRemoveUserEffectsWithFlag(int chance, BattlePokemon.EffectFlag flag) {
-            super(chance);
-            this.flag = flag;
-        }
-    }
-    public static class EffectAddEffectToDefender extends Effect {
-        public final BattlePokemon.Effect effect;
-        public EffectAddEffectToDefender(int chance, BattlePokemon.Effect effect) {
-            super(chance);
-            this.effect = effect;
         }
     }
     public static class EffectConfuse extends Effect {
