@@ -570,21 +570,26 @@ public class BattleCalculator {
         useAttackMove(user, defender, defenders, move);
     }
     private boolean attemptFlee(BattlePokemon pokemon) {
-        if (canSwitch(pokemon)) {
-            int preySpeed = -1;
-            for (int i = 0; i < parties[pokemon.party].numBattling; i++)
-                if (preySpeed == -1 || parties[pokemon.party].members[i].getStat(5) < preySpeed)
-                    preySpeed = parties[pokemon.party].members[i].getStat(5);
-            int predatorSpeed = -1;
-            for (BattleParty party : parties) {
-                if (party == parties[pokemon.party])
-                    continue;
-                for (int i = 0; i < party.numBattling; i++)
-                    if (predatorSpeed == -1 || party.members[i].getStat(5) < predatorSpeed)
-                        predatorSpeed = party.members[i].getStat(5);
+        boolean isRunAway = pokemon.getAbility().getIndex() == 50;
+        if (isRunAway || canSwitch(pokemon)) {
+            boolean ranAway = isRunAway;
+            if (!ranAway) {
+                int preySpeed = -1;
+                for (int i = 0; i < parties[pokemon.party].numBattling; i++)
+                    if (preySpeed == -1 || parties[pokemon.party].members[i].getStat(5) < preySpeed)
+                        preySpeed = parties[pokemon.party].members[i].getStat(5);
+                int predatorSpeed = -1;
+                for (BattleParty party : parties) {
+                    if (party == parties[pokemon.party])
+                        continue;
+                    for (int i = 0; i < party.numBattling; i++)
+                        if (predatorSpeed == -1 || party.members[i].getStat(5) < predatorSpeed)
+                            predatorSpeed = party.members[i].getStat(5);
+                }
+                int escapeAttempts = ++parties[pokemon.party].escapeAttempts;
+                ranAway = MathUtils.random(255) < preySpeed * 128 / predatorSpeed + 30 * escapeAttempts; // actual formula is %255 due to use of bytes
             }
-            int escapeAttempts = ++parties[pokemon.party].escapeAttempts;
-            if (MathUtils.random(255) < preySpeed * 128 / predatorSpeed + 30 * escapeAttempts) { // actual formula is %255 due to use of bytes
+            if (ranAway) {
                 if (pokemon.party == 0) new TextResult("Ran away safely!");
                 else new TextResult(pokemon.getName() + " got away!");
                 new EndBattleResult();
