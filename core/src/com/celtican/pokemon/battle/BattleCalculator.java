@@ -60,7 +60,7 @@ public class BattleCalculator {
                         if (pokemon.action instanceof BattlePokemon.RunAction) {
                             if (attemptFlee(pokemon)) endBattle.set(true);
                         } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
-                            attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
+                            attemptSwitch(pokemon, null, ((BattlePokemon.SwitchAction) pokemon.action).slot);
                         }
                     }
                     if (endBattle.get() || attemptEndBattle()) {
@@ -310,9 +310,9 @@ public class BattleCalculator {
         else party = getRandomOtherParty(user);
         if (user.targetingSlot != -1) targetSlot = user.targetingSlot;
         else targetSlot = getRandomOtherTarget(user, party).partyMemberSlot;
-        useMove(user, move, party, targetSlot);
+        useMove(user, move, party, targetSlot, new Array<>());
     }
-    private void useMove(BattlePokemon user, Move move, BattleParty targetParty, int targetSlot) {
+    private void useMove(BattlePokemon user, Move move, BattleParty targetParty, int targetSlot, Array<DamageModifiers> mods) {
         if (user.getHP() <= 0)
             return;
         if (move.index != 182) user.removeEffect(BattlePokemon.Effect.PROTECT_USES); // protect
@@ -352,7 +352,7 @@ public class BattleCalculator {
             } else {
                 new TextResult(user.getName() + " is confused!");
                 if (MathUtils.random(2) == 0) {
-                    useAttackMove(user, user, null, Game.game.data.getStruggle());
+                    useAttackMove(user, user, null, Game.game.data.getStruggle(), mods);
                     return;
                 }
             }
@@ -458,7 +458,7 @@ public class BattleCalculator {
                     Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
                     break;
                 case 18: // whirlwind
-                    if (forceSwitch(defender)) {
+                    if (forceSwitch(defender, move)) {
                         if (defender.party > 0 && isWildBattle) {
                             new TextResult(defender.getName() + " was blown away!");
                         }
@@ -578,7 +578,7 @@ public class BattleCalculator {
             return;
         }
 
-        useAttackMove(user, defender, defenders, move);
+        useAttackMove(user, defender, defenders, move, mods);
     }
     private boolean attemptFlee(BattlePokemon pokemon) {
         boolean isRunAway = pokemon.getAbility().getIndex() == 50;
@@ -611,7 +611,7 @@ public class BattleCalculator {
         else new TextResult(pokemon.getName() + " couldn't get away!");
         return false;
     }
-    private boolean forceSwitch(BattlePokemon pokemon) {
+    private boolean forceSwitch(BattlePokemon pokemon, Move move) {
         Array<Integer> possibleSlots = new Array<>();
         BattleParty party = parties[pokemon.party];
         for (int i = party.numBattling; i < party.members.length; i++)
@@ -624,12 +624,12 @@ public class BattleCalculator {
             }
             return false;
         }
-        return attemptSwitch(pokemon, possibleSlots.random(), false);
+        return attemptSwitch(pokemon, move, possibleSlots.random(), false);
     }
-    private boolean attemptSwitch(BattlePokemon pokemon, int targetSlot) {
-        return attemptSwitch(pokemon, targetSlot, true);
+    private boolean attemptSwitch(BattlePokemon pokemon, Move move, int targetSlot) {
+        return attemptSwitch(pokemon, move, targetSlot, true);
     }
-    private boolean attemptSwitch(BattlePokemon pokemon, int targetSlot, boolean checkCanSwitch) {
+    private boolean attemptSwitch(BattlePokemon pokemon, Move move, int targetSlot, boolean checkCanSwitch) {
         BattlePokemon target = parties[pokemon.party].members[targetSlot];
         if (target == null || pokemon.getHP() <= 0 || targetSlot < parties[pokemon.party].numBattling || target.getHP() <= 0 ||
                 (checkCanSwitch && (!canSwitch(pokemon) || !canSwitch(target)))) {
@@ -638,9 +638,29 @@ public class BattleCalculator {
         }
 
         if (pokemon.party == 0) new TextResult(pokemon.getName() + ", switch out! Come back!");
-        else new TextResult("Go, " + target.getName() + "!");
+        else new TextResult("Trainer withdrew, " + target.getName() + "!");
 
         // pursuit here
+        {
+            boolean pursuit = move == null;
+            if (!pursuit) switch (move.index) {
+                case 521: // volt switch
+                case 369: // u-turn
+                    pursuit = true;
+            }
+            if (pursuit) {
+                forEachPokemonInSpeedArray(battlePokemon -> {
+                    if (battlePokemon.action instanceof BattlePokemon.MoveAction) {
+                        BattlePokemon.MoveAction action = ((BattlePokemon.MoveAction) battlePokemon.action);
+                        if (action.move.index == 228) {
+                            speedArray.removeValue(battlePokemon, true);
+                            useMove(battlePokemon, action.move, parties[pokemon.party], pokemon.partyMemberSlot, new Array<>(new DamageModifiers[]{DamageModifiers.PURSUIT}));
+                        }
+                    }
+                });
+                if (pokemon.getHP() <= 0) return false;
+            }
+        }
 
         pokemon.removeAllEffects(true);
         forEachPokemonOnField(p -> {
@@ -673,7 +693,7 @@ public class BattleCalculator {
     }
 
     // calculations
-    private DamageResult calcDamage(BattlePokemon attacker, BattlePokemon defender, Move move) {
+    private DamageResult calcDamage(BattlePokemon attacker, BattlePokemon defender, Move move, Array<DamageModifiers> globalMods) {
 
         int defenderAbility = getDefendersAbility(attacker, defender, move).getIndex();
         int attackerAbility = attacker.getAbility().getIndex();
@@ -717,7 +737,10 @@ public class BattleCalculator {
         {
             Array<Integer> mods = new Array<>();
 
-            if (move.index == 76 && !(weather == Weather.CLEAR || weather == Weather.SUN)) mods.add(0x800); // solar beam in rain/sand/hail
+            switch (move.index) {
+                case 76: if (!(weather == Weather.CLEAR || weather == Weather.SUN)) mods.add(0x800); break; // solar beam in rain/sand/hail
+                case 228: if (globalMods.contains(DamageModifiers.PURSUIT, false)) mods.add(0x2000); break; // pursuit
+            }
 
             bp = Math.max(1, roundDown((float)bp * chainMods(mods) / 0x1000));
         }
@@ -904,7 +927,7 @@ public class BattleCalculator {
     }
 
     // results
-    private void useAttackMove(BattlePokemon user, BattlePokemon defender, Array<BattlePokemon> defenders, Move move) {
+    private void useAttackMove(BattlePokemon user, BattlePokemon defender, Array<BattlePokemon> defenders, Move move, Array<DamageModifiers> mods) {
         if (move.multi || move.doubleHit) {
             int maxHits;
             if (move.doubleHit) maxHits = 2;
@@ -918,7 +941,7 @@ public class BattleCalculator {
             DamageResult damage = null;
             while (numHits < maxHits) {
                 numHits++;
-                damage = calcDamage(user, defender, move);
+                damage = calcDamage(user, defender, move, mods);
                 inflictDamage(defender, damage);
                 if (damage.isCrit) new TextResult("Critical hit!");
                 if (defender.getHP() <= 0)
@@ -930,7 +953,7 @@ public class BattleCalculator {
             new TextResult("Hit " + numHits + (numHits == 1 ? " time!" : " times!"));
             handleFaint(defender);
         } else {
-            DamageResult damage = calcDamage(user, defender, move);
+            DamageResult damage = calcDamage(user, defender, move, mods);
             inflictDamage(defender, damage);
             if (user == defender) new TextResult("It hit itself in its confusion!");
             if (damage.effectiveness > 0) new TextResult("It's super effective!");
@@ -1259,6 +1282,9 @@ public class BattleCalculator {
         return false;
     }
 
+    private enum DamageModifiers {
+        PURSUIT
+    }
     private static class DamageResult {
         private final int damage;
         private final boolean isCrit;

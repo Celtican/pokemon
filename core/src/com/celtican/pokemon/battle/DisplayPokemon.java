@@ -22,8 +22,12 @@ public class DisplayPokemon {
     }
 
     public void changePokemon(BattlePokemon pokemon) {
+        changePokemon(pokemon, pokemon.getHP());
+    }
+    public void changePokemon(BattlePokemon pokemon, int hp) {
         if (this.pokemon == null) this.pokemon = new PokemonData(pokemon);
         else this.pokemon.changePokemon(pokemon);
+        this.pokemon.hp = hp;
         if (this.healthBar == null) healthBar = new HealthBar(this);
         else healthBar.changePokemon();
         texture = pokemon.getAnimatedTexture(isFoe);

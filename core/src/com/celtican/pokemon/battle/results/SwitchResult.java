@@ -6,6 +6,7 @@ import com.celtican.pokemon.battle.DisplayPokemon;
 public class SwitchResult extends Result {
     private final int party;
     private final int slot;
+    private final int hp;
     private final BattlePokemon newActivePokemon;
 
     public SwitchResult(BattlePokemon newActivePokemon) {
@@ -19,6 +20,7 @@ public class SwitchResult extends Result {
         party = newActivePokemon.party;
         slot = newActivePokemon.partyMemberSlot;
         this.newActivePokemon = hide ? null : newActivePokemon;
+        hp = newActivePokemon.getHP();
     }
 
     @Override public boolean start() {
@@ -27,7 +29,7 @@ public class SwitchResult extends Result {
             display.hide = true;
         } else {
             display.hide = false;
-            display.changePokemon(newActivePokemon);
+            display.changePokemon(newActivePokemon, hp);
         }
         return true;
     }

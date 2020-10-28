@@ -427,7 +427,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Dragon Breath", DRAGON, SPECIAL, COOL, ADJACENT, 4, 60, 100, "protect, mirror", new Move.EffectStatusCondition(30, StatusCondition.PARALYSIS));
         Game.game.data.addMove("Baton Pass");
         Game.game.data.addMove("Encore");
-        Game.game.data.addMove("Pursuit");
+        Game.game.data.addMove("Pursuit", DARK, PHYSICAL, CLEVER, ADJACENT, 4, 40, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Rapid Spin", NORMAL, PHYSICAL, COOL, ADJACENT, 8, 50, 100, "contact, protect, mirror", new Move.EffectBoostSelfStats(100, 0, 0, 0, 0, 1, 0, 0));
         Game.game.data.addMove("Sweet Scent", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 4, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Iron Tail");
@@ -1265,8 +1265,8 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(16);
-        Game.game.data.player.party[1] = new PartyPokemon(5);
+        Game.game.data.player.party[0] = new PartyPokemon(19);
+        Game.game.data.player.party[1] = new PartyPokemon(19);
 
         Game.game.switchScreens(new TitleScreen());
     }
