@@ -230,7 +230,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Sand Attack");
         Game.game.data.addMove("Headbutt");
         Game.game.data.addMove("Horn Attack");
-        Game.game.data.addMove("Fury Attack");
+        Game.game.data.addMove("Fury Attack", NORMAL, PHYSICAL, COOL, ADJACENT, 4, 15, 85, "contact, protect, mirror, multi", null);
         Game.game.data.addMove("Horn Drill");
         Game.game.data.addMove("Tackle", NORMAL, PHYSICAL, TOUGH, ADJACENT, 7, 40, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Body Slam");
