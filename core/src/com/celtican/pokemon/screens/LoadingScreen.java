@@ -240,7 +240,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Double-Edge", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 120, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Tail Whip", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 6, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Poison Sting", POISON, PHYSICAL, CLEVER, ADJACENT, 7, 15, 100, "protect, mirror", new Move.EffectStatusCondition(30, StatusCondition.POISON));
-        Game.game.data.addMove("Twineedle");
+        Game.game.data.addMove("Twineedle", BUG, PHYSICAL, COOL, ADJACENT, 4, 25, 100, "protect, mirror, doublehit", new Move.EffectStatusCondition(20, StatusCondition.POISON));
         Game.game.data.addMove("Pin Missile");
         Game.game.data.addMove("Leer");
         Game.game.data.addMove("Bite", DARK, PHYSICAL, TOUGH, ADJACENT, 5, 60, 100, "contact, protect, mirror", new Move.EffectFlinch(30));
@@ -1265,7 +1265,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(28);
+        Game.game.data.player.party[0] = new PartyPokemon(5);
         Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());
