@@ -506,6 +506,13 @@ public class BattleCalculator {
                 case 110: // withdraw
                     boostStats(user, 0, 1, 0, 0, 0, 0, 0);
                     break;
+                case 116: // focus energy
+                    if (user.hasEffect(BattlePokemon.Effect.FOCUS_ENERGY)) butItFailed();
+                    else {
+                        user.addEffect(BattlePokemon.Effect.FOCUS_ENERGY, true);
+                        new TextResult(user.getName() + " is getting pumped!");
+                    }
+                    break;
                 case 182: // protect
                     if (speedArray.isEmpty()) {
                         butItFailed();
@@ -718,8 +725,8 @@ public class BattleCalculator {
                 isCrit = false;
             } else {
                 int critStage = 0;
-                if (move.crit)
-                    critStage++;
+                if (move.crit) critStage++;
+                if (attacker.hasEffect(BattlePokemon.Effect.FOCUS_ENERGY)) critStage += 2;
                 switch (critStage) {
                     case 0: isCrit = MathUtils.random(23) == 0; break;
                     case 1: isCrit = MathUtils.random(7) == 0; break;

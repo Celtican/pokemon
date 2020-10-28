@@ -315,7 +315,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Light Screen");
         Game.game.data.addMove("Haze");
         Game.game.data.addMove("Reflect");
-        Game.game.data.addMove("Focus Energy");
+        Game.game.data.addMove("Focus Energy", NORMAL, STATUS, COOL, SELF, 6, -1, -1, "snatch", null);
         Game.game.data.addMove("Bide");
         Game.game.data.addMove("Metronome");
         Game.game.data.addMove("Mirror Move");

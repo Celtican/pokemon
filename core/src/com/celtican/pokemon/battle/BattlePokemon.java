@@ -284,7 +284,8 @@ public class BattlePokemon implements Pokemon {
         FIRE_SPIN_TRAPPER_SLOT(EffectType.INTEGER, true, "RapidSpin"),
         FIRE_SPIN_TURNS_LEFT(EffectType.INTEGER, true, "RapidSpin"),
         FIRE_SPIN_TRAPPER_PARTY(EffectType.PARTY, true, "RapidSpin"),
-        RAGE(EffectType.BOOLEAN, true, null);
+        RAGE(EffectType.BOOLEAN, true, null),
+        FOCUS_ENERGY(EffectType.BOOLEAN, true, null);
 
         public final EffectType type;
         public final boolean endsOnSwitch;
