@@ -55,10 +55,13 @@ public class BattleCalculator {
                     if (endBattle.get()) return;
                     if (pokemon.action instanceof BattlePokemon.MoveAction) {
                         useMove(pokemon);
-                    } else if (pokemon.action instanceof BattlePokemon.RunAction) {
-                        if (attemptFlee(pokemon)) endBattle.set(true);
-                    } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
-                        attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
+                    } else {
+                        if (pokemon.hasEffect(BattlePokemon.Effect.RAGE)) pokemon.removeEffect(BattlePokemon.Effect.RAGE);
+                        if (pokemon.action instanceof BattlePokemon.RunAction) {
+                            if (attemptFlee(pokemon)) endBattle.set(true);
+                        } else if (pokemon.action instanceof BattlePokemon.SwitchAction) {
+                            attemptSwitch(pokemon, ((BattlePokemon.SwitchAction) pokemon.action).slot);
+                        }
                     }
                     if (endBattle.get() || attemptEndBattle()) {
                         endBattle.set(true);
@@ -313,6 +316,7 @@ public class BattleCalculator {
         if (user.getHP() <= 0)
             return;
         if (move.index != 182) user.removeEffect(BattlePokemon.Effect.PROTECT_USES); // protect
+        if (move.index != 99 && user.hasEffect(BattlePokemon.Effect.RAGE)) user.removeEffect(BattlePokemon.Effect.RAGE); // rage
         if (user.statusCondition != Pokemon.StatusCondition.HEALTHY) {
             if (user.statusCondition == Pokemon.StatusCondition.FREEZE) {
                 if (MathUtils.random(4) == 0) {
@@ -1087,9 +1091,6 @@ public class BattleCalculator {
         return attemptConfuse(pokemon);
     }
     private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move) {
-        attemptActivateMoveEffect(user, defender, move, move.effect);
-    }
-    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move, Move.Effect effect) {
         // effects that are not blocked by shield dust:
         switch (move.index) {
             // NOTE: TRAPPING MOVES (anchor shot, jaw lock, and spirit shackle, NOT fire spin and the like) ARE BLOCKED BY SHIELD DUST AND SHOULD HAVE AN EFFECT CLASS
@@ -1107,7 +1108,17 @@ public class BattleCalculator {
                     defender.addEffect(BattlePokemon.Effect.FIRE_SPIN_TURNS_LEFT, MathUtils.random(4, 5));
                 }
                 break;
+            case 99: // rage
+                if (!user.hasEffect(BattlePokemon.Effect.RAGE)) user.addEffect(BattlePokemon.Effect.RAGE, true);
+                break;
         }
+        if (defender.hasEffect(BattlePokemon.Effect.RAGE)) {
+            new TextResult(defender.getName() + "'s rage is building!");
+            boostStats(defender, 1, 0, 0, 0, 0, 0, 0);
+        }
+        attemptActivateMoveEffect(user, defender, move, move.effect);
+    }
+    private void attemptActivateMoveEffect(BattlePokemon user, BattlePokemon defender, Move move, Move.Effect effect) {
         if (effect == null) return;
         boolean isShieldDust = getDefendersAbility(user, defender, move).getIndex() == 19;
         if (effect.chance == 100 || MathUtils.random(99) < effect.chance) {

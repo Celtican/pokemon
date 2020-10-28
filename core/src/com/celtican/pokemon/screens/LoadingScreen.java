@@ -298,7 +298,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Meditate");
         Game.game.data.addMove("Agility");
         Game.game.data.addMove("Quick Attack");
-        Game.game.data.addMove("Rage");
+        Game.game.data.addMove("Rage", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 20, 100, "contact, protect, mirror", null); // todo: I never really understood rage. Make sure this is working
         Game.game.data.addMove("Teleport");
         Game.game.data.addMove("Night Shade", GHOST, SPECIAL, CLEVER, ADJACENT, 3, -1, 100, "protect, mirror", null);
         Game.game.data.addMove("Mimic");
@@ -1265,7 +1265,7 @@ public class LoadingScreen extends Screen {
     }
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
-        Game.game.data.player.party[0] = new PartyPokemon(5);
+        Game.game.data.player.party[0] = new PartyPokemon(16);
         Game.game.data.player.party[1] = new PartyPokemon(5);
 
         Game.game.switchScreens(new TitleScreen());

@@ -248,20 +248,9 @@ public class BattlePokemon implements Pokemon {
         return leveledUp ? Pokemon.super.evolvesInto() : null;
     }
 
-    public enum EffectFlag {
-        RAPID_SPIN("rapidspin"),
-        END_TURN("endturn");
-
-        public final String name;
-        EffectFlag(String name) {
-            this.name = name;
-        }
-    }
-
     public interface Action {}
     public static class MoveAction implements Action {
         public final Move move;
-
         public MoveAction(Move move) {
             this.move = move;
         }
@@ -274,6 +263,15 @@ public class BattlePokemon implements Pokemon {
         }
     }
 
+    public enum EffectFlag {
+        RAPID_SPIN("rapidspin"),
+        END_TURN("endturn");
+
+        public final String name;
+        EffectFlag(String name) {
+            this.name = name;
+        }
+    }
     public enum Effect {
         FLINCH(EffectType.BOOLEAN, true, "EndTurn"),
         CONFUSED(EffectType.INTEGER, true, null),
@@ -285,7 +283,8 @@ public class BattlePokemon implements Pokemon {
         LEECH_SEED_SAPPER_PARTY(EffectType.PARTY, true, "RapidSpin"),
         FIRE_SPIN_TRAPPER_SLOT(EffectType.INTEGER, true, "RapidSpin"),
         FIRE_SPIN_TURNS_LEFT(EffectType.INTEGER, true, "RapidSpin"),
-        FIRE_SPIN_TRAPPER_PARTY(EffectType.PARTY, true, "RapidSpin");
+        FIRE_SPIN_TRAPPER_PARTY(EffectType.PARTY, true, "RapidSpin"),
+        RAGE(EffectType.BOOLEAN, true, null);
 
         public final EffectType type;
         public final boolean endsOnSwitch;
