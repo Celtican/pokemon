@@ -22,7 +22,7 @@ public class PCPokemon implements Pokemon {
         isShiny = base.isShiny();
     }
     public PCPokemon(int level) {
-        this(Game.game.data.getSpecies(12), level);
+        this(Game.game.data.getSpecies(13), level);
     }
     public PCPokemon(Species species, int level) {
         this.species = species.getIndex();

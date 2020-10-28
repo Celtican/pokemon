@@ -181,13 +181,22 @@ public class LoadingScreen extends Screen {
                 -1, -1, new int[] {430, 33, 39, 55, 110, 229, 44, 352, 182, 240, 401, 504, 334, 56, 130}, new int[] {-1, 0, 0, 0, 0, 0, 9, 12, 15, 20, 25, 30, 35, 42, 49, 56});
         Game.game.data.addSpecies("Caterpie", EVEN, BUG, NONE, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
                 19, 19, 50, 50, 45, 30, 35, 20, 20, 45, 255, 50, 39, 1, 0, 0, 0, 0, 0,
-                11, 7, new int[] {33, 81, 450}, new int[] {-1, -1, 9});
+                11, 7, new int[] {33, 81, 450}, new int[] {0, 0, 9});
         Game.game.data.addSpecies("Metapod", EVEN, BUG, NONE, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
                 61, 61, 61, 61, 50, 20, 55, 25, 25, 30, 120, 50, 72, 0, 0, 2, 0, 0, 0,
                 12, 10, new int[] {106, 106}, new int[] {-1, 0});
         Game.game.data.addSpecies("Butterfree", EVEN, BUG, FLYING, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
                 14, 14, 110, 110, 60, 45, 50, 90, 80, 70, 45, 50, 178, 0, 0, 0, 2, 1, 0,
                 -1, -1, new int[] {16, 16, 106, 33, 81, 450, 48, 93, 77, 78, 79, 60, 18, 403, 219, 405, 366, 476, 483}, new int[] {-1, 0, 0, 0, 0, 0, 4, 8, 12, 12, 12, 16, 20, 24, 28, 32, 36, 40, 44});
+        Game.game.data.addSpecies("Weedle", EVEN, BUG, POISON, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                19, 19, 50, 50, 40, 35, 30, 20, 20, 50, 255, 70, 39, 0, 0, 0, 0, 0, 1,
+                14, 7, new int[] {40, 81, 450}, new int[] {0, 0, 9}); // todo: this is from gen VII
+        Game.game.data.addSpecies("Kakuna", EVEN, BUG, POISON, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                61, 61, 61, 61, 45, 25, 50, 25, 25, 35, 120, 70, 72, 0, 0, 2, 0, 0, 0,
+                15, 10, new int[] {106, 106}, new int[] {-1, 1}); // todo: this is from gen VII
+        Game.game.data.addSpecies("Beedrill", EVEN, BUG, POISON, EggGroup.BUG, EggGroup.BUG, MEDIUM_FAST,
+                68, 68, 97, 97, 65, 90, 40, 45, 80, 75, 45, 70, 178, 0, 2, 0, 0, 1, 0,
+                -1, -1, new int[] {41, 31, 31, 99, 228, 116, 474, 372, 390, 42, 398, 97, 283, 565}, new int[] {0, 0, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44}); // todo: this is from gen VII
     }
     private void addMoves() {
         Game.game.data.addMove("Struggle", NONE, PHYSICAL, TOUGH, ADJACENT, -1, 50, -1, "protect, mirror", null);
