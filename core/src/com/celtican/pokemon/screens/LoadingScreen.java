@@ -239,7 +239,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Thrash");
         Game.game.data.addMove("Double-Edge", NORMAL, PHYSICAL, TOUGH, ADJACENT, 3, 120, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Tail Whip", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 6, -1, 100, "protect, reflectable, mirror", null);
-        Game.game.data.addMove("Poison Sting");
+        Game.game.data.addMove("Poison Sting", POISON, PHYSICAL, CLEVER, ADJACENT, 7, 15, 100, "protect, mirror", new Move.EffectStatusCondition(30, StatusCondition.POISON));
         Game.game.data.addMove("Twineedle");
         Game.game.data.addMove("Pin Missile");
         Game.game.data.addMove("Leer");
