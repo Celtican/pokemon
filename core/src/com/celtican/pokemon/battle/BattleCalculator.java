@@ -435,6 +435,11 @@ public class BattleCalculator {
             return;
         }
 
+        if (move.index == 283 && defender.getHP() <= user.getHP()) { // endeavor
+            butItFailed();
+            return;
+        }
+
         if (move.accuracy > 0) {
             boolean missed = false;
             if (move.isOHKO()) {
@@ -457,12 +462,18 @@ public class BattleCalculator {
                 default:
                     Game.logError(move.name + " does not have the DOES_NOT_EXIST type but is not implemented in useMove().");
                     break;
+                case 14: // swords dance
+                    boostStats(user, 2, 0, 0, 0, 0, 0, 0);
+                    break;
                 case 18: // whirlwind
                     if (forceSwitch(defender, move)) {
                         if (defender.party > 0 && isWildBattle) {
                             new TextResult(defender.getName() + " was blown away!");
                         }
                     } else butItFailed();
+                    break;
+                case 28: // sand attack
+                    boostStats(defender, 0, 0, 0, 0, 0, -1, 0);
                     break;
                 case 39: // tail whip
                     for (BattlePokemon d : defenders) boostStats(d, 0, -1, 0, 0, 0, 0, 0);
@@ -496,6 +507,9 @@ public class BattleCalculator {
                     break;
                 case 81: // string shot
                     for (BattlePokemon pokemon : defenders) boostStats(pokemon, 0, 0, 0, 0, -2, 0, 0);
+                    break;
+                case 97: // agility
+                    boostStats(user, 0, 0, 0, 0, 2, 0, 0);
                     break;
                 case 106: // harden
                     boostStats(user, 0, 1, 0, 0, 0, 0, 0);
@@ -710,6 +724,8 @@ public class BattleCalculator {
             switch (move.index) {
                 case 69: case 101: // seismic toss, night shade
                     return new DamageResult(attacker.getLevel());
+                case 283: // endeavor
+                    return new DamageResult(defender.getHP() - attacker.getHP());
             }
             if (move.isOHKO()) return new DamageResult(defender.getHP());
         }

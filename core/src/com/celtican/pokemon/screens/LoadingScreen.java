@@ -213,10 +213,10 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Vise Grip", NORMAL, PHYSICAL, TOUGH, ADJACENT, 6, 55, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Guillotine", NORMAL, PHYSICAL, COOL, ADJACENT, 1, -1, 30, "contact, protect, mirror", null);
         Game.game.data.addMove("Razor Wind");
-        Game.game.data.addMove("Swords Dance");
-        Game.game.data.addMove("Cut");
+        Game.game.data.addMove("Swords Dance", NORMAL, STATUS, BEAUTIFUL, SELF, 4, -1, -1, "snatch, dance", null);
+        Game.game.data.addMove("Cut", NORMAL, PHYSICAL, COOL, ADJACENT, 6, 50, 95, "contact, protect, mirror", null);
         Game.game.data.addMove("Gust", FLYING, SPECIAL, CLEVER, ANY, 7, 40, 100, "protect, mirror, distance", null); // todo: allow it to hit targets and have its power doubled if the target is using bounce/fly/sky drop
-        Game.game.data.addMove("Wing Attack");
+        Game.game.data.addMove("Wing Attack", FLYING, PHYSICAL, COOL, ANY, 7, 60, 100, "contact, protect, mirror, distance", null);
         Game.game.data.addMove("Whirlwind", NORMAL, STATUS, CLEVER, ADJACENT, 4, -1, -1, "reflectable, mirror, authentic, sideanim", null);
         Game.game.data.addMove("Fly");
         Game.game.data.addMove("Bind");
@@ -227,7 +227,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Mega Kick");
         Game.game.data.addMove("Jump Kick");
         Game.game.data.addMove("Rolling Kick");
-        Game.game.data.addMove("Sand Attack");
+        Game.game.data.addMove("Sand Attack", GROUND, STATUS, CUTE, ADJACENT, 3, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Headbutt");
         Game.game.data.addMove("Horn Attack");
         Game.game.data.addMove("Fury Attack", NORMAL, PHYSICAL, COOL, ADJACENT, 4, 15, 85, "contact, protect, mirror, multi", null);
@@ -241,7 +241,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Tail Whip", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 6, -1, 100, "protect, reflectable, mirror", null);
         Game.game.data.addMove("Poison Sting", POISON, PHYSICAL, CLEVER, ADJACENT, 7, 15, 100, "protect, mirror", new Move.EffectStatusCondition(30, StatusCondition.POISON));
         Game.game.data.addMove("Twineedle", BUG, PHYSICAL, COOL, ADJACENT, 4, 25, 100, "protect, mirror, doublehit", new Move.EffectStatusCondition(20, StatusCondition.POISON));
-        Game.game.data.addMove("Pin Missile");
+        Game.game.data.addMove("Pin Missile", BUG, PHYSICAL, COOL, ADJACENT, 4, 25, 95, "protect, mirror, multi", null);
         Game.game.data.addMove("Leer");
         Game.game.data.addMove("Bite", DARK, PHYSICAL, TOUGH, ADJACENT, 5, 60, 100, "contact, protect, mirror", new Move.EffectFlinch(30));
         Game.game.data.addMove("Growl", NORMAL, STATUS, CUTE, ALL_ADJACENT_FOES, 8, -1, 100, "protect, reflectable, mirror, sound, authentic", null);
@@ -292,12 +292,12 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Fissure");
         Game.game.data.addMove("Dig");
         Game.game.data.addMove("Toxic");
-        Game.game.data.addMove("Confusion");
+        Game.game.data.addMove("Confusion", PSYCHIC, SPECIAL, CLEVER, ADJACENT, 5, 50, 100, "protect, mirror", new Move.EffectConfuse(10));
         Game.game.data.addMove("Psychic");
         Game.game.data.addMove("Hypnosis");
         Game.game.data.addMove("Meditate");
-        Game.game.data.addMove("Agility");
-        Game.game.data.addMove("Quick Attack");
+        Game.game.data.addMove("Agility", PSYCHIC, STATUS, COOL, SELF, 6, -1, -1, "snatch", null);
+        Game.game.data.addMove("Quick Attack", NORMAL, PHYSICAL, COOL, ADJACENT, 6, 40, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Rage", NORMAL, PHYSICAL, TOUGH, ADJACENT, 4, 20, 100, "contact, protect, mirror", null); // todo: I never really understood rage. Make sure this is working
         Game.game.data.addMove("Teleport");
         Game.game.data.addMove("Night Shade", GHOST, SPECIAL, CLEVER, ADJACENT, 3, -1, 100, "protect, mirror", null);
@@ -357,7 +357,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Bonemerang");
         Game.game.data.addMove("Rest");
         Game.game.data.addMove("Rock Slide");
-        Game.game.data.addMove("Hyper Fang");
+        Game.game.data.addMove("Hyper Fang", NORMAL, PHYSICAL, COOL, ADJACENT, 3, 80, 90, "contact, protect, mirror", new Move.EffectFlinch(10));
         Game.game.data.addMove("Sharpen");
         Game.game.data.addMove("Conversion");
         Game.game.data.addMove("Tri Attack");
@@ -441,7 +441,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Twister");
         Game.game.data.addMove("Rain Dance", WATER, STATUS, BEAUTIFUL, FIELD, 1, -1, -1, null, null);
         Game.game.data.addMove("Sunny Day");
-        Game.game.data.addMove("Crunch");
+        Game.game.data.addMove("Crunch", DARK, PHYSICAL, TOUGH, ADJACENT, 3, 80, 100, "contact, protect, mirror", new Move.EffectBoostTargetStats(20, 0, -1, 0, 0, 0, 0, 0));
         Game.game.data.addMove("Mirror Coat");
         Game.game.data.addMove("Psych Up");
         Game.game.data.addMove("Extreme Speed");
@@ -456,7 +456,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Stockpile");
         Game.game.data.addMove("Spit Up");
         Game.game.data.addMove("Swallow");
-        Game.game.data.addMove("Heat Wave");
+        Game.game.data.addMove("Heat Wave", FIRE, SPECIAL, BEAUTIFUL, ALL_ADJACENT_FOES, 10, 95, 90, "protect, mirror", new Move.EffectStatusCondition(10, StatusCondition.BURN));
         Game.game.data.addMove("Hail");
         Game.game.data.addMove("Torment");
         Game.game.data.addMove("Flatter");
@@ -482,7 +482,7 @@ public class LoadingScreen extends Screen {
         Game.game.data.addMove("Brick Break");
         Game.game.data.addMove("Yawn");
         Game.game.data.addMove("Knock Off");
-        Game.game.data.addMove("Endeavor");
+        Game.game.data.addMove("Endeavor", NORMAL, PHYSICAL, TOUGH, ADJACENT, 5, -1, 100, "contact, protect, mirror", null);
         Game.game.data.addMove("Eruption");
         Game.game.data.addMove("Skill Swap");
         Game.game.data.addMove("Imprison");
@@ -1266,6 +1266,7 @@ public class LoadingScreen extends Screen {
     private void finalizeLoad() {
         Game.game.canvas.setupFont();
         Game.game.data.player.party[0] = new PartyPokemon(19);
+        Game.game.data.player.party[0].setMove(Game.game.data.getMove(283), 0);
         Game.game.data.player.party[1] = new PartyPokemon(19);
 
         Game.game.switchScreens(new TitleScreen());

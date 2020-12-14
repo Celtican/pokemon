@@ -51,6 +51,8 @@ public class Move {
         switch (index) {
             case 182: // protect
                 return 4;
+            case 98: // quick attack
+                return 1;
             default: // everything else
                 return 0;
             case 18: // whirlwind
